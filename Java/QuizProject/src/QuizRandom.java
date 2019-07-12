@@ -16,19 +16,6 @@ public class QuizRandom {
 				break;
 			}
 		}
-		random();
-		
-	}
-	public static void random() {
-		Random r = new Random();
-		int num1 = r.nextInt(9)+1;
-		int num2 = r.nextInt(10);
-		int num3 = r.nextInt(10);
-		if(num1 != num2 && num1 != num3 && num2 != num3) {
-			System.out.println(num1 *100 + num2 *10 + num3);
-			return;
-		}
-		random();
 	}
 
 }

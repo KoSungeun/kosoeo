@@ -2,11 +2,11 @@
 public class QuizAZ {
 
 	public static void main(String[] args) {
-		for(int i = 0; i < 10; i++) {
-			for(int j = 0; j < 10; j++) {
-				if(i != j) {
-					if((i*10 + j) + (j*10 + i) == 99) {
-						System.out.printf("A:%d Z:%d\n",i,j);
+		for(int a = 0; a < 10; a++) {
+			for(int z = 0; z < 10; z++) {
+				if(a != z) {
+					if((a*10 + z) + (z*10 + a) == 99) {
+						System.out.printf("A:%d Z:%d\n",a,z);
 					}
 				}
 			}
