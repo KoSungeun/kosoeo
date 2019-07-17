@@ -1,0 +1,39 @@
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+class Book2 {
+	private String title;
+	public String author;
+	
+	public Book2() {}
+	
+	public Book2(String title) {
+		this.title = title;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+	@Override
+	public String toString() {
+		return title;
+	}
+}
+
+
+public class G2_NewInstanceTest {
+
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Class strClass = Class.forName("Book");
+		
+		Book2 myBook1 = new Book2("홍길동전");
+		System.out.println(myBook1);
+		
+		Class pClass = Class.forName("Book2");
+		Book2 myBook2 = (Book2)pClass.newInstance();
+		myBook2.setTitle("전우치전");
+		System.out.println(myBook2);
+	}
+}

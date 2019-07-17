@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class A4_StringArray {
 
