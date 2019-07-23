@@ -18,8 +18,9 @@ public class ThreeByThree_Puzzle {
 				}
 			}
 		}
-		shuffle(puzzle, r);
-		int[] index = find(puzzle);
+		
+		int[] index = shuffle(puzzle, r);
+		
 		while (true) {
 			for (int i = 0; i < puzzle.length; i++) {
 				for (int j = 0; j < puzzle.length; j++) {
@@ -46,6 +47,7 @@ public class ThreeByThree_Puzzle {
 			}
 			if (checker(puzzle)) {
 				System.out.println("정답입니다. 게임을 종료합니다.");
+				sc.close();
 				break;
 			}
 		}
@@ -65,11 +67,27 @@ public class ThreeByThree_Puzzle {
 		return index;
 	}
 
-	public static void shuffle(String[][] puzzle, Random r) {
+	public static int[] shuffle(String[][] puzzle, Random r) {
+		int seed;
+		int[] index = find(puzzle);
 		for (int i = 0; i < 10000; i++) {
-			move(puzzle, r.nextInt(puzzle.length), r.nextInt(puzzle.length), r.nextInt(puzzle.length),
-					r.nextInt(puzzle.length));
+			seed = r.nextInt(4);
+			switch (seed) {
+			case 0:
+				index = move(puzzle, index, index[0] + 1, index[1]);				
+				break;
+			case 1:
+				index = move(puzzle, index, index[0] - 1, index[1]);
+				break;
+			case 2:
+				index = move(puzzle, index, index[0], index[1] + 1);
+				break;
+			case 3:
+				index = move(puzzle, index, index[0], index[1] - 1);
+				break;
+			}
 		}
+		return index;
 	}
 
 	public static int[] move(String[][] puzzle, int[] index, int mx, int my) {
@@ -85,12 +103,6 @@ public class ThreeByThree_Puzzle {
 		return index;
 	}
 
-	public static void move(String[][] puzzle, int r1, int r2, int r3, int r4) {
-		String temp;
-		temp = puzzle[r1][r2];
-		puzzle[r1][r2] = puzzle[r3][r4];
-		puzzle[r3][r4] = temp;
-	}
 
 	public static boolean checker(String[][] puzzle) {
 		int answer = 1;

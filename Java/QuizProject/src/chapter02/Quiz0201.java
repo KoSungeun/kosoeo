@@ -15,6 +15,7 @@ public class Quiz0201 {
 		System.out.printf("%d - %d = %d \n", num1, num2, num1 - num2);
 		System.out.printf("%d * %d = %d \n", num1, num2, num1 * num2);
 		System.out.printf("%d / %d = %d \n", num1, num2, num1 / num2);
+		sc.close();
 	}
 
 }

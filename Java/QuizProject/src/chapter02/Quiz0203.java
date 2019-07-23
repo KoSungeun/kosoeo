@@ -17,6 +17,7 @@ public class Quiz0203 {
 		
 		System.out.printf("%d 나누기 %d 의 몫은 %d 입니다 \n", num1, num2, result1);
 		System.out.printf("%d 나누기 %d 의 나머지는 %d 입니다", num1, num2, result2);
+		sc.close();
 	}
 
 }

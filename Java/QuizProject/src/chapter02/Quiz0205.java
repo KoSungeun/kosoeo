@@ -15,6 +15,7 @@ public class Quiz0205 {
 		result = (result > 0) ? result : result * -1;
 		
 		System.out.printf("%d * %d의 절대값은 %d 입니다.\n", num1, num2, result);
+		sc.close();
 	}
 
 }

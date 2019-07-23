@@ -10,6 +10,7 @@ public class Quiz0202 {
 		System.out.println("숫자 입력 : ");
 		int num = sc.nextInt();
 		int result = num * num;
-		System.out.printf("%d의 제곱은 %d", num, result);		
+		System.out.printf("%d의 제곱은 %d", num, result);
+		sc.close();
 	}
 }

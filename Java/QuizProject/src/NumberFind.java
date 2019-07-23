@@ -9,12 +9,12 @@ public class NumberFind {
 		char check;
 		for(int i = 0; i < result.length() ; i++) {
 			check = result.charAt(i);
-			if(check > 47 && check < 58) {
+			if(check >= '0' && check <= '9') {
 				sum += Character.getNumericValue(check);
 			}
 		}
 		System.out.printf("숫자의 합 : %d", sum);
-		
+		sc.close();
 	}
 
 }

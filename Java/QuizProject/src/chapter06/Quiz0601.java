@@ -3,7 +3,6 @@ package chapter06;
 import java.util.Scanner;
 
 public class Quiz0601 {
-
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("두 개의 숫자를 입력하세요.");
@@ -18,6 +17,7 @@ public class Quiz0601 {
 			result = result * -1;
 		}
 		System.out.println("두 수의 차는 " + result + "입니다");
+		sc.close();
 	}
 
 }

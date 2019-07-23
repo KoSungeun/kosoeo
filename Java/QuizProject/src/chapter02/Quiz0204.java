@@ -14,6 +14,7 @@ public class Quiz0204 {
 		int result = (num1 > num2) ? num1 : num2;
 		
 		System.out.println("큰 수는" + result + "입니다.");
+		sc.close();
 	}
 
 }
