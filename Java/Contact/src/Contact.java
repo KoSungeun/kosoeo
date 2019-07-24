@@ -1,9 +1,15 @@
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Contact {
+public class Contact implements java.io.Serializable {
+
+	private static final long serialVersionUID = -4067696872500457700L;
 	private String name;
 	private String phoneNumber;
 	private String email;
@@ -16,8 +22,16 @@ public class Contact {
 		this.email = email;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Contact() {
-		list = new LinkedList<>();
+		try(ObjectInputStream oi =
+				new ObjectInputStream(new FileInputStream("Object.bin"))) {
+			list = (LinkedList<Contact>) oi.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO: handle exception
+		} catch (IOException e) {
+			list = new LinkedList<Contact>();
+		}	
 		sc =  new Scanner(System.in);
 	}
 	
@@ -61,6 +75,7 @@ public class Contact {
 				delete();
 				break;
 			case 4:
+				save();
 				return;
 			default:
 				break;
@@ -70,8 +85,13 @@ public class Contact {
 		
 	}
 
-	public void seve() {
-
+	public void save() {
+		try(ObjectOutputStream oo = 
+				new ObjectOutputStream(new FileOutputStream("Object.bin"))) {
+			oo.writeObject(list);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	public void print() {
 		System.out.println("이름\t전화번호\t이메일\t");
