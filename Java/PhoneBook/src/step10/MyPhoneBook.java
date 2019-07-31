@@ -66,7 +66,9 @@ public class MyPhoneBook {
 		String phoneNumber = sc.nextLine();
 		System.out.print("이메일 : ");
 		String email = sc.nextLine();
-
+		if(phoneNumber == null) {
+			System.out.println("널입니다");
+		}
 		PhoneInfo pInfo;
 		if (email != null) {
 			pInfo = new PhoneInfo(name, phoneNumber, email);

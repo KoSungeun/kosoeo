@@ -496,7 +496,6 @@ from employee
 group by job);
 
 
-
 select ename, dno
 from employee
 where dno in (
@@ -517,28 +516,57 @@ on a.law_name = b.law_name
 where b.sidok = '인천광역시'
 and a.sidok = '서울특별시';
 
-select law_name
-from 
-(select sigunguk, law_name
-from zipcode
-where law_name is not null
-and sidok != '경기도'
-group by sigunguk, law_name)
-group by law_name
-having count(*)>1;
-
-
 select sidok, sigunguk, law_name
 from zipcode
-where law_name in (select law_name
+where sidok != '경기도' and law_name in (select law_name
 from 
 (select sigunguk, law_name
 from zipcode
-where law_name is not null
-and sidok != '경기도'
+where sidok != '경기도'
 group by sigunguk, law_name)
 group by law_name
 having count(*)>1)
 group by sidok, sigunguk, law_name
 order by law_name;
+
+
+
+select distinct a.law_name
+from zipcode a join zipcode b
+on a.law_name = b.law_name
+where 
+b.sidok = '인천광역시'
+and a.sidok = '서울특별시';
+
+
+select sidok, sigunguk, law_name
+from zipcode
+where law_name in (select a.law_name
+from zipcode a join zipcode b
+on a.law_name = b.law_name
+where 
+b.sidok = '인천광역시'
+and a.sidok = '서울특별시'
+group by a.law_name) and sidok != '경기도'
+group by sidok, sigunguk, law_name
+order by law_name;
+
+select distinct a.law_name
+from zipcode a join zipcode b
+on a.law_name = b.law_name
+where b.sidok = '인천광역시'
+and a.sidok = '서울특별시';
+
+select law_name from zipcode
+ where law_name = '논현동';
+ 
+create index idx_zipcode_law_name
+on zipcode(law_name);
+
+create index idx_zipcode_sidok
+on zipcode(sidok);
+
+create index idx_zipcode_dogulwa
+on zipcode (sidok, sigunguk, law_name);
+
 

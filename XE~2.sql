@@ -171,3 +171,83 @@ create table emp9 (
  select * from emp9;
  insert into emp9
  values (8001, 'È«±æµ¿1', 'Á¡¿ø', 50);
+ 
+create table emp (
+    eno number(4) constraint emp_eno_pk primary key,
+    ename varchar2(10),
+    salary number(7,2) default 1000
+    );
+insert into emp (eno, ename, salary)
+values(1001, 'È«±æµ¿', 2000);
+insert into emp
+values (1002, 'È«±æµ¿2', 1000);
+insert into emp (eno, salary)
+values (1003, 1500);
+insert into emp
+values (1004, null, 1600);
+insert into emp (eno, ename)
+values (2002, 'Àü¿ìÄ¡');
+
+drop table emp;
+
+select  * from emp;
+
+alter table emp
+add constraint emp_salary_check check(0 < salary);
+
+alter table emp
+enable constraint emp_salary_check;
+
+create view v_emp
+as
+select eno, ename, job, manager, dno
+from employee;
+desc employee;
+desc v_emp;
+
+select * from v_emp2;
+create view v_emp2
+as
+select a.eno, a.ename, a.salary, b.dno, b.dname, b.loc
+from employee a, department b
+where a.dno = b.dno;
+
+desc v_emp2;
+
+
+create or replace view v_emp
+as 
+select eno, ename, dno, job
+from employee
+where job like 'MANAGER' with check option;
+
+select * from v_emp;
+select * from employee;
+insert into v_emp
+values(9004, 'È«±æµ¿2', 30, 'MANAGER');
+
+create sequence sample_seq
+ increment by 1
+ start with 1;
+ 
+select sequence_name , min_value, max_value,
+increment_by, cycle_flag
+from user_sequences;
+
+select dno_seq.currval from dual;
+
+create sequence dno_seq
+increment by 10
+start with 50;
+
+insert into department
+values (dno_seq.nextval, '111', '111');
+
+create index idx_employee_ename
+on employee (ename);
+
+select * from employee
+ where ename = 'SCOTT';
+ 
+select * from zipcode
+ where rownum < 10;
