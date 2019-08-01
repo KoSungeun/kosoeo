@@ -34,6 +34,7 @@ public class PreparedStatementEx {
 			pstmt1 = con.prepareStatement(sql);
 			int updateCount = pstmt1.executeUpdate();
 			
+			
 			System.out.println("createCount : " + updateCount);
 			
 			//------------------------------------------------------

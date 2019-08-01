@@ -76,7 +76,7 @@ public class BatchInsertEx {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			try {
+			try {	
 				if(!commit) con.rollback();
 				if (rs != null) rs.close();
 				if (stmt != null) stmt.close();
