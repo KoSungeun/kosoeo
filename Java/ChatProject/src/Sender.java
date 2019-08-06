@@ -24,7 +24,6 @@ public class Sender extends Thread {
 	public void run() {
 		try {
 			out.println(request);
-
 		} catch (Exception e) {
 			System.out.println("예외S2:" + e);
 		}

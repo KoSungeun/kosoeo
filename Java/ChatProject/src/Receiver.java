@@ -22,13 +22,26 @@ public class Receiver extends Thread {
 	@Override
 	public void run() {
 		String request;
+		String menu;
+		String id;
 		while (in != null) {
 			try {
 				request = URLDecoder.decode(in.readLine(),"UTF-8");
-				if(su.requestSplit(request, 0).equals("join")) {
+				menu = su.requestSplit(request, 0);
+				if(menu.equals("join")) {
 					System.out.println(su.requestSplit(request, 1));
 					break;
+				} else if(menu.equals("login")) {
+					id = su.requestSplit(request, 1);
+					if(!id.equals("null")) {
+						request = su.requestSplit(request, 2);
+						new ChatWin(socket, id);
+					} else {
+						System.out.println(su.requestSplit(request, 2));
+						break;
+					}	
 				}
+				System.out.println(request);
 			} catch (java.net.SocketException ne) {
 				break;
 			} catch (IOException e) {

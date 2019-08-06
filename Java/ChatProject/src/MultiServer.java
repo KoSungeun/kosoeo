@@ -79,19 +79,39 @@ public class MultiServer {
 				PrintWriter it_out = (PrintWriter) clientMap.get(it.next());
 				if (user.equals(""))
 					it_out.println(URLEncoder.encode(msg, "UTF-8"));
-//					it_out.println(msg);
+
 				else
 					it_out.println("[" + URLEncoder.encode(user, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
-//					it_out.println("["+user+"]"+msg);
 			} catch (Exception e) {
 				System.out.println("예외:" + e);
 			}
 		}
 	}
 
+	public void whisper(String id, String s, int begin, int end) {
+		begin = end + 1;
+		end = s.indexOf(" ", begin);
+		String whisperId = s.substring(begin, end);
+		if (clientMap.containsKey(whisperId)) {
+			begin = end + 1;
+			String words = s.substring(begin);
+			clientMap.get(id).println("To " + whisperId + " : " + words);
+			clientMap.get(whisperId).println("From " + id + " : " + words);
+		} else {
+			clientMap.get(id).println("해당 사용자가 없습니다.");
+		}
+	}
+	
+	public void mute(String id, String s, int begin, int end) {
+		begin = end + 1;
+		end = s.indexOf(" ", begin);
+		String muteId = s.substring(begin, end);
+		
+	}
+
 	public static void main(String[] args) {
 		// 서버객체 생성
-		
+
 		MultiServer ms = new MultiServer();
 		ms.db.connectDatabase();
 		ms.init();
@@ -120,64 +140,63 @@ public class MultiServer {
 		// 쓰레드를 사용하기 위해서 run()메서드 재정의
 		@Override
 		public void run() {
-			
-//			String name = ""; // 클라이언트로부터 받은 이름을 저장할 변수.
+
+			String id = ""; // 클라이언트로부터 받은 이름을 저장할 변수.
 			try {
 				String request;
-				while(in != null) {
-					request = URLDecoder.decode(in.readLine(),"UTF-8");
-					if(su.requestSplit(request, 0).equals("join")) {
-						db.join(su.requestSplit(request, 1), su.requestSplit(request, 2));
-						out.println(URLEncoder.encode("join/회원가입완료", "UTF-8"));
+				String response;
+				String s;
+
+				request = in.readLine();
+				request = URLDecoder.decode(request, "UTF-8");
+				if (su.requestSplit(request, 0).equals("join")) {
+					response = db.join(su.requestSplit(request, 1), su.requestSplit(request, 2));
+					out.println(URLEncoder.encode("join/" + response, "UTF-8"));
+				} else if (su.requestSplit(request, 0).equals("login")) {
+					response = db.login(su.requestSplit(request, 1), su.requestSplit(request, 2));
+					out.println(URLEncoder.encode("login/" + response, "UTF-8"));
+					if (!su.requestSplit(response, 0).equals("null")) {
+						id = in.readLine();
+						id = URLDecoder.decode(id, "UTF-8");
+						clientMap.put(id, out);
+						System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
+
+						while (in != null) {
+							s = in.readLine();
+							if (s == null) {
+								break;
+							}
+							s = URLDecoder.decode(s, "UTF-8");
+							System.out.println(s);
+
+							if (s.startsWith("/")) {
+								try {
+									int begin = 1;
+									int end = s.indexOf(" ");
+									if (s.substring(begin).equalsIgnoreCase("list"))
+										list(out);
+									else if (s.substring(begin, end).equalsIgnoreCase("to")) {
+										whisper(id, s, begin, end);
+									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
+										
+									}
+								} catch (StringIndexOutOfBoundsException e) {
+									clientMap.get(id).println("잘못된 명령어입니다.");
+								}
+							} else {
+								sendAllMsg(id, s);
+							}
+
+						}
+
 					}
-				}			
-//				name = in.readLine(); // 클라이언트에서 처음으로 보내는 메시지는
-//										// 클라이언트가 사용할 이름이다.
-//				name = URLDecoder.decode(name, "UTF-8");
-//
-//				sendAllMsg("", name + "님이 입장하셨습니다.");
-//				// 현재 객체가 가지고 있는 소켓을 제외하고 다른 소켓(클라이언트)들에게 접속을 알림.
-//				clientMap.put(name, out); // 해쉬맵에 키를 name으로 출력스트림 객체를 저장.
-//				System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
-//
-//				// 입력 스트림이 null이 아니면 반복.
-//				String s = "";
-//				while (in != null) {
-//					s = in.readLine();
-//					s = URLDecoder.decode(s, "UTF-8");
-//					System.out.println(s);
-//
-//					if (s.startsWith("/")) {
-//						try {
-//							if (s.substring(1).equalsIgnoreCase("list"))
-//								list(out);
-//							else if (s.substring(1, s.indexOf(" ")).equalsIgnoreCase("to")) {
-//								String whisperName = s.substring(s.indexOf(" ") + 1, s.indexOf(" ", s.indexOf(" ") + 1));
-//								System.out.println(whisperName);
-//								if (clientMap.containsKey(whisperName)) {
-//									clientMap.get(name).println("To " + whisperName + " : " + s.substring(s.indexOf(" ", s.indexOf(" ") + 1) + 1));
-//									clientMap.get(whisperName).println(
-//											"From " + name + " : " + s.substring(s.indexOf(" ", s.indexOf(" ") + 1) + 1));
-//								} else {
-//									clientMap.get(name).println("해당 사용자가 없습니다.");
-//								}
-//							}
-//						} catch (StringIndexOutOfBoundsException e) {
-//							clientMap.get(name).println("잘못된 명령어입니다.");
-//						}
-//					} else
-//						sendAllMsg(name, s);
-//					;
-//				}
-//				System.out.println("Bye...");
+				}
 			} catch (IOException e) {
 				System.out.println("예외:" + e);
 			} finally {
-//				// 예외가 발생할때 퇴장. 해쉬맵에서 해당 데이터 제거.
-//				// 보통 종료하거나 나가면 java.net.SocketException: 예외발생
-//				clientMap.remove(name);
-//				sendAllMsg("", name + "님이 퇴장하셨습니다.");
-//				System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
+				clientMap.remove(id);
+				sendAllMsg("", id + "님이 퇴장하셨습니다.");
+				System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
 				try {
 					in.close();
 					out.close();

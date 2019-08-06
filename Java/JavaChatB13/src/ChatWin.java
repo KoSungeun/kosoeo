@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class ChatWin extends JFrame {
+public class ChatWin extends JFrame  {
 
     private static final long serialVersionUID = 1L;
     JTextField tf;
@@ -78,5 +78,6 @@ public class ChatWin extends JFrame {
             tf.setText("");
         }
     }
+
 
 }

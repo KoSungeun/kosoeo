@@ -6,15 +6,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-
 public class MultiClient {
 
 	Scanner s = new Scanner(System.in);
 	String ServerIP;
+
 	public MultiClient(String[] args) {
 		this.ServerIP = "localhost";
 		if (args.length > 0)
-			ServerIP = args[0]; 
+			ServerIP = args[0];
 	}
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
@@ -27,7 +27,7 @@ public class MultiClient {
 	}
 
 	public Socket serverConnect() throws IOException {
-		
+
 		Socket socket = new Socket(ServerIP, 9999); // 소켓 객체 생성
 		System.out.println("서버와 연결이 되었습니다........");
 		return socket;
@@ -43,6 +43,7 @@ public class MultiClient {
 		String choice = s.nextLine();
 		switch (choice) {
 		case "1":
+			login();
 			break;
 		case "2":
 			join();
@@ -50,11 +51,57 @@ public class MultiClient {
 		case "0":
 			return;
 		default:
-			System.out.println("잘못입력하셨습니다.");
 			menu();
 			break;
 		}
 
+	}
+
+	public void login() throws IOException {
+		Socket socket = serverConnect();
+		String id = null;
+		String password = null;
+		while (id == null) {
+			System.out.println("ID : ");
+			id = s.nextLine();
+			if (id.trim().equals("")) {
+				System.out.println("필수입력값입니다");
+				id = null;
+			}
+
+		}
+		while (password == null) {
+			System.out.println("PASSWORD : ");
+			password = s.nextLine();
+			if (password.trim().equals("")) {
+				System.out.println("필수입력값입니다.");
+				password = null;
+			}
+
+		}
+		String request = String.format("login/%s/%s", id, password);
+		Thread sender = new Sender(socket, request);
+		Thread receiver = new Receiver(socket);
+		sender.start();
+		receiver.start();
+		
+		try {
+			receiver.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+//		ExecutorService exr = Executors.newFixedThreadPool(2);
+//		exr.submit(sender);
+//		try {
+//			exr.submit(receiver).get();
+//		} catch (InterruptedException | ExecutionException e) {
+//			e.printStackTrace();
+//		}
+		
+		menu();
 	}
 
 	public void join() throws IOException {
@@ -90,19 +137,16 @@ public class MultiClient {
 		String request = String.format("join/%s/%s", id, password);
 		Thread sender = new Sender(socket, request);
 		Thread receiver = new Receiver(socket);
-
-		ExecutorService exr = Executors.newFixedThreadPool(2);
-		exr.submit(sender);
+		sender.start();
+		receiver.start();
 		try {
-			exr.submit(receiver).get();
-		} catch (InterruptedException | ExecutionException e) {
+			receiver.join();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		exr.shutdown();
 		menu();
-			
-		
+
 	}
 
 }
