@@ -8,51 +8,20 @@ import java.util.Scanner;
 
 public class Database {
 
-	Scanner sc = new Scanner(System.in);
 	Connection con = null;
-	PreparedStatement pstmt = null;
+	PreparedStatement jpstmt = null;
 	String sql = null;
 	ResultSet rs = null;
 	
-	public void addNumber() {
-		String name = null;
-		String phoneNumber = null;
-		String email = null;
-
-		while (name == null) {
-			System.out.print("이름 : ");
-			name = sc.nextLine();
-			if (name.trim().equals("")) {
-				System.out.println("필수입력값입니다");
-				name = null;
-			}
-	
-		}
-
-		while (phoneNumber == null) {
-			System.out.print("전화번호 : ");
-			phoneNumber = sc.nextLine();
-			if (phoneNumber.trim().equals("")) {
-				System.out.println("필수입력값입니다.");
-				phoneNumber = null;
-			}
-		}
-		System.out.print("이메일 : ");
-		email = sc.nextLine();
-
+	public void join(String id, String password) {
 		try {
-			sql = "insert into phone_info (name, phone_number, email) values(?, ?, ?)";
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, name);
-			pstmt.setString(2, phoneNumber);
-			if (!email.trim().equals("")) {
-				pstmt.setString(3, email);
-			} else {
-				pstmt.setString(3, null);
-			}
-			pstmt.executeUpdate();
+			sql = "insert into users (id, password) values (?, ?)";
+			jpstmt = con.prepareStatement(sql);
+			jpstmt.setString(1, id);
+			jpstmt.setString(2, password);
+			jpstmt.executeUpdate();
 		} catch (SQLIntegrityConstraintViolationException e) {
-			System.out.println("중복된 이름과 번호가 있습니다.");
+			System.out.println("중복된 ID가 있습니다.");
 		} catch (SQLException sqle) {
 			System.out.println("데이터베이스 입력오류입니다.");
 		} 
@@ -67,3 +36,4 @@ public class Database {
 		}
 	}
 }
+
