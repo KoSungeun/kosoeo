@@ -102,11 +102,13 @@ public class MultiServer {
 		}
 	}
 	
-	public void mute(String id, String s, int begin, int end) {
+	public void mute(String fromId, String s, int begin, int end) {
 		begin = end + 1;
 		end = s.indexOf(" ", begin);
-		String muteId = s.substring(begin, end);
-		
+		System.out.println(begin);
+		String toId = s.substring(begin);
+		System.out.println(s);
+		clientMap.get(fromId).println(db.mute(fromId, toId));
 	}
 
 	public static void main(String[] args) {
@@ -178,10 +180,11 @@ public class MultiServer {
 									else if (s.substring(begin, end).equalsIgnoreCase("to")) {
 										whisper(id, s, begin, end);
 									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
-										
+										mute(id, s, begin, end);
 									}
 								} catch (StringIndexOutOfBoundsException e) {
 									clientMap.get(id).println("잘못된 명령어입니다.");
+									e.printStackTrace();
 								}
 							} else {
 								sendAllMsg(id, s);

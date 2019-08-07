@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class Database {
 
 	Connection con = null;
+	PreparedStatement unopstmt = null;
 	PreparedStatement jpstmt = null;
 	PreparedStatement lpstmt = null;
 	PreparedStatement mpstmt = null;
@@ -60,29 +61,49 @@ public class Database {
 	
 	public String mute(String fromId, String toId) {
 		String response = toId + "님을 차단하였습니다";
-		String fromuno = "";
-		String touno = "";
+		int fromuno;
+		int touno;
 		try {
-			sql = "select id, fromuno, touno from mute join users" + 
-					"on mute.touno = uno" + 
-					"where fromuno = (select uno from users where id = ?);";
-			mspstmt = con.prepareStatement(sql);
-			mspstmt.setString(1, fromId);
+			if(unopstmt == null) {
+				sql = "select f.uno, t.uno from users f, users t where f.id = ? and t.id = ?";
+				unopstmt = con.prepareStatement(sql);
+			}
+			unopstmt.setString(1, fromId);
+			unopstmt.setString(2, toId);
+			rs = unopstmt.executeQuery();
+			if(rs.next()) {
+				fromuno = rs.getInt(1);
+				touno = rs.getInt(2);
+			} else {
+				return response = "해당 사용자가 없습니다";
+			}
+			
+			
+			if(mspstmt == null) {
+				sql = "select touno from mute where fromuno = ?";
+				mspstmt = con.prepareStatement(sql);
+			}
+			mspstmt.setInt(1, fromuno);
 			rs = mspstmt.executeQuery();
 			while (rs.next()) {
-				if(rs.getString(1).equals(toId)) {
+				if(rs.getInt(1) == touno) {
 					response = "이미차단된 사용자입니다";
 					return response;
 				} 
 			}
 			
-			sql = "insert into mute (mno, fromuno, touno) values (seq.nextval, ?, ?)";
-			mpstmt = con.prepareStatement(sql);
-			mpstmt.setString(1, fromuno);
-			mpstmt.setString(2, touno);
+			
+			if(mpstmt == null) {
+				sql = "insert into mute (mno, fromuno, touno) values (seq.nextval, ?, ?)";
+				mpstmt = con.prepareStatement(sql);
+			}
+			
+			mpstmt.setInt(1, fromuno);
+			mpstmt.setInt(2, touno);
 			mpstmt.executeUpdate();
 		} catch (SQLException sqle) {
 			response = "데이터베이스 입력오류입니다.";
+			sqle.printStackTrace();
 		} 
 		return response;
 	}

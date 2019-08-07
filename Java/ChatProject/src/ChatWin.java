@@ -67,6 +67,7 @@ public class ChatWin extends JFrame {
                 try {
                     out.close();
                     socket.close();
+                    p.removeAll();
                 } catch (IOException e1) {
                 }
             } else {
