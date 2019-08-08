@@ -87,6 +87,27 @@ public class MultiServer {
 			}
 		}
 	}
+	
+	public void sendMsg(String id, String msg) {
+
+		for(Room r : Room.getRoomList()) {
+			
+			Map<String, Users> usersMap = r.getUsersMap();
+			if(usersMap.containsKey(id)) {
+				for(String mapId : usersMap.keySet()) {
+					try {
+					usersMap.get(mapId).getOut().println("[" + URLEncoder.encode(id, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
+					} catch (Exception e) {
+						System.out.println("예외:" + e);
+					}
+				}
+			}
+			
+		}
+		
+
+	}
+	
 
 	public void whisper(String id, String s, int begin, int end) {
 		begin = end + 1;
@@ -160,9 +181,9 @@ public class MultiServer {
 					if (!su.requestSplit(response, 0).equals("null")) {
 						id = in.readLine();
 						id = URLDecoder.decode(id, "UTF-8");
-						clientMap.put(id, out);
-						System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
-
+						Users users = db.getUsers(id, out);
+						Room.joinRoom(users);
+						
 						while (in != null) {
 							s = in.readLine();
 							if (s == null) {
@@ -175,19 +196,53 @@ public class MultiServer {
 								try {
 									int begin = 1;
 									int end = s.indexOf(" ");
+									if(end < 0) {
+										end = begin;
+									}
 									if (s.substring(begin).equalsIgnoreCase("list"))
 										list(out);
 									else if (s.substring(begin, end).equalsIgnoreCase("to")) {
 										whisper(id, s, begin, end);
 									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
 										mute(id, s, begin, end);
+									} else if (s.substring(begin).equalsIgnoreCase("croom")) {
+										String rname =null;
+										String limit = null;
+										String selectPass = null;
+										String select =null;
+										System.out.println("sasd");
+										while(rname == null) {
+											out.println("방이름을 입력해주세요");
+											rname = in.readLine();
+										}
+										while(limit == null) {
+											out.println("최대 인원수를 입력해주세요");
+											limit = in.readLine();
+										}
+										while(selectPass == null) {
+											out.println("비밀번호를 설정하시겠습니까?(y/n)");
+											selectPass = in.readLine();
+											if(selectPass.equalsIgnoreCase("n")) {
+												for(Room r : Room.getRoomList()) {
+													if(r.getUsersMap().containsKey(id)) {
+														r.getUsersMap().remove(id);
+													}
+												}
+												Room.createRoom(users, rname, null, Integer.parseInt(limit));
+												out.println(rname + "방이 생성되었습니다.");
+											} else if(selectPass.equalsIgnoreCase("y")) {
+												
+											}
+										}		
+										
+										
 									}
 								} catch (StringIndexOutOfBoundsException e) {
-									clientMap.get(id).println("잘못된 명령어입니다.");
+									users.getOut().println("잘못된 명령어입니다.");
 									e.printStackTrace();
 								}
 							} else {
-								sendAllMsg(id, s);
+								sendMsg(id, s);
 							}
 
 						}
