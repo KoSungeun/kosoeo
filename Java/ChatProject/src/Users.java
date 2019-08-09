@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 
@@ -7,12 +8,21 @@ public class Users {
 	private int rno;
 	private String id;
 	private PrintWriter out;
+	private BufferedReader in;
+
 	
-	public Users(int uno, String id, PrintWriter out) {
+	public Users(int uno, String id, PrintWriter out, BufferedReader in) {
 		this.rno = 0;
 		this.uno = uno;
 		this.id = id;
 		this.out = out;
+		this.in = in;
+	}
+	public BufferedReader getIn() {
+		return in;
+	}
+	public void setIn(BufferedReader in) {
+		this.in = in;
 	}
 	public int getRno() {
 		return rno;

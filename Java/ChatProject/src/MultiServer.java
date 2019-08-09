@@ -8,8 +8,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MultiServer {
 
@@ -18,12 +18,15 @@ public class MultiServer {
 	Map<String, PrintWriter> clientMap;
 	StringUtil su = new StringUtil();
 	Database db = new Database();
+	RoomTreeMap roomMap;
 
 	public MultiServer() {
 		// 클라이언트의 출력스트림을 저장할 해쉬맵 생성.
 		clientMap = new HashMap<String, PrintWriter>();
 		// 해쉬맵 동기화 설정.
 		Collections.synchronizedMap(clientMap);
+
+		roomMap = new RoomTreeMap();
 	}
 
 	public void init() {
@@ -52,62 +55,65 @@ public class MultiServer {
 	}
 
 	// 접속자 리스트 보내기
-	public void list(PrintWriter out) {
-		// 출력스트림을 순차적으로 얻어와서 해당 메시지를 출력한다.
-		Iterator<String> it = clientMap.keySet().iterator();
-		String msg = "사용자 리스트 [";
-		while (it.hasNext()) {
-			msg += (String) it.next() + ",";
-		}
-		msg = msg.substring(0, msg.length() - 1) + "]";
-		try {
-			out.println(URLEncoder.encode(msg, "UTF-8"));
-		} catch (Exception e) {
+	public void list(Users users, String option) throws IOException {
+		users.getOut().println("ID\t방번호\t방이름");
+		Map<Integer, Room> roomList = roomMap.getRoomList();
 
+		int usersRno = users.getRno();
+		Map<String, Users> usersMap = null;
+
+		if (option.equalsIgnoreCase("a")) { // 전체
+			usersMap = roomList.values().stream().flatMap(e -> e.getUsersMap().entrySet().stream())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		} else if (option.equalsIgnoreCase("l")) { // 로비
+			usersMap = roomList.get(0).getUsersMap();
+		} else if (option.equalsIgnoreCase("r")) { // 방
+			usersMap = roomList.get(usersRno).getUsersMap();
+		}
+		for (String id : usersMap.keySet()) {
+			users.getOut().println(String.format("%s\t%d\t%s", usersMap.get(id).getId(), usersMap.get(id).getRno(),
+					roomList.get(usersMap.get(id).getRno()).getName()));
 		}
 
 	}
 
-	// 접속된 모든 클라이언트들에게 메시지를 전달.
-	public void sendAllMsg(String user, String msg) {
+	public void sendMsg(String id, int rno, String msg) throws IOException {
 
-		// 출력스트림을 순차적으로 얻어와서 해당 메시지를 출력한다.
-		Iterator<String> it = clientMap.keySet().iterator();
-
-		while (it.hasNext()) {
-			try {
-				PrintWriter it_out = (PrintWriter) clientMap.get(it.next());
-				if (user.equals(""))
-					it_out.println(URLEncoder.encode(msg, "UTF-8"));
-
-				else
-					it_out.println("[" + URLEncoder.encode(user, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
-			} catch (Exception e) {
-				System.out.println("예외:" + e);
-			}
+		Map<String, Users> usersMap = roomMap.getRoomList().get(rno).getUsersMap();
+		for (String mapId : usersMap.keySet()) {
+			usersMap.get(mapId).getOut()
+					.println("[" + URLEncoder.encode(id, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
 		}
+
 	}
 	
-	public void sendMsg(String id, String msg) {
-
-		for(Room r : Room.getRoomList()) {
-			
-			Map<String, Users> usersMap = r.getUsersMap();
-			if(usersMap.containsKey(id)) {
-				for(String mapId : usersMap.keySet()) {
-					try {
-					usersMap.get(mapId).getOut().println("[" + URLEncoder.encode(id, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
-					} catch (Exception e) {
-						System.out.println("예외:" + e);
-					}
-				}
+	public void invite(Users users, String inviteId) throws IOException {
+		System.out.println(inviteId);
+		Map<Integer, Room> roomList = roomMap.getRoomList();
+		Map<String, Users> allUsers = roomList.values().stream().flatMap(e -> e.getUsersMap().entrySet().stream())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		if(allUsers.containsKey(inviteId)) {
+			allUsers.get(inviteId).getOut().println(users.getId() + "님이 초대하였습니다. 수락하시겠습니까? (y/n)");
+			String select = null;
+			String inviting = "초대중";
+			while(select == null) {
+				inviting = inviting + ".";
+				users.getOut().println(inviting);
+				select = allUsers.get(inviteId).getIn().readLine();
 			}
-			
+			 
+			if(select.equalsIgnoreCase("y")) {
+				users.getOut().println("수락했습니다.");
+				roomMap.joinRoom(allUsers.get(inviteId), users.getRno());
+			} else  {
+				allUsers.get(inviteId).getOut().println("거절했습니다");
+				users.getOut().println("거절 당했습니다.");
+			}
+		} else {
+			users.getOut().println("해당 이용자가 없습니다.");
 		}
 		
-
 	}
-	
 
 	public void whisper(String id, String s, int begin, int end) {
 		begin = end + 1;
@@ -122,7 +128,7 @@ public class MultiServer {
 			clientMap.get(id).println("해당 사용자가 없습니다.");
 		}
 	}
-	
+
 	public void mute(String fromId, String s, int begin, int end) {
 		begin = end + 1;
 		end = s.indexOf(" ", begin);
@@ -132,9 +138,68 @@ public class MultiServer {
 		clientMap.get(fromId).println(db.mute(fromId, toId));
 	}
 
+	public void createRoom(Users users, BufferedReader in, PrintWriter out) throws IOException {
+		String rname = null;
+		int limit = 0;
+		String selectPass = null;
+		String password = null;
+
+		while (rname == null) {
+			out.println("방이름을 입력해주세요");
+			rname = in.readLine();
+		}
+		while (limit == 0) {
+			out.println("최대 인원수를 입력해주세요");
+
+			try {
+				limit = Integer.parseInt(in.readLine());
+			} catch (NumberFormatException e) {
+				out.println("숫자만 입력해주세요");
+			}
+
+		}
+		while (selectPass == null) {
+			out.println("비밀번호를 설정하시겠습니까?(y/n)");
+			selectPass = in.readLine();
+			if (selectPass.equalsIgnoreCase("n")) {
+
+			} else if (selectPass.equalsIgnoreCase("y")) {
+				while (password.trim().equals("")) {
+					out.println("비밀번호를 입력해주세요");
+					password = in.readLine();
+				}
+			}
+		}
+		roomMap.createRoom(users, rname, password, limit);
+
+	}
+
+	public void roomList(Users users, BufferedReader in, PrintWriter out, String option) throws IOException {
+		out.println("방번호\t방제목\t현재원\t정원\t공개");
+		for (int rno : roomMap.getRoomList().keySet()) {
+			if (rno != 0) {
+				Room r = roomMap.getRoomList().get(rno);
+
+				String flag;
+				if (r.getPassword() != null) {
+					flag = "X";
+					if (option.equalsIgnoreCase("o")) {
+						continue;
+					}
+				} else {
+					flag = "0";
+					if (option.equalsIgnoreCase("p")) {
+						continue;
+					}
+				}
+				out.println(String.format("%d\t%s\t%d\t%d\t%s", rno, r.getName(), r.getUsersMap().size(), r.getLimit(),
+						flag));
+			}
+		}
+	}
+
 	public static void main(String[] args) {
 		// 서버객체 생성
-
 		MultiServer ms = new MultiServer();
 		ms.db.connectDatabase();
 		ms.init();
@@ -165,6 +230,7 @@ public class MultiServer {
 		public void run() {
 
 			String id = ""; // 클라이언트로부터 받은 이름을 저장할 변수.
+			Users users = null;
 			try {
 				String request;
 				String response;
@@ -181,9 +247,11 @@ public class MultiServer {
 					if (!su.requestSplit(response, 0).equals("null")) {
 						id = in.readLine();
 						id = URLDecoder.decode(id, "UTF-8");
-						Users users = db.getUsers(id, out);
-						Room.joinRoom(users);
-						
+
+						users = db.getUsers(id, out, in);
+						roomMap.joinRoom(users);
+						out.println(roomMap.getRoomList().get(users.getRno()).getName() + "에 입장하였습니다 인원수 : "
+								+ roomMap.getRoomList().get(users.getRno()).getUsersMap().size());
 						while (in != null) {
 							s = in.readLine();
 							if (s == null) {
@@ -194,55 +262,65 @@ public class MultiServer {
 
 							if (s.startsWith("/")) {
 								try {
+									String option = null;
 									int begin = 1;
 									int end = s.indexOf(" ");
-									if(end < 0) {
+									if (end < 0) {
 										end = begin;
 									}
-									if (s.substring(begin).equalsIgnoreCase("list"))
-										list(out);
-									else if (s.substring(begin, end).equalsIgnoreCase("to")) {
+									String command = s.substring(begin);
+									if (command.startsWith("list")) {
+										if (end > 0) {
+											option = s.substring(s.indexOf("-") + 1);
+										}
+										list(users, option);
+									} else if (s.substring(begin, end).equalsIgnoreCase("to")) {
 										whisper(id, s, begin, end);
 									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
 										mute(id, s, begin, end);
 									} else if (s.substring(begin).equalsIgnoreCase("croom")) {
-										String rname =null;
-										String limit = null;
-										String selectPass = null;
-										String select =null;
-										System.out.println("sasd");
-										while(rname == null) {
-											out.println("방이름을 입력해주세요");
-											rname = in.readLine();
+										createRoom(users, in, out);
+									} else if (s.substring(begin).startsWith("vroom")) {
+										if (end > 0) {
+											option = s.substring(s.indexOf("-") + 1);
 										}
-										while(limit == null) {
-											out.println("최대 인원수를 입력해주세요");
-											limit = in.readLine();
-										}
-										while(selectPass == null) {
-											out.println("비밀번호를 설정하시겠습니까?(y/n)");
-											selectPass = in.readLine();
-											if(selectPass.equalsIgnoreCase("n")) {
-												for(Room r : Room.getRoomList()) {
-													if(r.getUsersMap().containsKey(id)) {
-														r.getUsersMap().remove(id);
-													}
+										roomList(users, in, out, option);
+									} else if (s.substring(begin).equalsIgnoreCase("jroom")) {
+										out.println("입장할 방번호를 입력해주세요");
+										String req = in.readLine();
+										int rno = Integer.parseInt(req);
+										if (roomMap.getRoomList().containsKey(rno)) {
+											String rPassword = roomMap.getRoomList().get(rno).getPassword();
+											boolean flag = true;
+											if (rPassword != null) {
+												out.println("비밀번호를 입력해주세요.");
+												String password = in.readLine();
+
+												if (!password.equals(rPassword)) {
+													out.println("비밀번호가 틀립니다");
+													flag = false;
 												}
-												Room.createRoom(users, rname, null, Integer.parseInt(limit));
-												out.println(rname + "방이 생성되었습니다.");
-											} else if(selectPass.equalsIgnoreCase("y")) {
-												
 											}
-										}		
-										
-										
+											if (flag) {
+												roomMap.joinRoom(users, rno);
+
+											}
+										} else {
+											out.println("해당 방이 없습니다.");
+										}
+									} else if (s.substring(begin).equalsIgnoreCase("lroom")) {
+										roomMap.leaveRoom(users);
+										roomMap.joinRoom(users);
+									} else if (s.substring(begin).startsWith("invite")) {
+										invite(users, s.substring(end +1));
 									}
-								} catch (StringIndexOutOfBoundsException e) {
-									users.getOut().println("잘못된 명령어입니다.");
+
+								} catch (Exception e) {
 									e.printStackTrace();
+									users.getOut().println("잘못된 명령어입니다.");
 								}
 							} else {
-								sendMsg(id, s);
+								sendMsg(id, users.getRno(), s);
 							}
 
 						}
@@ -252,15 +330,17 @@ public class MultiServer {
 			} catch (IOException e) {
 				System.out.println("예외:" + e);
 			} finally {
-				clientMap.remove(id);
-				sendAllMsg("", id + "님이 퇴장하셨습니다.");
-				System.out.println("현재 접속자 수는 " + clientMap.size() + "명 입니다.");
+				db.loginSet.remove(id);
+				if (users != null) {
+					roomMap.leaveRoom(users);
+				}
+
 				try {
 					in.close();
 					out.close();
 					socket.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println(users.getId() + "님이 접속을 종료하였습니다.");
 				}
 			}
 		}
