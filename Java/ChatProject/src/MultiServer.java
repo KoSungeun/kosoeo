@@ -97,7 +97,7 @@ public class MultiServer {
 			String select = null;
 			String inviting = "초대중";
 			while(select == null) {
-				inviting = inviting + ".";
+				inviting += ".";
 				users.getOut().println(inviting);
 				select = allUsers.get(inviteId).getIn().readLine();
 			}
