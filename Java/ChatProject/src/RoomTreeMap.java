@@ -1,8 +1,15 @@
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class RoomTreeMap {
-	private Map<Integer, Room> roomMap = new TreeMap<>();
+	private Map<Integer, Room> roomMap;
+	
+	public RoomTreeMap() {
+		roomMap = new TreeMap<>();
+		Collections.synchronizedMap(roomMap);
+	}
 	
 	public Map<Integer, Room> getRoomList() {
 		return roomMap;
@@ -47,7 +54,11 @@ public class RoomTreeMap {
 
 	public Map<Integer, Room> joinRoom(Users users, int rno) {
 		Map<String, Users> usersMap = roomMap.get(rno).getUsersMap();
-		System.out.println(usersMap.size());
+		
+		if(roomMap.get(rno).getBlockMap().containsKey(users.getId())) {
+			users.getOut().println("영구강퇴 됐습니다.");
+			return roomMap;
+		}
 		if(usersMap.size() >= roomMap.get(rno).getLimit()) {
 			users.getOut().println("정원이 초과하였습니다");
 			return roomMap;
@@ -59,7 +70,7 @@ public class RoomTreeMap {
 
 		for(String id : usersMap.keySet()) {
 			if(!users.getId().equals(id)) {
-				usersMap.get(id).getOut().println(id + "님이 입장하였습니다.");
+				usersMap.get(id).getOut().println(users.getId() + "님이 입장하였습니다.");
 			}
 		}
 		usersMap.put(users.getId(), users);
@@ -74,5 +85,14 @@ public class RoomTreeMap {
 			
 		roomMap.get(0).getUsersMap().put(users.getId(), users);
 		return roomMap;
+	}
+	
+	public Map<String, Users> getAllUsers() {
+		return roomMap.values().stream().flatMap(e -> e.getUsersMap().entrySet().stream())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+	
+	public Map<String, Users> getRoomUsers(int rno) {
+		return getRoomList().get(rno).getUsersMap();
 	}
 }

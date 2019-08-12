@@ -7,7 +7,8 @@ public class Room {
 	private String password;
 	private int limit;
 	private int master;
-	private Map<String, Users> userMap;
+	private Map<String, Users> blockMap;
+	private Map<String, Users> usersMap;
 
 	Room(int rno, String name, String password, int limit, int master) {
 		this.rno = rno;
@@ -15,7 +16,24 @@ public class Room {
 		this.password = password;
 		this.limit = limit;
 		this.master = master;
-		userMap = new HashMap<String, Users>();
+		usersMap = new HashMap<String, Users>();
+		blockMap = new HashMap<String, Users>();
+	}
+
+	public Map<String, Users> getBlockMap() {
+		return blockMap;
+	}
+
+	public void setBlockMap(Map<String, Users> blockMap) {
+		this.blockMap = blockMap;
+	}
+
+	public Map<String, Users> getUsersMap() {
+		return usersMap;
+	}
+
+	public void setUserMap(Map<String, Users> usersMap) {
+		this.usersMap = usersMap;
 	}
 
 	public int getRno() {
@@ -58,7 +76,4 @@ public class Room {
 		this.master = master;
 	}
 
-	public Map<String, Users> getUsersMap() {
-		return userMap;
-	}
 }

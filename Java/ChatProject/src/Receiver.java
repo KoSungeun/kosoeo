@@ -21,27 +21,44 @@ public class Receiver extends Thread {
 	//run()메소드 재정의
 	@Override
 	public void run() {
-		String request;
+		
+		String response;
 		String menu;
 		String id;
+		ChatWin cw = null;
 		while (in != null) {
+			
 			try {
-				request = URLDecoder.decode(in.readLine(),"UTF-8");
-				menu = su.requestSplit(request, 0);
+				response = URLDecoder.decode(in.readLine(),"UTF-8");
+				menu = su.requestSplit(response, 0);
 				if(menu.equals("join")) {
-					System.out.println(su.requestSplit(request, 1));
+					System.out.println(su.requestSplit(response, 1));
 					break;
 				} else if(menu.equals("login")) {
-					id = su.requestSplit(request, 1);
+					id = su.requestSplit(response, 1);
 					if(!id.equals("null")) {
-						request = su.requestSplit(request, 2);
-						new ChatWin(socket, id);
+						response = su.requestSplit(response, 2);
+						cw = new ChatWin(socket, id);
 					} else {
-						System.out.println(su.requestSplit(request, 2));
+						System.out.println(su.requestSplit(response, 2));
 						break;
 					}	
 				}
-				System.out.println(request);
+				if(response.startsWith("/")) {
+					String userId = su.requestSplit(response, 2);
+					if(su.requestSplit(response, 1).equals("invite")) {
+						if(!cw.invite) {
+							cw.invite = true;
+							cw.userId = userId;
+							System.out.println(su.requestSplit(response, 3) +"/"+ su.requestSplit(response, 4));
+						} else {
+							cw.out.println("/response/" +userId + "/busy");
+						}
+					}
+				} else {
+					System.out.println(response);
+				}
+				
 			} catch (java.net.SocketException ne) {
 				break;
 			} catch (IOException e) {
