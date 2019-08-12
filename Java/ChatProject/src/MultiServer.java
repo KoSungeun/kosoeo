@@ -274,7 +274,6 @@ public class MultiServer {
 				String request;
 				String response;
 				String s;
-
 				request = in.readLine();
 				request = URLDecoder.decode(request, "UTF-8");
 				if (su.requestSplit(request, 0).equals("join")) {
