@@ -6,17 +6,26 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MultiServer {
 
 	ServerSocket serverSocket = null;
 	Socket socket = null;
+	Map<String, PrintWriter> clientMap;
 	StringUtil su = new StringUtil();
 	Database db = new Database();
 	RoomTreeMap roomMap;
 
 	public MultiServer() {
+		// 클라이언트의 출력스트림을 저장할 해쉬맵 생성.
+		clientMap = new HashMap<String, PrintWriter>();
+		// 해쉬맵 동기화 설정.
+		Collections.synchronizedMap(clientMap);
+
 		roomMap = new RoomTreeMap();
 	}
 
@@ -54,7 +63,8 @@ public class MultiServer {
 		Map<String, Users> usersMap = null;
 
 		if (option.equalsIgnoreCase("a")) { // 전체
-			usersMap = roomMap.getAllUsers();
+			usersMap = roomList.values().stream().flatMap(e -> e.getUsersMap().entrySet().stream())
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		} else if (option.equalsIgnoreCase("l")) { // 로비
 			usersMap = roomList.get(0).getUsersMap();
 		} else if (option.equalsIgnoreCase("r")) { // 방
@@ -76,50 +86,46 @@ public class MultiServer {
 		}
 
 	}
-
+	
 	public void invite(Users users, String inviteId) throws IOException {
-		Map<String, Users> allUsers = roomMap.getAllUsers();
-		if (roomMap.getRoomList().get(users.getRno()).getMaster() == users.getUno()) {
-			if (allUsers.containsKey(inviteId)) {
-				users.getOut().println(allUsers.get(inviteId).getId() + "님을 초대 하였습니다.");
-				allUsers.get(inviteId).getOut()
-						.println("/invite/" + users.getId() + "/" + users.getId() + "님이 초대하였습니다. 수락하시겠습니까? (y/n)");
-			} else {
-				users.getOut().println("해당 이용자가 없습니다.");
+		System.out.println(inviteId);
+		Map<Integer, Room> roomList = roomMap.getRoomList();
+		Map<String, Users> allUsers = roomList.values().stream().flatMap(e -> e.getUsersMap().entrySet().stream())
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		if(allUsers.containsKey(inviteId)) {
+			allUsers.get(inviteId).getOut().println(users.getId() + "님이 초대하였습니다. 수락하시겠습니까? (y/n)");
+			String select = null;
+			String inviting = "초대중";
+			while(select == null) {
+				inviting += ".";
+				users.getOut().println(inviting);
+				select = allUsers.get(inviteId).getIn().readLine();
+			}
+			 
+			if(select.equalsIgnoreCase("y")) {
+				users.getOut().println("수락했습니다.");
+				roomMap.joinRoom(allUsers.get(inviteId), users.getRno());
+			} else  {
+				allUsers.get(inviteId).getOut().println("거절했습니다");
+				users.getOut().println("거절 당했습니다.");
 			}
 		} else {
-			users.getOut().println("방장이 아닙니다");
+			users.getOut().println("해당 이용자가 없습니다.");
 		}
-
+		
 	}
 
-	public void inviteResponse(Users users, String inviteId, String response) throws IOException {
-		Map<String, Users> allUsers = roomMap.getAllUsers();
-
-		if (response.equalsIgnoreCase("y")) {
-			roomMap.joinRoom(users, allUsers.get(inviteId).getRno());
-		} else if (response.equalsIgnoreCase("n")) {
-			allUsers.get(inviteId).getOut().println("거절하였습니다.");
-		} else if (response.equalsIgnoreCase("busy")) {
-			allUsers.get(inviteId).getOut().println("초대중입니다.");
-		} else {
-			users.getOut().println("/invite/" + allUsers.get(inviteId).getId() + "/" + allUsers.get(inviteId).getId()
-					+ "님이 초대하였습니다. 수락하시겠습니까? (y/n)");
-		}
-
-	}
-
-	public void whisper(Users Users, String s, int begin, int end) {
+	public void whisper(String id, String s, int begin, int end) {
 		begin = end + 1;
 		end = s.indexOf(" ", begin);
 		String whisperId = s.substring(begin, end);
-		if (roomMap.getAllUsers().containsKey(whisperId)) {
+		if (clientMap.containsKey(whisperId)) {
 			begin = end + 1;
 			String words = s.substring(begin);
-			roomMap.getAllUsers().get(Users.getId()).getOut().println("To " + whisperId + " : " + words);
-			roomMap.getAllUsers().get(whisperId).getOut().println("From " + Users.getId() + " : " + words);
+			clientMap.get(id).println("To " + whisperId + " : " + words);
+			clientMap.get(whisperId).println("From " + id + " : " + words);
 		} else {
-			roomMap.getAllUsers().get(Users.getId()).getOut().println("해당 사용자가 없습니다.");
+			clientMap.get(id).println("해당 사용자가 없습니다.");
 		}
 	}
 
@@ -129,7 +135,7 @@ public class MultiServer {
 		System.out.println(begin);
 		String toId = s.substring(begin);
 		System.out.println(s);
-//		clientMap.get(fromId).println(db.mute(fromId, toId));
+		clientMap.get(fromId).println(db.mute(fromId, toId));
 	}
 
 	public void createRoom(Users users, BufferedReader in, PrintWriter out) throws IOException {
@@ -158,12 +164,10 @@ public class MultiServer {
 			if (selectPass.equalsIgnoreCase("n")) {
 
 			} else if (selectPass.equalsIgnoreCase("y")) {
-				while (password == null) {
+				while (password.trim().equals("")) {
 					out.println("비밀번호를 입력해주세요");
 					password = in.readLine();
 				}
-			} else {
-				selectPass = null;
 			}
 		}
 		roomMap.createRoom(users, rname, password, limit);
@@ -192,49 +196,6 @@ public class MultiServer {
 						flag));
 			}
 		}
-	}
-
-	public void kick(Users users, String kickId, String option) {
-
-		String msg;
-		if (roomMap.getRoomList().get(users.getRno()).getMaster() == users.getUno()) {
-			if (roomMap.getRoomUsers(users.getRno()).containsKey(kickId)) {		
-				if (option.equals("b")) {
-					msg = "님을 영구강퇴하였습니다.";
-					users.getOut().println(kickId);
-					roomMap.getRoomList().get(users.getRno()).getBlockMap().put(kickId,
-							roomMap.getRoomUsers(users.getRno()).get(kickId));
-				} else {
-					msg = "님을 강퇴하였습니다.";
-				}
-				users.getOut().println(kickId + msg);
-				roomMap.getRoomUsers(users.getRno()).get(kickId).getOut().println("강퇴당했습니다");
-				roomMap.joinRoom(roomMap.getRoomUsers(users.getRno()).get(kickId), 0);
-			} else {
-				users.getOut().println("해당 이용자가 없습니다.");
-			}
-		} else {
-			users.getOut().println("방장이 아닙니다");
-		}
-	}
-	
-	public void turnOver(Users users, String turnOverId) {
-		int rno = users.getRno();
-		Room room = roomMap.getRoomList().get(rno);
-		Users overUser ;
-		if(room.getMaster() == users.getUno()) {
-			if(room.getUsersMap().containsKey(turnOverId)) {
-				overUser = room.getUsersMap().get(turnOverId);
-				room.setMaster(overUser.getUno());
-				users.getOut().println("방장을 승계하였습니다.");
-				overUser.getOut().println("방장이 됐습니다.");
-			} else {
-				users.getOut().println("해당 이용자가 없습니다.");
-			}
-		} else {
-			users.getOut().println("방장이 아닙니다");
-		}
-		 
 	}
 
 	public static void main(String[] args) {
@@ -313,7 +274,7 @@ public class MultiServer {
 										}
 										list(users, option);
 									} else if (s.substring(begin, end).equalsIgnoreCase("to")) {
-										whisper(users, s, begin, end);
+										whisper(id, s, begin, end);
 									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
 										mute(id, s, begin, end);
 									} else if (s.substring(begin).equalsIgnoreCase("croom")) {
@@ -341,6 +302,7 @@ public class MultiServer {
 											}
 											if (flag) {
 												roomMap.joinRoom(users, rno);
+
 											}
 										} else {
 											out.println("해당 방이 없습니다.");
@@ -349,21 +311,7 @@ public class MultiServer {
 										roomMap.leaveRoom(users);
 										roomMap.joinRoom(users);
 									} else if (s.substring(begin).startsWith("invite")) {
-										invite(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).equals("response")) {
-										String userId = su.requestSplit(s, 2);
-										response = su.requestSplit(s, 3);
-										inviteResponse(users, userId, response);
-									} else if (su.requestSplit(s, 1).startsWith("kick")) {
-										if (s.indexOf("-") > 0) {
-											begin = end + 1;
-											end = s.indexOf(" ", begin);
-											kick(users, s.substring(begin, end), s.substring(s.indexOf("-") + 1));
-										} else {
-											kick(users, s.substring(end + 1), "");
-										}
-									} else if (su.requestSplit(s, 1).startsWith("over")) {
-										turnOver(users, s.substring(end + 1));
+										invite(users, s.substring(end +1));
 									}
 
 								} catch (Exception e) {
@@ -396,4 +344,5 @@ public class MultiServer {
 			}
 		}
 	}
+	////////////////////////////////////////////////////////
 }
