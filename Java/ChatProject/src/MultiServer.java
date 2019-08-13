@@ -6,7 +6,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MultiServer {
 
@@ -67,12 +69,28 @@ public class MultiServer {
 
 	}
 
-	public void sendMsg(String id, int rno, String msg) throws IOException {
+	public void sendMsg(Users user, String msg) throws IOException {
 
-		Map<String, Users> usersMap = roomMap.getRoomList().get(rno).getUsersMap();
-		for (String mapId : usersMap.keySet()) {
-			usersMap.get(mapId).getOut()
-					.println("[" + URLEncoder.encode(id, "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
+		List<String> muteList = db.msgMute(user);
+		String originMsg = msg; 
+		Map<String, Users> usersMap = roomMap.getRoomList().get(user.getRno()).getUsersMap();
+		for (String userId : usersMap.keySet()) {
+			boolean mute = false;
+			for(String muteId : muteList) {
+				if(userId.equals(muteId)) {
+					mute = true;
+					break;
+				}
+			}
+			if(!mute) {
+				msg = originMsg;
+				for(String word : db.getNgWord(usersMap.get(userId))) {
+					msg = msg.replaceAll(word, "***");
+				}
+				usersMap.get(userId).getOut()
+				.println("[" + URLEncoder.encode(user.getId(), "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
+					
+			}
 		}
 
 	}
@@ -109,27 +127,25 @@ public class MultiServer {
 
 	}
 
-	public void whisper(Users Users, String s, int begin, int end) {
+	public void whisper(Users user, String s, int begin, int end) {
 		begin = end + 1;
 		end = s.indexOf(" ", begin);
 		String whisperId = s.substring(begin, end);
 		if (roomMap.getAllUsers().containsKey(whisperId)) {
 			begin = end + 1;
 			String words = s.substring(begin);
-			roomMap.getAllUsers().get(Users.getId()).getOut().println("To " + whisperId + " : " + words);
-			roomMap.getAllUsers().get(whisperId).getOut().println("From " + Users.getId() + " : " + words);
+			roomMap.getAllUsers().get(user.getId()).getOut().println("To " + whisperId + " : " + words);
+			for(String word : db.getNgWord(roomMap.getAllUsers().get(whisperId))) {
+				words = words.replaceAll(word, "***");
+			}
+			roomMap.getAllUsers().get(whisperId).getOut().println("From " + user.getId() + " : " + words);
 		} else {
-			roomMap.getAllUsers().get(Users.getId()).getOut().println("해당 사용자가 없습니다.");
+			roomMap.getAllUsers().get(user.getId()).getOut().println("해당 사용자가 없습니다.");
 		}
 	}
 
-	public void mute(String fromId, String s, int begin, int end) {
-		begin = end + 1;
-		end = s.indexOf(" ", begin);
-		System.out.println(begin);
-		String toId = s.substring(begin);
-		System.out.println(s);
-//		clientMap.get(fromId).println(db.mute(fromId, toId));
+	public void mute(Users user, String muteId) throws IOException {
+		user.getOut().println(db.mute(user.getId(), muteId));
 	}
 
 	public void createRoom(Users users, BufferedReader in, PrintWriter out) throws IOException {
@@ -236,6 +252,36 @@ public class MultiServer {
 		}
 		 
 	}
+	
+	public void roomDestroy(Users users) {
+		int rno = users.getRno();
+		Room room = roomMap.getRoomList().get(rno);
+		
+		if(room.getMaster() == users.getUno()) {
+			Set<String> userIdSet = room.getUsersMap().keySet();
+			for(String userId : userIdSet) {
+				room.getUsersMap().get(userId).getOut().println("방장이 방을 폭파하였습니다");
+				room.getUsersMap().get(userId).setRno(0);
+				roomMap.getRoomList().get(0).getUsersMap().put(userId, room.getUsersMap().get(userId));
+				room.getUsersMap().get(userId).getOut().println("대기실에 입장하였습니다.");
+			}
+			roomMap.getRoomList().remove(rno);
+		} else {
+			users.getOut().println("방장이 아닙니다");
+		}
+	}
+	
+	public void ngWord(Users user, String ngWord) {
+		user.getOut().println(db.ngWord(user, ngWord));
+	}
+	
+	public void blockUser(Users user, String blockId) {
+		if(user.isAdmin()) {
+			
+		} else {
+			user.getOut().println("관리자가 아닙니다.");
+		}
+	}
 
 	public static void main(String[] args) {
 		// 서버객체 생성
@@ -316,7 +362,7 @@ public class MultiServer {
 									} else if (s.substring(begin, end).equalsIgnoreCase("to")) {
 										whisper(users, s, begin, end);
 									} else if (s.substring(begin, end).equalsIgnoreCase("mute")) {
-										mute(id, s, begin, end);
+										mute(users, s.substring(end + 1));
 									} else if (s.substring(begin).equalsIgnoreCase("croom")) {
 										createRoom(users, in, out);
 									} else if (s.substring(begin).startsWith("vroom")) {
@@ -347,8 +393,7 @@ public class MultiServer {
 											out.println("해당 방이 없습니다.");
 										}
 									} else if (s.substring(begin).equalsIgnoreCase("lroom")) {
-										roomMap.leaveRoom(users);
-										roomMap.joinRoom(users);
+										roomMap.joinRoom(users, 0);
 									} else if (s.substring(begin).startsWith("invite")) {
 										invite(users, s.substring(end + 1));
 									} else if (su.requestSplit(s, 1).equals("response")) {
@@ -365,14 +410,17 @@ public class MultiServer {
 										}
 									} else if (su.requestSplit(s, 1).startsWith("over")) {
 										turnOver(users, s.substring(end + 1));
-									}
-
+									} else if (su.requestSplit(s, 1).startsWith("destroy")) {
+										roomDestroy(users);
+									} else if (su.requestSplit(s, 1).startsWith("ngword")) {
+										ngWord(users, s.substring(end + 1));
+									} 
 								} catch (Exception e) {
 									e.printStackTrace();
 									users.getOut().println("잘못된 명령어입니다.");
 								}
 							} else {
-								sendMsg(id, users.getRno(), s);
+								sendMsg(users, s);
 							}
 
 						}
@@ -391,6 +439,7 @@ public class MultiServer {
 					in.close();
 					out.close();
 					socket.close();
+					
 				} catch (IOException e) {
 					System.out.println(users.getId() + "님이 접속을 종료하였습니다.");
 				}

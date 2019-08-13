@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ public class Room {
 		this.limit = limit;
 		this.master = master;
 		usersMap = new HashMap<String, Users>();
+		Collections.synchronizedMap(usersMap);
 		blockMap = new HashMap<String, Users>();
 	}
 
