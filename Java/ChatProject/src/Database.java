@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -23,6 +24,8 @@ public class Database {
 	private PreparedStatement ngspstmt = null;
 	private PreparedStatement ngdpstmt = null;
 	private PreparedStatement ngipstmt = null;
+	private PreparedStatement b0pstmt = null;
+	private PreparedStatement b1pstmt = null;
 	private String sql = null;
 	private ResultSet rs = null;
 	public Set<String> loginSet = new HashSet<String>();
@@ -57,7 +60,7 @@ public class Database {
 		return response;
 	}
 
-	public Users getUsers(String id, PrintWriter out, BufferedReader in) {
+	public Users getUsers(String id, Socket socket,  PrintWriter out, BufferedReader in) {
 		int uno = 0;
 		boolean admin = false;
 		try {
@@ -74,7 +77,41 @@ public class Database {
 		} catch (SQLException sqle) {
 			System.out.println("알 수 없는 에러가 발생했습니다.");
 		}
-		return new Users(uno, id, admin, out, in);
+		return new Users(uno, id, admin, socket, out, in);
+	}
+	
+	public String block(String blockId) {
+		
+		String response = "해당 유저가 없습니다.";
+		try {
+			if (b0pstmt == null) {
+				sql = "update users set block = 0 where id = ? and (select block from users where id = ?) = 1";
+				b0pstmt = con.prepareStatement(sql);
+			}
+			b0pstmt.setString(1, blockId);
+			b0pstmt.setString(2, blockId);
+			if (b0pstmt.executeUpdate() > 0) {
+				response = blockId + "님을 블록해제 했습니다.";
+				return response;
+			}
+
+			if (b1pstmt == null) {
+				sql = "update users set block = 1 where id = ? and (select block from users where id = ?) = 0";
+				b1pstmt = con.prepareStatement(sql);
+			}
+			b1pstmt.setString(1, blockId);
+			b1pstmt.setString(2, blockId);
+			if (b1pstmt.executeUpdate() > 0) {
+				response = blockId + "님을 블록했습니다";
+				return response;
+			}
+			
+		} catch (SQLException sqle) {
+			response = "데이터베이스 입력오류입니다.";
+			sqle.printStackTrace();
+		}
+		return response;
+
 	}
 
 	public List<String> msgMute(Users user) {

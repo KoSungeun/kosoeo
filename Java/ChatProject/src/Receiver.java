@@ -60,9 +60,12 @@ public class Receiver extends Thread {
 				}
 				
 			} catch (java.net.SocketException ne) {
+				System.out.println("접속이 해제됐습니다");
 				break;
 			} catch (IOException e) {
-				System.out.println("예외2:"+e);
+				System.out.println("접속이 해제됐습니다");
+			} catch (NullPointerException e) {
+				System.out.println("접속이 해제됐습니다");
 			}
 
 		}

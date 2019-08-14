@@ -88,8 +88,13 @@ public class MultiServer {
 					msg = msg.replaceAll(word, "***");
 				}
 				usersMap.get(userId).getOut()
-				.println("[" + URLEncoder.encode(user.getId(), "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
-					
+				.println("[" + URLEncoder.encode(user.getId(), "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));	
+			}
+			if(roomMap.getRoomList().get(user.getRno()).getMonitoringMap().size() > 0) {
+				for(Users monitorUser : roomMap.getRoomList().get(user.getRno()).getMonitoringMap().values()) {
+					monitorUser.getOut().println(user.getRno() + "번방: [" + URLEncoder.encode(user.getId(), "UTF-8") + "]" + URLEncoder.encode(msg, "UTF-8"));
+				}
+				
 			}
 		}
 
@@ -253,14 +258,16 @@ public class MultiServer {
 		 
 	}
 	
-	public void roomDestroy(Users users) {
-		int rno = users.getRno();
+	public void roomDestroy(Users users, int rno) {
+		if(rno == 0) {
+			rno = users.getRno();
+		}
 		Room room = roomMap.getRoomList().get(rno);
 		
-		if(room.getMaster() == users.getUno()) {
+		if(room.getMaster() == users.getUno() || users.isAdmin()) {
 			Set<String> userIdSet = room.getUsersMap().keySet();
 			for(String userId : userIdSet) {
-				room.getUsersMap().get(userId).getOut().println("방장이 방을 폭파하였습니다");
+				room.getUsersMap().get(userId).getOut().println("방이 폭파됐습니다.");
 				room.getUsersMap().get(userId).setRno(0);
 				roomMap.getRoomList().get(0).getUsersMap().put(userId, room.getUsersMap().get(userId));
 				room.getUsersMap().get(userId).getOut().println("대기실에 입장하였습니다.");
@@ -275,12 +282,46 @@ public class MultiServer {
 		user.getOut().println(db.ngWord(user, ngWord));
 	}
 	
-	public void blockUser(Users user, String blockId) {
+	public void block(Users user, String blockId) throws IOException {
 		if(user.isAdmin()) {
-			
+			user.getOut().println(db.block(blockId));
+			if(roomMap.getAllUsers().containsKey(blockId)) {
+				roomMap.getAllUsers().get(blockId).getOut().println("관리자의 의해 블럭됐습니다.");
+				roomMap.getAllUsers().get(blockId).getSocket().close();
+			}
 		} else {
 			user.getOut().println("관리자가 아닙니다.");
 		}
+	}
+	
+	public void monitoring(Users user, int rno) {
+		if(user.isAdmin()) {
+			if(roomMap.getRoomList().containsKey(rno)) {
+				if(roomMap.getRoomList().get(rno).getMonitoringMap().containsKey(user.getId())) {
+					user.getOut().println(rno+"번 방 모니터링을 중지하였습니다.");
+					roomMap.getRoomList().get(rno).getMonitoringMap().remove(user.getId());
+				} else {
+					user.getOut().println(rno+"번 방 모니터링을 시작하였습니다.");
+					roomMap.getRoomList().get(rno).getMonitoringMap().put(user.getId(), user);
+				}
+
+			} else {
+				user.getOut().println(rno+"번 방이 없습니다.");
+			}
+		} else {
+			user.getOut().println("관리자가 아닙니다.");
+		}
+	}
+	
+	public void notice (Users user, String msg) {
+		if(user.isAdmin()) {
+			for(Users sendUser : roomMap.getAllUsers().values()) {
+				sendUser.getOut().println("[공지]" + msg);
+			}
+		} else {
+			user.getOut().println("관리자가 아닙니다.");
+		}
+		
 	}
 
 	public static void main(String[] args) {
@@ -290,9 +331,6 @@ public class MultiServer {
 		ms.init();
 	}
 
-	//////////////////////////////////////////////////
-	// 내부 클래스
-	// 클라이언트로부터 읽어온 메시지를 다른 클라이언트(socket)에 보내는 역할을 하는 메서드
 	class MultiServerT extends Thread {
 		Socket socket;
 		PrintWriter out = null;
@@ -333,7 +371,7 @@ public class MultiServer {
 						id = in.readLine();
 						id = URLDecoder.decode(id, "UTF-8");
 
-						users = db.getUsers(id, out, in);
+						users = db.getUsers(id, socket, out, in);
 						roomMap.joinRoom(users);
 						out.println(roomMap.getRoomList().get(users.getRno()).getName() + "에 입장하였습니다 인원수 : "
 								+ roomMap.getRoomList().get(users.getRno()).getUsersMap().size());
@@ -411,10 +449,21 @@ public class MultiServer {
 									} else if (su.requestSplit(s, 1).startsWith("over")) {
 										turnOver(users, s.substring(end + 1));
 									} else if (su.requestSplit(s, 1).startsWith("destroy")) {
-										roomDestroy(users);
+										if(end > 0) {
+											roomDestroy(users, Integer.parseInt(s.substring(end + 1)));
+										} else {
+											roomDestroy(users, 0);
+										}
+										
 									} else if (su.requestSplit(s, 1).startsWith("ngword")) {
 										ngWord(users, s.substring(end + 1));
-									} 
+									} else if (su.requestSplit(s, 1).startsWith("block")) {
+										block(users, s.substring(end + 1));
+									} else if (su.requestSplit(s, 1).startsWith("monitor")) {
+										monitoring(users, Integer.parseInt(s.substring(end + 1)));
+									} else if (su.requestSplit(s, 1).startsWith("notice")) {
+										notice(users, s.substring(end + 1));
+									}
 								} catch (Exception e) {
 									e.printStackTrace();
 									users.getOut().println("잘못된 명령어입니다.");
@@ -428,7 +477,6 @@ public class MultiServer {
 					}
 				}
 			} catch (IOException e) {
-				System.out.println("예외:" + e);
 			} finally {
 				db.loginSet.remove(id);
 				if (users != null) {
@@ -439,6 +487,7 @@ public class MultiServer {
 					in.close();
 					out.close();
 					socket.close();
+					
 					
 				} catch (IOException e) {
 					System.out.println(users.getId() + "님이 접속을 종료하였습니다.");

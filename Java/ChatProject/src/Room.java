@@ -10,6 +10,7 @@ public class Room {
 	private int master;
 	private Map<String, Users> blockMap;
 	private Map<String, Users> usersMap;
+	private Map<String, Users> monitoringMap;
 
 	Room(int rno, String name, String password, int limit, int master) {
 		this.rno = rno;
@@ -20,6 +21,9 @@ public class Room {
 		usersMap = new HashMap<String, Users>();
 		Collections.synchronizedMap(usersMap);
 		blockMap = new HashMap<String, Users>();
+		Collections.synchronizedMap(blockMap);
+		monitoringMap = new HashMap<String, Users>();
+		Collections.synchronizedMap(monitoringMap);
 	}
 
 	public Map<String, Users> getBlockMap() {
@@ -77,5 +81,19 @@ public class Room {
 	public void setMaster(int master) {
 		this.master = master;
 	}
+
+	public Map<String, Users> getMonitoringMap() {
+		return monitoringMap;
+	}
+
+	public void setMonitoringMap(Map<String, Users> monitoringMap) {
+		this.monitoringMap = monitoringMap;
+	}
+
+	public void setUsersMap(Map<String, Users> usersMap) {
+		this.usersMap = usersMap;
+	}
+	
+	
 
 }

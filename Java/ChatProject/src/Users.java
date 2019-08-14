@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.PrintWriter;
+import java.net.Socket;
 
 
 public class Users {
@@ -8,14 +9,16 @@ public class Users {
 	private int rno;
 	private String id;
 	private boolean admin;
+	private Socket socket;
 	private PrintWriter out;
 	private BufferedReader in;
 
-	public Users(int uno, String id, boolean admin, PrintWriter out, BufferedReader in) {
+	public Users(int uno, String id, boolean admin, Socket socket, PrintWriter out, BufferedReader in) {
 		this.uno = uno;
 		this.rno = 0;
 		this.id = id;
 		this.admin = admin;
+		this.socket = socket; 
 		this.out = out;
 		this.in = in;
 	}
@@ -57,5 +60,13 @@ public class Users {
 		this.admin = admin;
 	}
 
+	public Socket getSocket() {
+		return socket;
+	}
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+	
 	
 }
