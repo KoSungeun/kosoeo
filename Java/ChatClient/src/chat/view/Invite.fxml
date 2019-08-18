@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="100.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat.view.InviteController">
+   <children>
+      <Label fx:id="inviteMsg" layoutX="23.0" layoutY="31.0" text="~님이 초대 하였습니다" />
+      <Button layoutX="236.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleOk" text="수락" />
+      <Button layoutX="286.0" layoutY="63.0" mnemonicParsing="false" onAction="#handleCancel" text="거절" />
+   </children>
+</AnchorPane>
