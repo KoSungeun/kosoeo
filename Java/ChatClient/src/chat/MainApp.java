@@ -134,7 +134,6 @@ public class MainApp extends Application {
 	        dialogStage.setScene(scene);
 			InviteController controller = loader.getController();
 			controller.setDialogStage(dialogStage);
-			controller.setMainApp(this);
 			controller.setInviteMsg(msg);
 			
 			dialogStage.showAndWait();
