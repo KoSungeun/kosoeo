@@ -22,7 +22,7 @@
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="C:\kosoeo\Java\ChatServer">
+			<fileset dir="D:\kosoeo\Java\ChatServer">
 				<include name="src/**" />
 			</fileset>
 		</copy>

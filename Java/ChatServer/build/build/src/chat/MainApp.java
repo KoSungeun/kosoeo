@@ -84,7 +84,10 @@ public class MainApp extends Application {
 				controller.logArea.appendText("서버가 종료되었습니다.\n");
 			} finally {
 				try {
-					socket.close();
+					if(socket != null) {
+						socket.close();
+					}
+					
 					serverSocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
