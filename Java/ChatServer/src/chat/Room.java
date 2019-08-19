@@ -19,12 +19,9 @@ public class Room {
 		this.password = password;
 		this.limit = limit;
 		this.master = master;
-		usersMap = new HashMap<String, Users>();
-		Collections.synchronizedMap(usersMap);
-		blockMap = new HashMap<String, Users>();
-		Collections.synchronizedMap(blockMap);
-		monitoringMap = new HashMap<String, Users>();
-		Collections.synchronizedMap(monitoringMap);
+		usersMap = Collections.synchronizedMap(new HashMap<String, Users>());
+		blockMap = Collections.synchronizedMap(new HashMap<String, Users>());
+		monitoringMap = Collections.synchronizedMap(new HashMap<String, Users>());
 	}
 
 	public Map<String, Users> getBlockMap() {

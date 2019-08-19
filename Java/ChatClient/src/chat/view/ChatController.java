@@ -44,8 +44,6 @@ public class ChatController {
 	BufferedReader in = null;
 	PrintWriter out = null;
 
-	private MainApp mainApp;
-
 	boolean isInvite = false;
 
 	public ChatController() {
@@ -62,7 +60,7 @@ public class ChatController {
 	}
 
 	public void setMainApp(MainApp mainApp, Socket socket) {
-		this.mainApp = mainApp;
+
 
 		StringUtil su = new StringUtil();
 //		roomTable.getSelectionModel().selectedItemProperty().addListener(e-> {

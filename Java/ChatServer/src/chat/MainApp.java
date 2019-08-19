@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,10 +85,10 @@ public class MainApp extends Application {
 				controller.logArea.appendText("서버가 종료되었습니다.\n");
 			} finally {
 				try {
-					if(socket != null) {
+					if (socket != null) {
 						socket.close();
 					}
-					
+
 					serverSocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -98,9 +99,11 @@ public class MainApp extends Application {
 
 	public void closeServer() {
 		try {
+			for (Users user : roomMap.getAllUsers().values()) {
+				user.getSocket().close();
+			}
 			serverSocket.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -147,7 +150,7 @@ public class MainApp extends Application {
 				}
 				usersMap.get(userId).getOut().println("[" + user.getId() + "]" + msg);
 			}
-			
+
 		}
 		if (roomMap.getRoomList().get(user.getRno()).getMonitoringMap().size() > 0) {
 			for (Users monitorUser : roomMap.getRoomList().get(user.getRno()).getMonitoringMap().values()) {
@@ -326,7 +329,7 @@ public class MainApp extends Application {
 				room.getUsersMap().get(userId).setRno(0);
 				roomMap.getRoomList().get(0).getUsersMap().put(userId, room.getUsersMap().get(userId));
 				room.getUsersMap().get(userId).getOut().println("대기실에 입장하였습니다.");
-				
+
 			}
 			roomMap.getRoomList().remove(rno);
 			roomMap.sendUserList(users);
@@ -388,7 +391,6 @@ public class MainApp extends Application {
 		PrintWriter out = null;
 		BufferedReader in = null;
 
-		// 생성자.
 		public MultiServerT(Socket socket) {
 			this.socket = socket;
 			try {
@@ -400,25 +402,23 @@ public class MainApp extends Application {
 			}
 		}
 
-		// 쓰레드를 사용하기 위해서 run()메서드 재정의
 		@Override
 		public void run() {
-
-			String id = ""; // 클라이언트로부터 받은 이름을 저장할 변수.
+			String id = "";
 			Users users = null;
 			try {
 				String request;
 				String response;
 				String s;
 				request = in.readLine();
-				if (su.requestSplit(request, 0).equals("join")) {
-					response = db.join(su.requestSplit(request, 1), su.requestSplit(request, 2));
+				if (su.rSplit(request, 0).equals("join")) {
+					response = db.join(su.rSplit(request, 1), su.rSplit(request, 2));
 					out.println("join/" + response);
-				} else if (su.requestSplit(request, 0).equals("login")) {
-					response = db.login(su.requestSplit(request, 1), su.requestSplit(request, 2));
+				} else if (su.rSplit(request, 0).equals("login")) {
+					response = db.login(su.rSplit(request, 1), su.rSplit(request, 2));
 					out.println("login/" + response);
-					if (!su.requestSplit(response, 0).equals("null")) {
-						id = su.requestSplit(response, 0);
+					if (!su.rSplit(response, 0).equals("null")) {
+						id = su.rSplit(response, 0);
 						users = db.getUsers(id, socket, out, in);
 						roomMap.joinRoom(users);
 						out.println(roomMap.getRoomList().get(users.getRno()).getName() + "에 입장하였습니다");
@@ -440,7 +440,7 @@ public class MainApp extends Application {
 											option = s.substring(s.indexOf("-") + 1);
 										}
 										list(users, option);
-									} else if (command.startsWith("to")) {	
+									} else if (command.startsWith("to")) {
 										whisper(users, s, begin, end);
 									} else if (command.startsWith("mute")) {
 										mute(users, s.substring(end + 1));
@@ -461,7 +461,6 @@ public class MainApp extends Application {
 											if (rPassword != null) {
 												out.println("비밀번호를 입력해주세요.");
 												String password = in.readLine();
-
 												if (!password.equals(rPassword)) {
 													out.println("비밀번호가 틀립니다");
 													flag = false;
@@ -477,11 +476,11 @@ public class MainApp extends Application {
 										roomMap.joinRoom(users, 0);
 									} else if (s.substring(begin).startsWith("invite")) {
 										invite(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).equals("response")) {
-										String userId = su.requestSplit(s, 2);
-										response = su.requestSplit(s, 3);
+									} else if (su.rSplit(s, 1).equals("response")) {
+										String userId = su.rSplit(s, 2);
+										response = su.rSplit(s, 3);
 										inviteResponse(users, userId, response);
-									} else if (su.requestSplit(s, 1).startsWith("kick")) {
+									} else if (su.rSplit(s, 1).startsWith("kick")) {
 										if (s.indexOf("-") > 0) {
 											begin = end + 1;
 											end = s.indexOf(" ", begin);
@@ -489,9 +488,9 @@ public class MainApp extends Application {
 										} else {
 											kick(users, s.substring(end + 1), "");
 										}
-									} else if (su.requestSplit(s, 1).startsWith("over")) {
+									} else if (su.rSplit(s, 1).startsWith("over")) {
 										turnOver(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).startsWith("destroy")) {
+									} else if (su.rSplit(s, 1).startsWith("destroy")) {
 										System.out.println(end);
 										System.out.println(s);
 										if (end > 0) {
@@ -499,17 +498,15 @@ public class MainApp extends Application {
 										} else {
 											roomDestroy(users, 0);
 										}
-
-									} else if (su.requestSplit(s, 1).startsWith("ngword")) {
+									} else if (su.rSplit(s, 1).startsWith("ngword")) {
 										ngWord(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).startsWith("block")) {
+									} else if (su.rSplit(s, 1).startsWith("block")) {
 										block(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).startsWith("monitor")) {
+									} else if (su.rSplit(s, 1).startsWith("monitor")) {
 										monitoring(users, Integer.parseInt(s.substring(end + 1)));
-									} else if (su.requestSplit(s, 1).startsWith("notice")) {
+									} else if (su.rSplit(s, 1).startsWith("notice")) {
 										notice(users, s.substring(end + 1));
-									} else if (su.requestSplit(s, 1).startsWith("?")) {
-										
+									} else if (su.rSplit(s, 1).startsWith("?")) {
 										users.getOut().println("---------관리자 전용----------");
 										users.getOut().println("／notice 공지내용\t공지전달");
 										users.getOut().println("／monitor 방번호 \t모니터링");
@@ -538,24 +535,25 @@ public class MainApp extends Application {
 
 					}
 				}
+			} catch (SocketException e) {
+
 			} catch (IOException e) {
-				
-				
+				e.printStackTrace();
 			} finally {
 				db.loginSet.remove(id);
 				if (users != null) {
 					roomMap.leaveRoom(users);
+					roomMap.sendUserList(users);
 				}
 				roomMap.sendRoomList();
-				roomMap.sendUserList(users);
-
 				try {
 					in.close();
 					out.close();
 					socket.close();
 
 				} catch (IOException e) {
-					System.out.println(users.getId() + "님이 접속을 종료하였습니다.");
+					e.printStackTrace();
+
 				}
 			}
 		}

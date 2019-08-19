@@ -8,8 +8,7 @@ public class RoomTreeMap {
 	private Map<Integer, Room> roomMap;
 	
 	public RoomTreeMap() {
-		roomMap = new TreeMap<>();
-		Collections.synchronizedMap(roomMap);
+		roomMap = Collections.synchronizedMap(new TreeMap<>());
 	}
 	
 	public Map<Integer, Room> getRoomList() {
@@ -37,7 +36,6 @@ public class RoomTreeMap {
 	public Map<Integer, Room> leaveRoom(Users users) {
 		Map<String, Users> usersMap = roomMap.get(users.getRno()).getUsersMap();
 		usersMap.remove(users.getId());
-		sendUserList(users);
 		int preRno = users.getRno(); 
 		users.setRno(0);
 		if(preRno != 0 && usersMap.size() == 0) {
@@ -69,12 +67,14 @@ public class RoomTreeMap {
 		
 		leaveRoom(users);
 		users.setRno(rno);
-		
-		for(String id : usersMap.keySet()) {
-			if(!users.getId().equals(id)) {
-				usersMap.get(id).getOut().println(users.getId() + "님이 입장하였습니다.");
+		if(rno != 0) {
+			for(String id : usersMap.keySet()) {
+				if(!users.getId().equals(id)) {
+					usersMap.get(id).getOut().println(users.getId() + "님이 입장하였습니다.");
+				}
 			}
 		}
+	
 		usersMap.put(users.getId(), users);
 		sendUserList(users);
 		sendRoomList();
@@ -93,7 +93,7 @@ public class RoomTreeMap {
 		return roomMap;
 	}
 	
-	public void sendUserList(Users user) {
+	synchronized public void sendUserList(Users user) {
 		String userList = "/user/";
 		for (Users u : getRoomList().get(user.getRno()).getUsersMap().values()) {
 			String Id = u.getId();

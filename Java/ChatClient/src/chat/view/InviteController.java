@@ -1,7 +1,5 @@
 package chat.view;
 
-import chat.MainApp;
-import chat.StringUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
