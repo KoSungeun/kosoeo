@@ -12,7 +12,6 @@ public class InviteController {
 	private Label inviteMsg;
 
 	private Stage dialogStage;
-	private MainApp mainApp;
 	private boolean okClicked = false;
 
 	public InviteController() {
@@ -31,9 +30,6 @@ public class InviteController {
 		return okClicked;
 	}
 
-	public void setMainApp(MainApp mainApp) {
-		this.mainApp = mainApp;
-	}
 	public void setInviteMsg(String msg) {
 		inviteMsg.setText(msg);
 	}

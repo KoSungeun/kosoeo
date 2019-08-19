@@ -1,8 +1,6 @@
 *.class
-Java/.metadata/
 *.prefs
-*.classpath
-*.project
-Java/.vscode/
-/.metadata/
+.metadata/
+.vscode/
 build/
+bin/
