@@ -1,5 +1,8 @@
 *.class
 *.prefs
+*.png
+*.mp3
+*.mp4
 .metadata/
 .vscode/
 build/
