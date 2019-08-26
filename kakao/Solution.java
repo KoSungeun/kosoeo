@@ -1,13 +1,15 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 class Solution {
     public int[] solution(String[] genres, int[] plays) {
-        int[] answer = new int[plays.length];
+        
         List<Music> musicList = new ArrayList<>();
         Map<String, Integer> genresPlays = new HashMap<>();
         for(int i=0; i < genres.length; i++) {
@@ -15,7 +17,6 @@ class Solution {
             musicList.add(new Music(i, genres[i], plays[i]));
             
         }
-        
         
 
         Map<String, Integer> genresSort = new LinkedHashMap<>();
@@ -25,26 +26,35 @@ class Solution {
             .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
             .forEachOrdered(e -> genresSort.put(e.getKey(), e.getValue()));
 
-        musicList.stream()
-        .sorted((a,b) ->  b.getPlays() - a.getPlays()).sorted().forEach(System.out::println);
+        musicList = musicList.stream().sorted((a, b) -> b.getPlays() - a.getPlays()).collect(Collectors.toList());
 
+        
+        List<Integer> best = new ArrayList<>();
         for(String genresRank : genresSort.keySet()) {
-            for(Music music : musicList) {
+            int count = 0;
+            Iterator<Music> musicIt = musicList.iterator();
+            while(musicIt.hasNext()) {
+                Music music = musicIt.next();
                 if(music.getGeres().equals(genresRank)) {
-                    music.getNum();
+                    if(count < 2) {
+                        best.add(music.getNum());
+                    }
+                    System.out.println(music.getNum());
+                    musicIt.remove();
+                    count++;
                 }
-            }
-            
+            }    
         }
+        ;
+        int[] answer = new int[best.size()];
+        for(int i = 0; i < best.size(); i++) {
+            answer[i] = best.get(i);
+        }
+      ;
         return answer;
     }
 }
 
-
-
-class genres {
-
-}
 
 class Music {
     private int num;
