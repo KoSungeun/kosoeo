@@ -29,7 +29,6 @@
         }
 
         function changed(position) {
-
             if(count == 5) { // clearWatch() 테스트를 위해 5번만 서비스
                 navigator.geolocation.clearWatch(watchID); // 반복 서비스 종료
                 document.getElementById("msg").innerHTML = "위치 서비스 종료";
@@ -42,7 +41,7 @@
             
             // 지도 이미지 갱신
             img.src = "https://maps.googleapis.com/maps/api/staticmap?center=" + lat
-                + "," + lon + "&zoom=13&size=400x300&sensor=false&markers=color:red%7Clabel:C%7C" + lat + "," + lon + "&key=AIzaSyCsMeRJB-5RGwpEQi8Bqf6kTa_Hw5h1lAc";
+                + "," + lon + "&zoom=13&size=400x300&sensor=false&markers=color:red%7Clabel:C%7C" + lat + "," + lon + "&key=AIzaSyAetWsVV_tgpfK_OFYtCCBFNXNlRJgsbiY";
 
             if(count == 0) // 처음이면 구글 지도 이미지 부착
                 document.getElementById("map").appendChild(img);

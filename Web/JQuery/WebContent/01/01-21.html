@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .high_light_0 { background: yellow; }
+        .high_light_1 { background: orange; }
+        .high_light_2 { background: blue; }
+        .high_light_3 { background: green; }
+        .high_light_4 { background: red; }
+    </style>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('h1').addClass(function (index) {
+                return 'high_light_' + index;
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <h1>item - 0</h1>
+    <h1>item - 1</h1>
+    <h1>item - 2</h1>
+    <h1>item - 3</h1>
+    <h1>item - 4</h1>
+
+</body>
+
+</html>

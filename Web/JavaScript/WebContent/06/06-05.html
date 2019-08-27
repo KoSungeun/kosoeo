@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>06-05 : getCurrentPosition()로 현재 위치 파악</title>
+</head>
+<body>
+
+<h3>getCurrentPosition()로 현재 위치 파악</h3>
+<hr>
+<div id="msg">이곳에  위치 정보 출력</div>
+<div id="map" style="height:400px"></div>
+<script>
+/*
+if(!navigator.geolocation)
+	alert("지원하지 않음");
+else // found() 콜백 함수 등록
+	navigator.geolocation.getCurrentPosition(found);
+*/
+
+// 위치 파악 시 found() 호출.
+// 위치 정보 들어 있는 position 객체가 매개 변수로 넘어온다.
+function found(position) {
+	var now = new Date(position.timestamp);
+	var lat = position.coords.latitude; // 위도
+	var lon = position.coords.longitude; // 경도
+	var acc = position.coords.accuracy; // 정확도
+
+	// 위도와 경도의 소수점 이하 자리가 너무 길어 유효 숫자 6자리로 짜름
+	lat = lat.toPrecision(6); lon = lon.toPrecision(6);
+
+	var text = "현재 시간 " + now.toUTCString() + "<br>";
+	text += "현재 위치 (위도 " + lat + "°, 경도 " + lon + "°)<br>";
+	text += "정확도 " + acc + "m<br>";
+
+	document.getElementById("msg").innerHTML = text;
+}
+
+var map, infoWindow;
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 37.574690, lng: 126.978142},
+        zoom: 16
+    });
+    infoWindow = new google.maps.InfoWindow;
+
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+
+            infoWindow.setPosition(pos);
+            infoWindow.setContent('Location found.');
+            infoWindow.open(map);
+            map.setCenter(pos);
+            
+            found(position);
+        }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+        });
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
+}
+
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+                          'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+}
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBxOJwwMIjC1TL2TkHLYgYRwR0Z1emsiNs&callback=initMap"
+    async defer></script>
+
+</body>
+</html>

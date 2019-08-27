@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .high_light {
+            background: yellow;
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+        // 플러그인간의 충돌을 제거합니다.
+        $.noConflict();
+        var J = jQuery;
+
+        // jQuery를 사용합니다.
+        J(document).ready(function () {
+            J('h1').removeClass('high_light');
+        });
+    </script>
+</head>
+
+<body>
+    <h1 class="high_light">item - 0</h1>
+    <h2 class="high_light">item - 1</h2>
+
+</body>
+
+</html>
