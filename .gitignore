@@ -3,6 +3,8 @@
 *.png
 *.mp3
 *.mp4
+*.exe
+*.chm
 .metadata/
 .vscode/
 build/

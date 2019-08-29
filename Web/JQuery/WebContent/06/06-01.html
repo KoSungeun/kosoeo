@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+    </style>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+        $(document).ready(function () {
+            // XMLHttpRequest 객체를 생성합니다.
+            var request = new XMLHttpRequest();
+            request.open('GET', '/data.html', false);
+
+            // Ajax를 수행합니다.
+            request.send();
+
+            // 출력합니다.
+            document.body.innerHTML += request.responseText;
+        });
+    </script>
+</head>
+<body>
+</body>
+
+</html>
