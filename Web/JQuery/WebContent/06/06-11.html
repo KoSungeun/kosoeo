@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+    </style>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="xml2json.js"></script>
+    <script>
+        function createRequest() {
+            var request;
+            try {
+                request = new XMLHttpRequest();
+            } catch (exception) {
+                var versions = [
+                    'Msxml2.XMLHTTP.6.0',
+                    'Msxml2.XMLHTTP.5.0',
+                    'Msxml2.XMLHTTP.4.0',
+                    'Msxml2.XMLHTTP.3.0',
+                    'Msxml2.XMLHTTP',
+                    'Microsoft.XMLHttp'    
+
+                ];
+                for(var i = 0; i < versions.length; i++) {
+                    try {
+                        return new ActiveXObject(versions[i]);
+                    } catch(e) {}
+                }
+            }
+            return request;
+        }
+
+        $(document).ready(function () {
+            // XMLHttpRequest 객체를 생성합니다.
+            // 같은 도메인 내에서만 정상 동작한다. (보안상의 이유로)
+            var request = createRequest();
+            
+            request.onreadystatechange = function (event) {
+                if (request.readyState == 4) {
+                    if(request.status == 200) {
+                        // 변수를 선언합니다.
+                        var json = xml2json.parser(request.responseText);
+                        var data = json.root.datas.data;
+                        // 이용합니다
+                        for (var i = 0; i < data.length; i++) {
+                            document.body.innerHTML += '<h1>' + data[i].name + '</h1>'
+                            document.body.innerHTML += '<h2>' + data[i].price + '</h2>'
+                        }
+                    }
+                }
+            };
+            request.open('GET', '/data.xml', true);
+            request.send();
+
+        });
+    </script>
+</head>
+<body>
+</body>
+
+</html>

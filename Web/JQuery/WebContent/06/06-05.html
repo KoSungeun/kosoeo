@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+    </style>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+        function createRequest() {
+            var request;
+            try {
+                request = new XMLHttpRequest();
+            } catch (exception) {
+                var versions = [
+                    'Msxml2.XMLHTTP.6.0',
+                    'Msxml2.XMLHTTP.5.0',
+                    'Msxml2.XMLHTTP.4.0',
+                    'Msxml2.XMLHTTP.3.0',
+                    'Msxml2.XMLHTTP',
+                    'Microsoft.XMLHttp'    
+
+                ];
+                for(var i = 0; i < versions.length; i++) {
+                    try {
+                        return new ActiveXObject(versions[i]);
+                    } catch(e) {}
+                }
+            }
+            return request;
+        }
+
+        $(document).ready(function () {
+            // XMLHttpRequest 객체를 생성합니다.
+            // 같은 도메인 내에서만 정상 동작한다. (보안상의 이유로)
+            var request = createRequest();
+            
+            request.onreadystatechange = function (event) {
+                // 출력합니다.
+                alert(request.readyState);
+            }
+            request.open('GET', '/data.html', true);
+            request.send();
+
+        });
+    </script>
+</head>
+<body>
+</body>
+
+</html>
