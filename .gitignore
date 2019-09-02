@@ -9,3 +9,5 @@
 .vscode/
 build/
 bin/
+program/WinSCP
+Servers/

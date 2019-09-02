@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>XMLHttpRequest</title>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+
+        function form_check(type) {
+            // 기본 체크
+            var vName = $('#name').val();
+            if(type == 'xml') {
+                xml_ajax()
+            } else {
+                json_ajax();
+            }
+            
+        }
+        function xml_ajax() {
+            $.ajax({
+                url: '/data.xml',
+                type: 'post',
+                dataType: 'text',
+                data: $('#my-form').serialize(),
+                error: function (xhr, status, error) {
+                    alert(error);
+                },
+                success: function (data) {
+                    return_xml(data);
+                }
+            });
+        }
+
+        function json_ajax() {
+            $.ajax({
+                url: '/data.json',
+                type: 'post',
+                dataType: 'json',
+                data: $('#my-form').serialize(),
+                error: function (xhr, status, error) {
+                    alert(error);
+                },
+                success: function (data) {
+                    return_json(data);
+                }
+            });
+        }
+
+
+        function return_xml(data) {
+            // xml read
+            $(data).find('data').each(function () {
+                // 변수 선언
+                var name = $(this).find('name').text();
+                var price = $(this).find('price').text();
+
+                // 출력
+                $('<h1></h1>').text(name + ':' + price).appendTo('body');
+            });
+       }
+
+       function return_json(data) {
+            // json read
+            $(data).each(function(i, data) {
+                $('<h1></h1>').text(data['version'] + ':' + data['name']).appendTo('body');
+            });
+
+       }
+
+        $(document).ready(function () {
+
+        });
+
+    </script>
+</head>
+
+<body>
+    <form id="my-form">
+        <table>
+            <tr>
+                <td>Name</td>
+                <td><input id="name" name="name" type="text" /></td>
+            </tr>
+            <tr>
+                <td>Price</td>
+                <td><input id="price" name="price" type="text" /></td>
+            </tr>
+        </table>
+        <input type="button" value="Get Ajax String(xml)" onclick="form_check('xml')" />
+        <input type="button" value="Get Ajax String(json)" onclick="form_check('json')" />
+    </form>
+    <div id="wrap">
+
+    </div>
+</body>
+
+</html>
