@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="Jsp20_2-ConnectionPool">
+    <wb-module deploy-name="Jsp25_1-FW-Servlet">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <property name="java-output-path" value="/Jsp20_2-ConnectionPool/build/classes"/>
-        <property name="context-root" value="Jsp20_2"/>
+        <property name="java-output-path" value="/Jsp25_1-FW-Servlet/build/classes"/>
+        <property name="context-root" value="Jsp25_1"/>
     </wb-module>
 </project-modules>
