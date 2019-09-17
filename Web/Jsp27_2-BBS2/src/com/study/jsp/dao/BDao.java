@@ -11,12 +11,17 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import com.study.jsp.BPageInfo;
 import com.study.jsp.dto.BDto;
 
 
 public class BDao {
 
-	DataSource dataSource;
+	private static BDao instance = new BDao();
+	DataSource dataSource = null;
+	
+	int listCount = 10;		// 한 페이지당 보여줄 게시물의 갯수
+	int pageCount = 10;		// 하단에 보여줄 페이지 리스트의 갯수
 	
 	public BDao() {
 		try {
@@ -25,6 +30,10 @@ public class BDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static BDao getInstance() {
+		return instance;
 	}
 	
 	public void write(String bName, String bTitle, String bContent) {
@@ -54,19 +63,31 @@ public class BDao {
 		}
 	}
 	
-	public ArrayList<BDto> list() {
+	public ArrayList<BDto> list(int curPage) {
 		
 		ArrayList<BDto> dtos = new ArrayList<BDto>();
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		
+		int nStart = (curPage - 1) * listCount + 1;
+		int nEnd = (curPage - 1) * listCount + listCount;
+
+		
 		try {
 			con = dataSource.getConnection();
 			String query = "select * " +
-						   " from mvc_board " +
-						   " order by bGroup desc, bStep asc";
+						   "	from ( " +
+						   "		select rownum num, A.* " +
+						   "			from ( " +
+						   "				select * " +
+						   "				from mvc_board " +
+						   "			order by bGroup desc, bStep asc ) A " + 
+						   "		where rownum <= ? ) B " +
+						   " where B.num >= ? ";
 			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, nEnd);
+			pstmt.setInt(2, nStart);
 			resultSet = pstmt.executeQuery();
 			
 			while (resultSet.next()) {
@@ -315,6 +336,71 @@ public class BDao {
 				e2.printStackTrace();
 			}
 		}
+	}
+	
+	public BPageInfo articlePage(int curPage) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+		
+		int listCount = 10;		// 한 페이지당 보여줄 게시물의 갯수
+		int pageCount = 10;		// 하단에 보여줄 페이지 리스트의 갯수
+		
+		// 총 게시물의 갯수
+		int totalCount = 0;
+		
+		try {
+			con = dataSource.getConnection();
+			String query = "select count(*) as total from mvc_board";
+			pstmt = con.prepareStatement(query);
+			resultSet = pstmt.executeQuery();
+			
+			if (resultSet.next()) {
+				totalCount = resultSet.getInt("total");
+			}
+	
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(resultSet != null) resultSet.close();
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		
+		// 총 페이지 수
+		int totalPage = totalCount / listCount;
+		if (totalCount % listCount > 0)
+			totalPage++;
+		
+		// 현재 페이지
+		int myCurPage = curPage;
+		if(myCurPage > totalPage)
+			myCurPage = totalPage;
+		if(myCurPage < 1)
+			myCurPage = 1;
+		
+		// 시작 페이지
+		int startPage = ((myCurPage - 1) / pageCount) * pageCount + 1;
+		
+		// 끝 페이지
+		int endPage = startPage + pageCount - 1;
+		if(endPage > totalPage)
+			endPage = totalPage;
+		
+		BPageInfo pinfo = new BPageInfo();
+		pinfo.setTotalCount(totalCount);
+		pinfo.setListCount(listCount);
+		pinfo.setTotalPage(totalPage);
+		pinfo.setCurPage(myCurPage);
+		pinfo.setPageCount(pageCount);
+		pinfo.setStartPage(startPage);
+		pinfo.setEndPage(endPage);
+		
+		return pinfo;
 	}
 
 
