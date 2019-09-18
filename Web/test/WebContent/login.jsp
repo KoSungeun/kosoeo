@@ -5,13 +5,15 @@
 <head>
     <title>Insert title here</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="google-signin-client_id" content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
     <script src="http://code.jquery.com/jquery.js"></script>
-
  	<script src="https://apis.google.com/js/platform.js" async defer></script>
  	<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
-	<meta name="google-signin-client_id" content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
+ 	<script src="naveridlogin_js_sdk_2.0.0.js"></script>
+	
 
 	<script>
+	/* 구글 로그인 */
 	function onSignIn(googleUser) {
 		var profile = googleUser.getBasicProfile();
 		console.log('ID: ' + profile.getId());
@@ -36,10 +38,8 @@
 	    });
 	}
 	
-	</script>
-	
-	<script>
-  window.fbAsyncInit = function() {
+	/* 페이스북 로그인 */
+ 	window.fbAsyncInit = function() {
     FB.init({
       appId      : '483967858850686',
       cookie     : true,
@@ -174,7 +174,7 @@
 	</script>
 	
 	
-	<script src="naveridlogin_js_sdk_2.0.0.js"></script>
+	
 
 	<!-- (3) LoginWithNaverId Javscript 설정 정보 및 초기화 -->
 	<script>
@@ -204,7 +204,7 @@
 		/* (6) 로그인 상태가 "true" 인 경우 로그인 버튼을 없애고
 		   사용자 정보를 출력합니다. */
 		function setLoginStatus() {
-			console.log(naverLogin.user);
+			
 			var uid = naverLogin.user.getId();
 			var profileImage = naverLogin.user.getProfileImage();
 			var uName = naverLogin.user.getName();
@@ -213,7 +213,7 @@
 			$("#naverIdLogin_loginButton").css("display", "none");
 			$("#nlogout").css("display", "block");
 			$("#upic").attr('src', profileImage);
-			$("#uname").html(nickName);
+			$("#uname").html(uName);
 			
 			
 			/* (7) 로그아웃 버튼을 설정하고 동작을 정의합니다. */
