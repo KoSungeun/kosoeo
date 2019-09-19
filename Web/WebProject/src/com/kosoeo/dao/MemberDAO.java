@@ -26,24 +26,23 @@ public class MemberDAO {
 		return instance;
 	}
 	
-	public int insertMember(MemberDTO dto) {
+	public int join(MemberDTO dto) {
 		int ri = 0;
-		
+		System.out.println(dto.getNickName());
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String query = "insert into member values (?, ?, ?, ?, ?, ?)";
+		String query = "insert into member (no, email, password, name, nickname) values (member_seq.nextval, ?, ?, ?, ?)";
 		
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, dto.getId());
-			pstmt.setString(2, dto.getPw());	
+			pstmt.setString(1, dto.getEmail());
+			pstmt.setString(2, dto.getPassword());	
 			pstmt.setString(3, dto.getName());
-			pstmt.setString(4, dto.geteMail());
-			pstmt.setTimestamp(5, dto.getrDate());
-			pstmt.setString(6, dto.getAddress());
+			pstmt.setString(4, dto.getNickName());
+
 			pstmt.executeUpdate();
-			ri = MemberDao.MEMBER_JOIN_SUCCESS;
+			ri = MemberDAO.MEMBER_JOIN_SUCCESS;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -58,22 +57,22 @@ public class MemberDAO {
 		
 	}
 	
-	public int confirmId(String id) {
+	public int emailCheck(String email) {
 		int ri = 0;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
-		String query = "select id from members where id = ?";
+		String query = "select email from member where email = ?";
 		
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, id);
+			pstmt.setString(1, email);
 			set = pstmt.executeQuery();
 			if(set.next()) {
-				ri = MemberDao.MEMBER_EXISTENT;
+				ri = MemberDAO.MEMBER_EXISTENT;
 			} else {
-				ri = MemberDao.MEMBER_NONEXISTENT;
+				ri = MemberDAO.MEMBER_NONEXISTENT;
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -110,14 +109,14 @@ public class MemberDAO {
 				dbPw = set.getString("pw");
 				if(dbPw.equals(pw)) {
 					System.out.println("login ok");
-					ri = MemberDao.MEMBER_LOGIN_SUCCESS;	// 로그인 OK
+					ri = MemberDAO.MEMBER_LOGIN_SUCCESS;	// 로그인 OK
 				} else {
 					System.out.println("login fail");
-					ri = MemberDao.MEMBER_LOGIN_PW_NO_GOOD;	// 비밀번호 X
+					ri = MemberDAO.MEMBER_LOGIN_PW_NO_GOOD;	// 비밀번호 X
 				}				
 			} else {
 				System.out.println("login fail");
-				ri = MemberDao.MEMBER_LOGIN_IS_NOT;			// 아이디 X
+				ri = MemberDAO.MEMBER_LOGIN_IS_NOT;			// 아이디 X
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -133,12 +132,12 @@ public class MemberDAO {
 		return ri;
 	}
 	
-	public MemberDto getMember(String id) {
+	public MemberDTO getMember(String id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
 		String query = "select * from members where id = ?";
-		MemberDto dto = null;
+		MemberDTO dto = null;
 		
 		try {
 			con = getConnection();
@@ -147,13 +146,12 @@ public class MemberDAO {
 			set = pstmt.executeQuery();
 			
 			if(set.next()) {
-				dto = new MemberDto();
-				dto.setId(set.getString("id"));
-				dto.setPw(set.getString("pw"));
+				dto = new MemberDTO();
+				dto.setNo(set.getInt("no"));
+				dto.setEmail(set.getString("email"));
 				dto.setName(set.getString("name"));
-				dto.seteMail(set.getString("eMail"));
-				dto.setrDate(set.getTimestamp("rDate"));
-				dto.setAddress(set.getString("address"));
+				dto.setNickName(set.getString("nickname"));
+				dto.setJoinDate(set.getTimestamp("joindate"));
 			}
 
 		} catch(Exception e) {
@@ -170,20 +168,21 @@ public class MemberDAO {
 		return dto;
 	}
 	
-	public int updateMember(MemberDto dto) {
+	public int updateMember(MemberDTO dto) {
 		int ri = 0;
 		
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String query = "update members set pw=?, eMail=?, address=? where id=?";
+		String query = "update members set email = ?, password = ?, name = ?, nickname = ? where email= ?";
 		
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, dto.getPw());	
-			pstmt.setString(2, dto.geteMail());
-			pstmt.setString(3, dto.getAddress());
-			pstmt.setString(4, dto.getId());
+			pstmt.setString(1, dto.getEmail());	
+			pstmt.setString(2, dto.getPassword());
+			pstmt.setString(3, dto.getName());
+			pstmt.setString(4, dto.getNickName());
+			pstmt.setString(5, dto.getEmail());
 			ri = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
