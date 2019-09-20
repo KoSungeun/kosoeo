@@ -28,7 +28,7 @@ public class MemberDAO {
 	
 	public int join(MemberDTO dto) {
 		int ri = 0;
-		System.out.println(dto.getNickName());
+		System.out.println(dto.getEmail());
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		String query = "insert into member (no, email, password, name, nickname) values (member_seq.nextval, ?, ?, ?, ?)";
@@ -63,7 +63,6 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
 		String query = "select email from member where email = ?";
-		
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(query);

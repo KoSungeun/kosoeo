@@ -54,7 +54,7 @@ public class BFrontController extends HttpServlet {
 		} else if (com.equals("/write.do")) {
 			command = new BWriteCommand();
 			command.execute(request, response);
-			viewPage = "list.do";
+			response.sendRedirect("list.do");
 		} else if (com.equals("/list.do")) {
 			command = new BListCommand();
 			command.execute(request, response);
@@ -87,9 +87,10 @@ public class BFrontController extends HttpServlet {
 			command.execute(request, response);
 			viewPage = "list.do?page="+curPage;
 		} 
-	
-		RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);
-		dispatcher.forward(request, response);
+		if(viewPage != null) {
+			RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);
+			dispatcher.forward(request, response);
+		}
 
 		
 	}

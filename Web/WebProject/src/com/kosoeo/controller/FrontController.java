@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kosoeo.command.Command;
+import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
 
 @WebServlet("*.do")
@@ -31,18 +32,22 @@ public class FrontController extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 		String viewPage = null;
-		Command command = null;
+		Command Command = null;
 
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
 
-		if (com.equals("/Member/join.do")) {
-			command = new MemberJoinCommand();
-			command.execute(request, response);
-			viewPage = "../main.jsp";
-		} else if (com.equals("/write.do")) {
 
+		if (com.equals("/Member/joinView.do")) {
+			viewPage = "join.jsp";
+		} else if (com.equals("/Member/join.do")) {
+			Command = new MemberJoinCommand();
+			Command.execute(request, response);
+			viewPage = "../main.jsp";
+		} else if (com.equals("/Member/emailCheck.do")) {
+			Command = new MemberEmailCheckCommand();
+			Command.execute(request, response);
 		} 
 		
 		if(viewPage != null) {

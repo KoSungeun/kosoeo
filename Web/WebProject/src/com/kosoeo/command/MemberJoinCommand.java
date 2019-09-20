@@ -26,7 +26,7 @@ public class MemberJoinCommand implements Command {
 		MemberDAO dao = MemberDAO.getInstance();
 		String result = null;
 		String msg = null;
-		if(dao.emailCheck(dto.getEmail()) != MemberDAO.MEMBER_EXISTENT) {
+		if(dao.emailCheck(dto.getEmail()) == MemberDAO.MEMBER_EXISTENT) {
 			result = "fail";
 			msg = "사용중인 이메일입니다";
 		} else {
