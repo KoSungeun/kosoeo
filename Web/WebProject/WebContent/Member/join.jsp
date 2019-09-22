@@ -31,7 +31,6 @@
 <script>
 	
 	function toggleVaild(selector, msg, checkOk) {
-
 		if(checkOk) {
 			$(selector + " > input").addClass("is-valid");
 	    	$(selector + " > div").addClass("valid-feedback");
@@ -41,39 +40,40 @@
 			$(selector + " > input").addClass("is-invalid");
 	    	$(selector + " > div").addClass("invalid-feedback");
 	    	$(selector + " > input").removeClass("is-valid");
-	    	$(selector + " > div").removeClass("valid-feedback");
-	    		
+	    	$(selector + " > div").removeClass("valid-feedback");		
 		}
 		$(selector + " > div").text(msg);
 	}
-	function emailCheck() {
+	
 
+	
+	function emailCheck() {
 		var checkOk = false;
 		var msg = "이메일 형식이 아닙니다";
 		var email = $('#email').val().trim();
 		var emailCheck = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-		
 		if(emailCheck.test(email)) {
-			
 			$.ajax({
 			    url: 'emailCheck.do',
 			    type: 'post',
 			    dataType: 'json',
-			    async: false,
-			    data: "email=" + email,
-			    success: function (data) {
-			    	var result = data["result"];
-			        if(result == "success") {
-			        	msg = data["msg"];
-			        	checkOk = true;
-			        } else if(result == "fail") {
-			        	msg = data["msg"];
-			        }      
-			    }
+			    data: "email=" + email
+			}).done(function(data) {
+				var result =  data["result"];
+		        if(result == "success") {
+		        	msg = data["msg"];
+		        	checkOk = true;
+		        } else if(result == "fail") {
+		        	msg = data["msg"];
+		        }
+		        toggleVaild("#emailGroup", msg, checkOk);
+		        return checkOk;
 			});
+		} else {
+			toggleVaild("#emailGroup", msg, checkOk);
+			return checkOk;
 		}
-		toggleVaild("#emailGroup", msg, checkOk);
-		return checkOk;
+		
 	}
 	function passwordCheck() {
 		
