@@ -131,6 +131,8 @@
 	<input type="button" class="btn btn-success" onclick="nsignOut();" value="로그아웃" /><br>
 	</div>
 	
+	
+	
 	<script type='text/javascript'>
     Kakao.init('6431066fae7f218669fc25b9b26e2665');
     function loginWithKakao() {

@@ -11,7 +11,8 @@
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
 	crossorigin="anonymous">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
 	integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
@@ -21,7 +22,12 @@
 	integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
 	crossorigin="anonymous"></script>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
-<meta name="google-signin-client_id" content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
+
+<meta name="google-signin-client_id"
+	content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script src="/WebProject/Member/naveridlogin_js_sdk_2.0.0.js"></script>
+
 </body>
 <title>WebProject</title>
 </head>
@@ -56,37 +62,68 @@
 			</ul>
 			<c:choose>
 				<c:when test="${MemberDTO == null}">
-					<div class="my-2 my-lg-0">	
-						<button class="btn btn-secondary mr-sm-2" onclick="location.href='/WebProject/Member/loginView.do'">로그인</button> 
-						<button class="btn btn-secondary my-2 my-sm-0" onclick="location.href='/WebProject/Member/joinView.do'">회원가입</button>		
+					<div class="my-2 my-lg-0">
+						<button class="btn btn-secondary mr-sm-2"
+							onclick="location.href='/WebProject/Member/loginView.do'">로그인</button>
+						<button class="btn btn-secondary my-2 my-sm-0"
+							onclick="location.href='/WebProject/Member/joinView.do'">회원가입</button>
 					</div>
 				</c:when>
 				<c:otherwise>
-					<div class="my-2 my-lg-0">	
-						<button class="btn btn-secondary mr-sm-2" onclick=logout()>로그아웃</button> 
-						<button class="btn btn-secondary my-2 my-sm-0" onclick="location.href='/WebProject/Member/joinView.do'">정보수정</button>		
+					<div class="my-2 my-lg-0">
+						<button class="btn btn-secondary mr-sm-2" onclick=logout()>로그아웃</button>
+						<button class="btn btn-secondary my-2 my-sm-0"
+							onclick="location.href='/WebProject/Member/joinView.do'">정보수정</button>
 					</div>
 				</c:otherwise>
-				
+
 			</c:choose>
 			
+			<!--  페이스북 초기화  -->
+			<div id="fb-root"></div>
+			<script async defer crossorigin="anonymous"
+					src="https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v4.0&appId=483967858850686&autoLogAppEvents=1"></script>
+
 			<script>
-				function logout() {
-					var auth2 = gapi.auth2.getAuthInstance();
-				    auth2.signOut().then(function () {
-				      console.log('User signed out.');
-				    });
-				    location.href='/WebProject/Member/logout.do';
-				    
-				}
-				
+			
+				// 구글 초기화
 				function onLoad() {
 					gapi.load('auth2', function() {
 						gapi.auth2.init();
 					});
 				}
+				// 카카오 초기화
+				Kakao.init('6431066fae7f218669fc25b9b26e2665');
+	
+				
+				// 네이버 초기화
+				var naverLogin = new naver.LoginWithNaverId({
+	
+					clientId : "YlV54vl651q8DjJCOlAq",
+					callbackUrl : "http://localhost:8081/test/callback.jsp",
+					isPopup : false
+	
+				});
+
+				
+				naverLogin.init();
+				
+				function logout() {
+					
+					var auth2 = gapi.auth2.getAuthInstance();
+					auth2.signOut();
+					
+					FB.logout();
+	
+					Kakao.Auth.logout();
+	
+					naverLogin.logout();
+	
+					location.href = '/WebProject/Member/logout.do';
+
+				}
+			
 			</script>
 			<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
-			
 		</div>
 	</nav>

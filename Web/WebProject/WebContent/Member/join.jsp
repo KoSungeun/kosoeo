@@ -106,6 +106,7 @@
 				msg = "암호확인 완료";
 				checkOk = true;
 			}
+			toggleVaild("#passwordGroup", msg, checkOk);
 			toggleVaild("#passwordCheckGroup", msg, checkOk);
 		}
 		return checkOk;
