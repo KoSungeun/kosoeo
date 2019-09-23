@@ -88,31 +88,41 @@ public class MemberDAO {
 		return ri;
 	}
 	
-	public int userCheck(String id, String pw) {
-		int ri = 0;
-		String dbPw;
+	public int userCheck(String email, String password, String type) {
+		int ri = MEMBER_LOGIN_IS_NOT;
+		String DBPassword;
 		
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
-		String query = "select pw from members where id = ?";
+		String query = "select password from member where email = ?";
+		
 		
 		try {
 			con = getConnection();
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, id);
+			pstmt.setString(1, email);
 			set = pstmt.executeQuery();
 			
 			
 			if(set.next()) {
-				dbPw = set.getString("pw");
-				if(dbPw.equals(pw)) {
-					System.out.println("login ok");
-					ri = MemberDAO.MEMBER_LOGIN_SUCCESS;	// 로그인 OK
+				DBPassword = set.getString("password");
+				if(type.equals("normal")) {
+					if(DBPassword != null) {
+						if(DBPassword.equals(password)) {
+							System.out.println("login ok");
+							ri = MemberDAO.MEMBER_LOGIN_SUCCESS;	// 로그인 OK
+						} else {
+							System.out.println("login fail");
+							ri = MemberDAO.MEMBER_LOGIN_PW_NO_GOOD;	// 비밀번호 X
+						}															
+					} else {
+						System.out.println("login fail");
+						ri = MemberDAO.MEMBER_LOGIN_PW_NO_GOOD;	// 비밀번호 X
+					}
 				} else {
-					System.out.println("login fail");
-					ri = MemberDAO.MEMBER_LOGIN_PW_NO_GOOD;	// 비밀번호 X
-				}				
+					ri = MemberDAO.MEMBER_LOGIN_SUCCESS;
+				}
 			} else {
 				System.out.println("login fail");
 				ri = MemberDAO.MEMBER_LOGIN_IS_NOT;			// 아이디 X
@@ -135,7 +145,7 @@ public class MemberDAO {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
-		String query = "select * from members where id = ?";
+		String query = "select no, email, name, nickname, joindate from member where email = ?";
 		MemberDTO dto = null;
 		
 		try {

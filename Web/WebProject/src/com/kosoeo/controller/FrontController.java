@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.kosoeo.command.Command;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
+import com.kosoeo.command.MemberLoginCommand;
+import com.kosoeo.command.MemberLogoutCommand;
 
 @WebServlet("*.do")
 public class FrontController extends HttpServlet {
@@ -34,22 +36,32 @@ public class FrontController extends HttpServlet {
 
 		request.setCharacterEncoding("UTF-8");
 		String viewPage = null;
-		Command Command = null;
+		Command command = null;
 
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
 
-
-		if (com.equals("/Member/joinView.do")) {
+		if(com.equals("/main.do")) {
+			viewPage = "main.jsp";
+		} else if (com.equals("/Member/joinView.do")) {
 			viewPage = "join.jsp";
+		} else if (com.equals("/Member/loginView.do")){
+			viewPage = "login.jsp";
 		} else if (com.equals("/Member/join.do")) {
-			Command = new MemberJoinCommand();
-			Command.execute(request, response);
+			command = new MemberJoinCommand();
+			command.execute(request, response);
 			viewPage = "../main.jsp";
 		} else if (com.equals("/Member/emailCheck.do")) {
-			Command = new MemberEmailCheckCommand();
-			Command.execute(request, response);
+			command = new MemberEmailCheckCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Member/login.do")) {
+			command = new MemberLoginCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Member/logout.do")) {
+			command = new MemberLogoutCommand();
+			command.execute(request, response);
+			response.sendRedirect("../main.do");
 		} 
 		
 		if(viewPage != null) {
