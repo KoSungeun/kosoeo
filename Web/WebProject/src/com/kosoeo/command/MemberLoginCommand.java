@@ -27,11 +27,11 @@ public class MemberLoginCommand implements Command {
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 		String name = request.getParameter("name");
+		String nickName = request.getParameter("nickName");
 		String type = request.getParameter("type"); 
 		
 		MemberDAO dao = MemberDAO.getInstance();
 		
-		System.out.println(email);
 		int checkNum = dao.userCheck(email, password, type);
 		if(checkNum == MemberDAO.MEMBER_LOGIN_IS_NOT && type.equals("normal")) {
 			out.println("{\"result\": \"-1\","
@@ -40,7 +40,11 @@ public class MemberLoginCommand implements Command {
 			MemberDTO dto = new MemberDTO();
 			dto.setEmail(email);
 			dto.setName(name);
-			dto.setNickName(name);
+			if(!nickName.trim().equals("")) {
+				dto.setNickName(nickName);
+			} else {
+				dto.setNickName(name);
+			}
 			dao.join(dto);
 			dto = dao.getMember(email);
 			session.setAttribute("MemberDTO", dto);

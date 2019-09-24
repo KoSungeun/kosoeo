@@ -35,7 +35,7 @@
 
 <body>
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-		<a class="navbar-brand" href="#">WebProject</a>
+		<a class="navbar-brand" href="/WebProject/main.do">WebProject</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarsExampleDefault"
 			aria-controls="navbarsExampleDefault" aria-expanded="false"
@@ -61,7 +61,8 @@
 					</div></li>
 			</ul>
 			<c:choose>
-				<c:when test="${MemberDTO == null}">
+
+				<c:when test="${MemberDTO == null}">	
 					<div class="my-2 my-lg-0">
 						<button class="btn btn-secondary mr-sm-2"
 							onclick="location.href='/WebProject/Member/loginView.do'">로그인</button>
@@ -73,7 +74,7 @@
 					<div class="my-2 my-lg-0">
 						<button class="btn btn-secondary mr-sm-2" onclick=logout()>로그아웃</button>
 						<button class="btn btn-secondary my-2 my-sm-0"
-							onclick="location.href='/WebProject/Member/joinView.do'">정보수정</button>
+							onclick="location.href='/WebProject/Member/modifyView.do'">정보수정</button>
 					</div>
 				</c:otherwise>
 
@@ -83,7 +84,7 @@
 			<div id="fb-root"></div>
 			<script async defer crossorigin="anonymous"
 					src="https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v4.0&appId=483967858850686&autoLogAppEvents=1"></script>
-
+			<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
 			<script>
 			
 				// 구글 초기화
@@ -100,7 +101,7 @@
 				var naverLogin = new naver.LoginWithNaverId({
 	
 					clientId : "YlV54vl651q8DjJCOlAq",
-					callbackUrl : "http://localhost:8081/test/callback.jsp",
+					callbackUrl : "http://localhost:8081/WebProject/Member/loginView.do",
 					isPopup : false
 	
 				});
@@ -111,19 +112,21 @@
 				function logout() {
 					
 					var auth2 = gapi.auth2.getAuthInstance();
-					auth2.signOut();
 					
 					FB.logout();
 	
 					Kakao.Auth.logout();
 	
 					naverLogin.logout();
-	
-					location.href = '/WebProject/Member/logout.do';
+					
+					auth2.signOut().then(function(){
+						location.href = '/WebProject/Member/logout.do';
+					});
+					
 
 				}
 			
 			</script>
-			<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+			
 		</div>
 	</nav>

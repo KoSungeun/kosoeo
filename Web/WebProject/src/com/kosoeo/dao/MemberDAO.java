@@ -177,12 +177,12 @@ public class MemberDAO {
 		return dto;
 	}
 	
-	public int updateMember(MemberDTO dto) {
+	public int modify (MemberDTO dto) {
 		int ri = 0;
 		
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		String query = "update members set email = ?, password = ?, name = ?, nickname = ? where email= ?";
+		String query = "update member set email = ?, password = ?, name = ?, nickname = ? where no = ?";
 		
 		try {
 			con = getConnection();
@@ -191,7 +191,34 @@ public class MemberDAO {
 			pstmt.setString(2, dto.getPassword());
 			pstmt.setString(3, dto.getName());
 			pstmt.setString(4, dto.getNickName());
-			pstmt.setString(5, dto.getEmail());
+			pstmt.setInt(5, dto.getNo());
+			
+			ri = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				pstmt.close();
+				con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return ri;
+		
+	}
+	
+	public int withdraw (int no) {
+		int ri = 0;
+		
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		String query = "delete member where no = ?";
+		
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, no);
 			ri = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

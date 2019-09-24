@@ -119,23 +119,25 @@
 			}
 		});
 	});
+	
+	$("#naverIdLogin_loginButton").attr("href", naverLogin.generateAuthorizeUrl());
 
 	function setLoginStatus() {
-		var uid = naverLogin.user.getId();
-		var profileImage = naverLogin.user.getProfileImage();
-		var uName = naverLogin.user.getName();
+		var name = naverLogin.user.getName();
 		var nickName = naverLogin.user.getNickName();
-		var eMail = naverLogin.user.getEmail();
+		var email = naverLogin.user.getEmail();
+		
+		loginAjax("naver", email, name, nickName)
 	}
 
-	function loginAjax(type, email, name) {
+	function loginAjax(type, email, name, nickName) {
 
 		var checkOk = false;
 		var queryString;
 		if (type == "normal") {
 			queryString = "type=normal&" + $('#loginForm').serialize();
 		} else {
-			queryString = "type=" + type + "&email=" + email + "&name=" + name;
+			queryString = "type=" + type + "&email=" + email + "&name=" + name + "&nickName=" + nickName;
 		}
 		$.ajax({
 			url : 'login.do',

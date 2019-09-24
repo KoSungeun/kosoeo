@@ -16,6 +16,8 @@ import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
 import com.kosoeo.command.MemberLoginCommand;
 import com.kosoeo.command.MemberLogoutCommand;
+import com.kosoeo.command.MemberModifyCommand;
+import com.kosoeo.command.MemberWithdrawCommand;
 
 @WebServlet("*.do")
 public class FrontController extends HttpServlet {
@@ -62,6 +64,17 @@ public class FrontController extends HttpServlet {
 			command = new MemberLogoutCommand();
 			command.execute(request, response);
 			response.sendRedirect("../main.do");
+		} else if (com.equals("/Member/modifyView.do")){
+			viewPage = "modify.jsp";
+		} else if (com.equals("/Member/modify.do")){
+			command = new MemberModifyCommand();
+			command.execute(request, response);
+			viewPage = "../main.jsp";
+		} else if (com.equals("/Member/withdrawView.do")){
+			viewPage = "withdraw.jsp";
+		} else if (com.equals("/Member/withdraw.do")){
+			command = new MemberWithdrawCommand();
+			command.execute(request, response);
 		} 
 		
 		if(viewPage != null) {
