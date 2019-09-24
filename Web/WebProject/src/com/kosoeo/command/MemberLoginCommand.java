@@ -30,6 +30,7 @@ public class MemberLoginCommand implements Command {
 		String nickName = request.getParameter("nickName");
 		String type = request.getParameter("type"); 
 		
+		System.out.println(nickName);
 		MemberDAO dao = MemberDAO.getInstance();
 		
 		int checkNum = dao.userCheck(email, password, type);
@@ -40,7 +41,7 @@ public class MemberLoginCommand implements Command {
 			MemberDTO dto = new MemberDTO();
 			dto.setEmail(email);
 			dto.setName(name);
-			if(!nickName.trim().equals("")) {
+			if(!nickName.trim().equals("undefined")) {
 				dto.setNickName(nickName);
 			} else {
 				dto.setNickName(name);
