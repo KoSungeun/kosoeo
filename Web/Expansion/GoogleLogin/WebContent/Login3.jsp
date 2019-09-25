@@ -51,7 +51,7 @@
 	</script>
 </head>
 <body>
-
+	<script>startApp();</script>
 	<div id="login" class="btn btn-primary col-md-1"> Google </div>
 
     <div id="logout" style="display: none;">
@@ -62,7 +62,7 @@
     </div>
 
 
-	<script>startApp();</script>
+
   
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

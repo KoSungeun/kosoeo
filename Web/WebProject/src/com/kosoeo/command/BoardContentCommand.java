@@ -1,4 +1,4 @@
-package com.study.jsp.command;
+package com.kosoeo.command;
 
 import java.io.IOException;
 
@@ -6,18 +6,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.study.jsp.dao.BDao;
-import com.study.jsp.dto.BDto;
+import com.kosoeo.dao.BoardDAO;
+import com.kosoeo.dto.BoardDTO;
 
 
-
-public class BContentCommand implements BCommand  {
+public class BoardContentCommand implements Command{
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String bId = request.getParameter("no");
-		BDao dao = new BDao();
-		BDto dto = dao.contentView(bId);
+		String no = request.getParameter("no");
+		BoardDAO dao = new BoardDAO();
+		BoardDTO dto = dao.contentView(no);
 		
 		request.setAttribute("content_view", dto);
 	}

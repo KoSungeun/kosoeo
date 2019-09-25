@@ -10,7 +10,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import com.kosoeo.command.BoardContentCommand;
+import com.kosoeo.command.BoardListCommand;
+import com.kosoeo.command.BoardWriteCommand;
 import com.kosoeo.command.Command;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
@@ -18,6 +22,8 @@ import com.kosoeo.command.MemberLoginCommand;
 import com.kosoeo.command.MemberLogoutCommand;
 import com.kosoeo.command.MemberModifyCommand;
 import com.kosoeo.command.MemberWithdrawCommand;
+
+
 
 @WebServlet("*.do")
 public class FrontController extends HttpServlet {
@@ -43,6 +49,20 @@ public class FrontController extends HttpServlet {
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
+		
+		
+		HttpSession session = null;
+		session = request.getSession();
+		int curPage = 1;
+		int curCategory = 0;
+		
+		if(session.getAttribute("cpage") != null ) {
+			curPage = (int) session.getAttribute("cpage");
+		}
+		if(session.getAttribute("ccategory") != null ) {
+			curCategory = (int) session.getAttribute("ccategory");
+		}
+		
 
 		if(com.equals("/main.do")) {
 			viewPage = "main.jsp";
@@ -75,6 +95,20 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/withdraw.do")){
 			command = new MemberWithdrawCommand();
 			command.execute(request, response);
+		} else if (com.equals("/Board/list.do")){
+			command = new BoardListCommand();
+			command.execute(request, response);
+			viewPage = "/Board/list.jsp";
+		} else if (com.equals("/Board/writeView.do")) {
+			viewPage = "/Board/write.jsp";
+		} else if (com.equals("/Board/write.do")) {
+			command = new BoardWriteCommand();
+			command.execute(request, response);
+			response.sendRedirect("list.do?category=" + curCategory);
+		} else if (com.equals("/Board/content.do")) {
+			command = new BoardContentCommand();
+			command.execute(request, response);
+			viewPage = "content.jsp";
 		} 
 		
 		if(viewPage != null) {

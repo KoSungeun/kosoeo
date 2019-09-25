@@ -70,7 +70,6 @@ public class BFrontController extends HttpServlet {
 		} else if (com.equals("/modify.do")) {
 			command = new BModifyCommnad();
 			command.execute(request, response);
-			
 			command = new BContentCommand();
 			command.execute(request, response);
 			viewPage = "content_view.jsp";
