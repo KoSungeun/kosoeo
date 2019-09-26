@@ -20,22 +20,29 @@ public class BoardListCommand implements Command {
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int nPage = 1;
 		int category = 0;
-		int type = 0;
+		String type = request.getParameter("type");
 		String word = request.getParameter("word");
+		
+
 		try {
 			nPage = Integer.parseInt(request.getParameter("page"));
 		} catch (Exception e) {}
 		try {
 			category = Integer.parseInt(request.getParameter("category"));
 		} catch (Exception e) {}
-		try {
-			type = Integer.parseInt(request.getParameter("type"));
-		} catch (Exception e) {}
-		
-		
+		if(type != null) {
+			if(type.equals("title") || type.equals("name") || type.equals("content") ) {
+				request.setAttribute("type", type);
+				request.setAttribute("word", word);
+				word = "'%"+ word + "%'";
+			} else {
+				type = null;
+			}
+		}
+
 
 		BoardDAO dao = BoardDAO.getInstance();
-		BoardPage pInfo = dao.articlePage(nPage, category);
+		BoardPage pInfo = dao.articlePage(nPage, category, type, word);
 		request.setAttribute("page", pInfo);
 		
 		nPage = pInfo.getCurPage();
@@ -45,16 +52,9 @@ public class BoardListCommand implements Command {
 		session.setAttribute("cpage", nPage);
 		session.setAttribute("ccategory", category);
 
-		if(type > 0) {
-			
-		} else {
-			
-		}
 		
-		ArrayList<BoardDTO> dtos = dao.list(nPage, category);
+		ArrayList<BoardDTO> dtos = dao.list(nPage, category, type, word);
 		request.setAttribute("list", dtos);
-		
-
 	}
 	
 }

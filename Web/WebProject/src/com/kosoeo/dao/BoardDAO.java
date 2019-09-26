@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import javax.naming.Context;
@@ -66,7 +65,7 @@ public class BoardDAO {
 		}
 	}
 	
-	public ArrayList<BoardDTO> list(int curPage, int category) {
+	public ArrayList<BoardDTO> list(int curPage, int category, String type, String word) {
 		
 		ArrayList<BoardDTO> dtos = new ArrayList<BoardDTO>();
 		Connection con = null;
@@ -75,19 +74,35 @@ public class BoardDAO {
 		
 		int nStart = (curPage - 1) * listCount + 1;
 		int nEnd = (curPage - 1) * listCount + listCount;
-				
+		
+
+		
+		String query = "select * " +
+				   "	from ( " +
+				   "		select rownum num, A.* " +
+				   "			from ( " +
+				   "				select * " +
+				   "				from board where category = ? " +
+				   "			order by bGroup desc, Step asc ) A " + 
+				   "		where rownum <= ? ) B " +
+				   " where B.num >= ? ";
+		
+		if(type != null) {
+
+			query = "select * " +
+					   "	from ( " +
+					   "		select rownum num, A.* " +
+					   "			from ( " +
+					   "				select * " +
+					   "				from board where category = ? and " + type + " like " + word +
+					   "			order by bGroup desc, Step asc ) A " + 
+					   "		where rownum <= ? ) B " +
+					   " where B.num >= ? ";
+		}
 		
 		try {
 			con = dataSource.getConnection();
-			String query = "select * " +
-						   "	from ( " +
-						   "		select rownum num, A.* " +
-						   "			from ( " +
-						   "				select * " +
-						   "				from board where category = ? " +
-						   "			order by bGroup desc, Step asc ) A " + 
-						   "		where rownum <= ? ) B " +
-						   " where B.num >= ? ";
+
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, category);
 			pstmt.setInt(2, nEnd);
@@ -100,7 +115,7 @@ public class BoardDAO {
 				dto.setCategory(resultSet.getInt("category"));
 				dto.setName(resultSet.getString("name"));
 				dto.setTitle(resultSet.getString("title"));
-				dto.setContent(resultSet.getString("title"));
+				dto.setContent(resultSet.getString("content"));
 				dto.setPostdate(resultSet.getTimestamp("postdate"));
 				dto.setHit(resultSet.getInt("hit"));
 				dto.setBgroup(resultSet.getInt("bgroup"));
@@ -146,7 +161,7 @@ public class BoardDAO {
 				dto.setCategory(resultSet.getInt("category"));
 				dto.setName(resultSet.getString("name"));
 				dto.setTitle(resultSet.getString("title"));
-				dto.setContent(resultSet.getString("title"));
+				dto.setContent(resultSet.getString("content"));
 				dto.setPostdate(resultSet.getTimestamp("postdate"));
 				dto.setHit(resultSet.getInt("hit"));
 				dto.setBgroup(resultSet.getInt("bgroup"));
@@ -346,7 +361,7 @@ public class BoardDAO {
 		}
 	}
 	
-	public BoardPage articlePage(int curPage, int category) {
+	public BoardPage articlePage(int curPage, int category, String type, String word) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
@@ -357,9 +372,17 @@ public class BoardDAO {
 		// 총 게시물의 갯수
 		int totalCount = 0;
 		
+		String query = null;
+		if(type != null) {
+			query = "select count(*) as total from board where category = ?  and " + type + " like " + word;
+		} else {
+			query = "select count(*) as total from board where category = ?";
+		}
+		
+		
 		try {
 			con = dataSource.getConnection();
-			String query = "select count(*) as total from board where category = ?";
+			
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, category);
 			resultSet = pstmt.executeQuery();

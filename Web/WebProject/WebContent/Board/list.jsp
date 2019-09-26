@@ -20,8 +20,8 @@
 			<tr>
 				<td>${dto.no}</td>
 				<td>${dto.name}</td>
-				<td><c:forEach begin="1" end="${dto.indent}">-</c:forEach> <a
-					href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}</a></td>
+				<td><c:forEach begin="1" end="${dto.indent}">-</c:forEach> 
+				<a href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}</a></td>
 				<td>${dto.postdate}</td>
 				<td>${dto.hit}</td>
 			</tr>
@@ -35,6 +35,9 @@
 
 <ul class="pagination justify-content-center pagination-lg">
 	<!-- 처음 -->
+	<c:if test="${type != null || word != null}">
+		<c:set var="pageQuery" value="&type=${type}&word=${word}"></c:set>
+	</c:if>
 	<c:choose>
 		<c:when test="${(page.curPage - 1) < 1}">
 			<li class="page-item disabled"><a class="page-link" href="">&lt;&lt;</a></li>
@@ -50,7 +53,7 @@
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="list.do?page=${page.curPage -1}">&lt;</a></li>
+				href="list.do?page=${page.curPage -1}${pageQuery}">&lt;</a></li>
 		</c:otherwise>
 	</c:choose>
 	<!--  개별 페이지 -->
@@ -64,7 +67,7 @@
 			</c:when>
 			<c:otherwise>
 				<li class="page-item"><a class="page-link"
-					href="list.do?page=${fEach}">${fEach}</a></li>
+					href="list.do?page=${fEach}${pageQuery}">${fEach}</a></li>
 			</c:otherwise>
 		</c:choose>
 	</c:forEach>
@@ -75,7 +78,7 @@
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="list.do?page=${page.curPage + 1}">&gt;</a></li>
+				href="list.do?page=${page.curPage + 1}${pageQuery}">&gt;</a></li>
 		</c:otherwise>
 	</c:choose>
 	<!-- 끝 -->
@@ -85,7 +88,7 @@
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="list.do?page=${page.totalPage}">&gt;&gt;</a></li>
+				href="list.do?page=${page.totalPage}${pageQuery}">&gt;&gt;</a></li>
 		</c:otherwise>
 	</c:choose>
 </ul>
@@ -94,11 +97,12 @@
 
 <form action="list.do" method="get">
 	<div class="form-row">
+		<input type="hidden" name="category" value="${ccategory}">
 		<div class="col-auto">
 			<select name="type" class="form-control">
-				<option selected value="1">제목</option>
-				<option value="2">이름</option>
-				<option value="3">내용</option>
+				<option selected value="title">제목</option>
+				<option value="name">이름</option>
+				<option value="content">내용</option>
 			</select>
 		</div>
 		<div class="col-auto">

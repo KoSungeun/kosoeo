@@ -95,7 +95,15 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/withdraw.do")){
 			command = new MemberWithdrawCommand();
 			command.execute(request, response);
-		} else if (com.equals("/Board/list.do")){
+		} else if (com.equals("/Board/notice.do")){
+			command = new BoardListCommand();
+			command.execute(request, response);
+			viewPage = "/Board/list.jsp";
+		} else if (com.equals("/Board/free.do")){
+			command = new BoardListCommand();
+			command.execute(request, response);
+			viewPage = "/Board/list.jsp";
+		} else if (com.equals("/Board/.do")){
 			command = new BoardListCommand();
 			command.execute(request, response);
 			viewPage = "/Board/list.jsp";

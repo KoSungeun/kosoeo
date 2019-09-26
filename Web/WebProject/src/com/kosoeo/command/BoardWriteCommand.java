@@ -18,6 +18,7 @@ public class BoardWriteCommand implements Command {
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");
 		
+		System.out.println(content);
 		
 		int category = 0;
 		try {
