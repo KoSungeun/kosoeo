@@ -29,6 +29,8 @@ import com.kosoeo.command.MemberWithdrawCommand;
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		actionDo(request, response);
@@ -55,15 +57,21 @@ public class FrontController extends HttpServlet {
 		session = request.getSession();
 		int curPage = 1;
 		int curCategory = 0;
-		
+		String action = "";
 		if(session.getAttribute("cpage") != null ) {
 			curPage = (int) session.getAttribute("cpage");
 		}
 		if(session.getAttribute("ccategory") != null ) {
 			curCategory = (int) session.getAttribute("ccategory");
+			if(curCategory == 0) {
+				action = "notice";
+			} else if(curCategory == 1) {
+				action = "free";
+			} else if(curCategory == 2) {
+				action = "down";
+			}
 		}
 		
-
 		if(com.equals("/main.do")) {
 			viewPage = "main.jsp";
 		} else if (com.equals("/Member/joinView.do")) {
@@ -97,27 +105,33 @@ public class FrontController extends HttpServlet {
 			command.execute(request, response);
 		} else if (com.equals("/Board/notice.do")){
 			command = new BoardListCommand();
+			request.setAttribute("category", 0);
 			command.execute(request, response);
 			viewPage = "/Board/list.jsp";
 		} else if (com.equals("/Board/free.do")){
 			command = new BoardListCommand();
+			request.setAttribute("category", 1);
 			command.execute(request, response);
 			viewPage = "/Board/list.jsp";
-		} else if (com.equals("/Board/.do")){
+		} else if (com.equals("/Board/down.do")){
 			command = new BoardListCommand();
+			request.setAttribute("category", 2);
 			command.execute(request, response);
 			viewPage = "/Board/list.jsp";
 		} else if (com.equals("/Board/writeView.do")) {
+			request.setAttribute("action", action);
 			viewPage = "/Board/write.jsp";
 		} else if (com.equals("/Board/write.do")) {
 			command = new BoardWriteCommand();
 			command.execute(request, response);
-			response.sendRedirect("list.do?category=" + curCategory);
+			response.sendRedirect(action + ".do");
 		} else if (com.equals("/Board/content.do")) {
 			command = new BoardContentCommand();
 			command.execute(request, response);
 			viewPage = "content.jsp";
 		} 
+		
+		
 		
 		if(viewPage != null) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);

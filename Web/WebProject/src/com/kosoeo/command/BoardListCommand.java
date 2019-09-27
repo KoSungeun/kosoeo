@@ -1,7 +1,10 @@
 package com.kosoeo.command;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,9 +30,9 @@ public class BoardListCommand implements Command {
 		try {
 			nPage = Integer.parseInt(request.getParameter("page"));
 		} catch (Exception e) {}
-		try {
-			category = Integer.parseInt(request.getParameter("category"));
-		} catch (Exception e) {}
+
+		category = (int) request.getAttribute("category");
+		
 		if(type != null) {
 			if(type.equals("title") || type.equals("name") || type.equals("content") ) {
 				request.setAttribute("type", type);
@@ -52,8 +55,23 @@ public class BoardListCommand implements Command {
 		session.setAttribute("cpage", nPage);
 		session.setAttribute("ccategory", category);
 
+		String action = "";
+		if(category == 0) {
+			action = "notice";
+		} else if(category == 1) {
+			action = "free";
+		} else if(category == 2) {
+			action = "down";
+		}
 		
+		
+		request.setAttribute("yesterday", Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
+
+		request.setAttribute("action", action);
 		ArrayList<BoardDTO> dtos = dao.list(nPage, category, type, word);
+		
+
+		
 		request.setAttribute("list", dtos);
 	}
 	
