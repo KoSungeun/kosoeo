@@ -10,8 +10,9 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import com.kosoeo.dto.BoardDTO;
+import com.kosoeo.dto.Board;
 import com.kosoeo.dto.BoardPage;
+import com.kosoeo.dto.Member;
 
 
 
@@ -37,22 +38,33 @@ public class BoardDAO {
 		return instance;
 	}
 	
-	public void write(String name, String title, String content, int category) {
+	public int write(int memberNo, String title, String content, int category) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		
+		int seq = 0;
 		try {
 			con = dataSource.getConnection();
-			String query = "insert into board " + 
-						   " (no, category, name, title, content, bGroup, step, indent) " +
+			
+			String query = "select last_number from user_sequences where sequence_name = 'BOARD_SEQ'";
+			pstmt = con.prepareStatement(query);
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()){
+				seq = rs.getInt("last_number");
+			}
+			pstmt.close();
+			rs.close();
+			query = "insert into board " + 
+						   " (no, category, memberNo, title, content, bGroup, step, indent) " +
 						   " values " + 
 						   " (board_seq.nextval, ?, ?, ?, ?, board_seq.currval, 0, 0 )";
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, category);
-			pstmt.setString(2, name);
+			pstmt.setInt(2, memberNo);
 			pstmt.setString(3, title);	
 			pstmt.setString(4, content);
 			pstmt.executeUpdate();
+	
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -63,11 +75,12 @@ public class BoardDAO {
 				e2.printStackTrace();
 			}
 		}
+		return seq;
 	}
 	
-	public ArrayList<BoardDTO> list(int curPage, int category, String type, String word) {
+	public ArrayList<Board> list(int curPage, int category, String type, String word) {
 		
-		ArrayList<BoardDTO> dtos = new ArrayList<BoardDTO>();
+		ArrayList<Board> dtos = new ArrayList<Board>();
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
@@ -85,7 +98,9 @@ public class BoardDAO {
 					   "		select rownum num, A.* " +
 					   "			from ( " +
 					   "				select * " +
-					   "				from board where category = ? and " + type + " like " + word +
+					   "				from board join member " + 
+					   "  					  on board.memberno = member.no " +
+					   "						where category = ? and " + type + " like " + word +
 					   "			order by bGroup desc, Step asc ) A " + 
 					   "		where rownum <= ? ) B " +
 					   " where B.num >= ? ";
@@ -95,7 +110,9 @@ public class BoardDAO {
 					   "		select rownum num, A.* " +
 					   "			from ( " +
 					   "				select * " +
-					   "				from board where category = ? " +
+					   "				from board join member " + 
+					   "  					  on board.memberno = member.no " +
+					   "                         where category = ? " +
 					   "			order by bGroup desc, Step asc ) A " + 
 					   "		where rownum <= ? ) B " +
 					   " where B.num >= ? ";
@@ -111,19 +128,22 @@ public class BoardDAO {
 			resultSet = pstmt.executeQuery();
 			
 			while (resultSet.next()) {
-				BoardDTO dto = new BoardDTO();
-				dto.setNo(resultSet.getInt("no"));
-				dto.setCategory(resultSet.getInt("category"));
-				dto.setName(resultSet.getString("name"));
-				dto.setTitle(resultSet.getString("title"));
-				dto.setContent(resultSet.getString("content"));
-				dto.setPostdate(resultSet.getTimestamp("postdate"));
-				dto.setHit(resultSet.getInt("hit"));
-				dto.setBgroup(resultSet.getInt("bgroup"));
-				dto.setStep(resultSet.getInt("step"));
-				dto.setIndent(resultSet.getInt("indent"));
-
-				dtos.add(dto);
+				Board bdto = new Board();
+				Member mdto = new Member();
+				mdto.setEmail(resultSet.getString("email"));
+				mdto.setName(resultSet.getString("name"));
+				mdto.setNickName(resultSet.getString("nickName"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setCategory(resultSet.getInt("category"));
+				bdto.setMember(mdto);
+				bdto.setTitle(resultSet.getString("title"));
+				bdto.setContent(resultSet.getString("content"));
+				bdto.setPostdate(resultSet.getTimestamp("postdate"));
+				bdto.setHit(resultSet.getInt("hit"));
+				bdto.setBgroup(resultSet.getInt("bgroup"));
+				bdto.setStep(resultSet.getInt("step"));
+				bdto.setIndent(resultSet.getInt("indent"));
+				dtos.add(bdto);
 			}
 			
 		} catch (SQLException e) {
@@ -141,33 +161,38 @@ public class BoardDAO {
 		
 	}
 	
-	public BoardDTO contentView(String strID) {
+	public Board contentView(String strID) {
 		upHit(strID);
 		
-		BoardDTO dto = null;
+		Board bdto = null;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		
 		try {
 			con = dataSource.getConnection();
-			String query = "select * from board where no = ?";
+			String query = "select * from board join member on board.memberno = member.no where board.no = ? ";
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, Integer.parseInt(strID));
 			resultSet = pstmt.executeQuery();
 			
 			while (resultSet.next()) {
-				dto = new BoardDTO();
-				dto.setNo(resultSet.getInt("no"));
-				dto.setCategory(resultSet.getInt("category"));
-				dto.setName(resultSet.getString("name"));
-				dto.setTitle(resultSet.getString("title"));
-				dto.setContent(resultSet.getString("content"));
-				dto.setPostdate(resultSet.getTimestamp("postdate"));
-				dto.setHit(resultSet.getInt("hit"));
-				dto.setBgroup(resultSet.getInt("bgroup"));
-				dto.setStep(resultSet.getInt("step"));
-				dto.setIndent(resultSet.getInt("indent"));
+				bdto = new Board();
+				Member mdto = new Member();
+				mdto.setNo(resultSet.getInt("memberNo"));
+				mdto.setEmail(resultSet.getString("email"));
+				mdto.setName(resultSet.getString("name"));
+				mdto.setNickName(resultSet.getString("nickName"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setCategory(resultSet.getInt("category"));
+				bdto.setMember(mdto);
+				bdto.setTitle(resultSet.getString("title"));
+				bdto.setContent(resultSet.getString("content"));
+				bdto.setPostdate(resultSet.getTimestamp("postdate"));
+				bdto.setHit(resultSet.getInt("hit"));
+				bdto.setBgroup(resultSet.getInt("bgroup"));
+				bdto.setStep(resultSet.getInt("step"));
+				bdto.setIndent(resultSet.getInt("indent"));
 				
 			}
 			
@@ -182,7 +207,7 @@ public class BoardDAO {
 				e2.printStackTrace();
 			}
 		}
-		return dto;
+		return bdto;
 		
 	}
 	
@@ -261,31 +286,35 @@ public class BoardDAO {
 		}
 	}
 	
-	public BoardDTO replyView(String str) {
-		BoardDTO dto = null;
+	public Board replyView(String str) {
+		Board dto = null;
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet resultSet = null;
 		
 		try {
 			con = dataSource.getConnection();
-			String query = "select * from board where no = ?";
+			String query = "select * from board join member on board.memberno = member.no where no = ? ";
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, Integer.parseInt(str));
 			resultSet = pstmt.executeQuery();
 			
 			while (resultSet.next()) {
-				dto = new BoardDTO();
-				dto.setNo(resultSet.getInt("no"));
-				dto.setCategory(resultSet.getInt("category"));
-				dto.setName(resultSet.getString("name"));
-				dto.setTitle(resultSet.getString("title"));
-				dto.setContent(resultSet.getString("title"));
-				dto.setPostdate(resultSet.getTimestamp("postdate"));
-				dto.setHit(resultSet.getInt("hit"));
-				dto.setBgroup(resultSet.getInt("bgroup"));
-				dto.setStep(resultSet.getInt("step"));
-				dto.setIndent(resultSet.getInt("indent"));
+				Board bdto = new Board();
+				Member mdto = new Member();
+				mdto.setEmail(resultSet.getString("email"));
+				mdto.setName(resultSet.getString("name"));
+				mdto.setNickName(resultSet.getString("nickName"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setCategory(resultSet.getInt("category"));
+				bdto.setMember(mdto);
+				bdto.setTitle(resultSet.getString("title"));
+				bdto.setContent(resultSet.getString("content"));
+				bdto.setPostdate(resultSet.getTimestamp("postdate"));
+				bdto.setHit(resultSet.getInt("hit"));
+				bdto.setBgroup(resultSet.getInt("bgroup"));
+				bdto.setStep(resultSet.getInt("step"));
+				bdto.setIndent(resultSet.getInt("indent"));
 
 			}
 			
@@ -304,26 +333,26 @@ public class BoardDAO {
 		
 	}
 
-	public void reply(BoardDTO bto) {
+	public void reply(Board dto) {
 		
-		replyShape(bto.getBgroup(), bto.getStep());
+		replyShape(dto.getBgroup(), dto.getStep());
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			con = dataSource.getConnection();
 			String query = "insert into board " + 
-						   " (no, category, name, title, content, bgroup, step, indent) " +
+						   " (no, category, memberNo, title, content, bgroup, step, indent) " +
 						   " values " + 
 						   " (board_seq.nextval, ?, ?, ?, ?, ?, ?)";
 			pstmt = con.prepareStatement(query);
-			pstmt.setInt(1, bto.getCategory());
-			pstmt.setString(2, bto.getName());
-			pstmt.setString(3, bto.getTitle());	
-			pstmt.setString(4, bto.getContent());
-			pstmt.setInt(5, bto.getBgroup());
-			pstmt.setInt(6, bto.getStep() + 1);
-			pstmt.setInt(7, bto.getIndent() + 1);
+			pstmt.setInt(1, dto.getCategory());
+			pstmt.setInt(2, dto.getMember().getNo());
+			pstmt.setString(3, dto.getTitle());	
+			pstmt.setString(4, dto.getContent());
+			pstmt.setInt(5, dto.getBgroup());
+			pstmt.setInt(6, dto.getStep() + 1);
+			pstmt.setInt(7, dto.getIndent() + 1);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -375,9 +404,9 @@ public class BoardDAO {
 		
 		String query = null;
 		if(type != null) {
-			query = "select count(*) as total from board where category = ?  and " + type + " like " + word;
+			query = "select count(*) as total from board join member on board.memberno = member.no where category = ?  and " + type + " like " + word;
 		} else {
-			query = "select count(*) as total from board where category = ?";
+			query = "select count(*) as total from board join member on board.memberno = member.no where category = ?";
 		}
 		
 		
@@ -423,6 +452,10 @@ public class BoardDAO {
 		int endPage = startPage + pageCount - 1;
 		if(endPage > totalPage)
 			endPage = totalPage;
+		
+		if(totalPage == 0) {
+			totalPage = 1;
+		}
 		
 		BoardPage pinfo = new BoardPage();
 		pinfo.setTotalCount(totalCount);

@@ -7,13 +7,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../header.jsp"></jsp:include>
 
+
+
+<div class="container-fluid">
+
 <table
-	class="table table-hover table-striped table-dark  shadow p-3 mb-5 rounded">
+	class="table table-hover table-striped table-dark shadow p-3 mb-4 mt-2">
 	<thead class="bg-danger">
 		<tr>
 			<th>번호</th>
 			<th>이름</th>
-			<th class="w-50">제목</th>
+			<th>제목</th>
 			<th>날짜</th>
 			<th>히트</th>
 		</tr>
@@ -22,10 +26,10 @@
 		<c:forEach items="${list }" var="dto">
 			<tr>
 				<td>${dto.no}</td>
-				<td>${dto.name}</td>
+				<td>${dto.member.nickName}</td>
 				<td><c:forEach begin="1" end="${dto.indent}">-</c:forEach> 
 				<a href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}
-				</a>
+				</a>	
 				<c:if test="${dto.postdate.compareTo(yesterday) > 0}">
 				<span class="badge badge-secondary">New</span>
 				</c:if>
@@ -35,10 +39,14 @@
 				<td>${dto.hit}</td>
 			</tr>
 		</c:forEach>
+		
+		<c:if test="${requestScope['javax.servlet.forward.request_uri'] == '/WebProject/Board/notice.do' && member.isAdmin() || 
+		requestScope['javax.servlet.forward.request_uri'] != '/WebProject/Board/notice.do'}">
 		<tr>
-			<td colspan="5"><a href="writeView.do"
-				class="btn btn-danger btn-lg btn-block">글작성</a></td>
+			<td colspan="5"><button type="button" class="btn btn-danger btn-lg btn-block" id="writeBtn">글작성</button></td>
 		</tr>
+		</c:if>
+		
 	</tbody>
 </table>
 
@@ -92,6 +100,7 @@
 	</c:choose>
 	<!-- 끝 -->
 	<c:choose>
+		
 		<c:when test="${page.curPage == page.totalPage}">
 			<li class="page-item disabled"><a class="page-link" href="">&gt;&gt;</a></li>
 		</c:when>
@@ -103,13 +112,13 @@
 </ul>
 
 
-
+<div class="d-flex justify-content-end">
 <form action="${action}.do" method="get">
 	<div class="form-row">
 		<div class="col-auto">
 			<select name="type" class="form-control">
 				<option <c:if test="${type == 'title'}">selected</c:if> selected value="title">제목</option>
-				<option <c:if test="${type == 'name'}">selected</c:if> value="name">이름</option>
+				<option <c:if test="${type == 'nickName'}">selected</c:if> value="nickName">이름</option>
 				<option <c:if test="${type == 'content'}">selected</c:if> value="content">내용</option>
 			</select>
 		</div>
@@ -121,5 +130,21 @@
 		</div>
 	</div>
 </form>
+</div>
+</div>
+<script>
+	$("#writeBtn").click(function() {
+		if(${member == null}) {
+			$(".modal-body").html("로그인후 이용해주세요.");
+			$("#alertModal").modal();
+		} else {
+			location.href="writeView.do";
+		}
+	});
+	$("#modalLoginBtn").click(function() {
+		location.href="/WebProject/Member/loginView.do";
+	});
+</script>
+
 
 <jsp:include page="../footer.jsp"></jsp:include>

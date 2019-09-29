@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.kosoeo.dao.BoardDAO;
-import com.kosoeo.dto.BoardDTO;
+import com.kosoeo.dto.Board;
 import com.kosoeo.dto.BoardPage;
 
 
@@ -34,7 +34,7 @@ public class BoardListCommand implements Command {
 		category = (int) request.getAttribute("category");
 		
 		if(type != null) {
-			if(type.equals("title") || type.equals("name") || type.equals("content") ) {
+			if(type.equals("title") || type.equals("nickName") || type.equals("content") ) {
 				request.setAttribute("type", type);
 				request.setAttribute("word", word);
 				word = "'%"+ word + "%'";
@@ -68,7 +68,7 @@ public class BoardListCommand implements Command {
 		request.setAttribute("yesterday", Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
 
 		request.setAttribute("action", action);
-		ArrayList<BoardDTO> dtos = dao.list(nPage, category, type, word);
+		ArrayList<Board> dtos = dao.list(nPage, category, type, word);
 		
 
 		

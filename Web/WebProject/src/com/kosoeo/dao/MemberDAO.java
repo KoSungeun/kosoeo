@@ -9,7 +9,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-import com.kosoeo.dto.MemberDTO;
+import com.kosoeo.dto.Member;
 
 public class MemberDAO {
 	public static final int MEMBER_NONEXISTENT = 0;
@@ -26,7 +26,7 @@ public class MemberDAO {
 		return instance;
 	}
 	
-	public int join(MemberDTO dto) {
+	public int join(Member dto) {
 		int ri = 0;
 		System.out.println(dto.getEmail());
 		Connection con = null;
@@ -141,12 +141,12 @@ public class MemberDAO {
 		return ri;
 	}
 	
-	public MemberDTO getMember(String id) {
+	public Member getMember(String id) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		ResultSet set = null;
 		String query = "select no, email, name, nickname, joindate from member where email = ?";
-		MemberDTO dto = null;
+		Member dto = null;
 		
 		try {
 			con = getConnection();
@@ -155,12 +155,15 @@ public class MemberDAO {
 			set = pstmt.executeQuery();
 			
 			if(set.next()) {
-				dto = new MemberDTO();
-				dto.setNo(set.getInt("no"));
+				dto = new Member();
+				AdminDAO adao = new AdminDAO();
+				int no = set.getInt("no");
+				dto.setNo(no);
 				dto.setEmail(set.getString("email"));
 				dto.setName(set.getString("name"));
 				dto.setNickName(set.getString("nickname"));
 				dto.setJoinDate(set.getTimestamp("joindate"));
+				dto.setAdmin(adao.adminCheck(no));
 			}
 
 		} catch(Exception e) {
@@ -177,7 +180,7 @@ public class MemberDAO {
 		return dto;
 	}
 	
-	public int modify (MemberDTO dto) {
+	public int modify (Member dto) {
 		int ri = 0;
 		
 		Connection con = null;

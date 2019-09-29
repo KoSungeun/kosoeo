@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <jsp:include page="../header.jsp"></jsp:include>
-<div class=container>
+<div class="container-fluid mt-2">
 	<form action="withdraw.do" method="post" id="joinForm">
 		<div class="form-group" id="passwordGroup">
 			<label for="inputPassword">암호</label> <input type="password"

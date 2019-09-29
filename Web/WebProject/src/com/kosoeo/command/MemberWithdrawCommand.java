@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 
 
 import com.kosoeo.dao.MemberDAO;
-import com.kosoeo.dto.MemberDTO;
+import com.kosoeo.dto.Member;
 
 
 
@@ -24,7 +24,7 @@ public class MemberWithdrawCommand implements Command {
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession();
-		MemberDTO dto = (MemberDTO) session.getAttribute("MemberDTO");
+		Member dto = (Member) session.getAttribute("MemberDTO");
 		dto.setPassword(request.getParameter("password"));
 		MemberDAO dao = MemberDAO.getInstance();
 		

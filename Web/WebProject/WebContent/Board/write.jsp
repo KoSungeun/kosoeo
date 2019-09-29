@@ -13,34 +13,35 @@
 	});
 </script>
 
-
-
-
-<form action="write.do" method="post">
-	<input type="hidden" name="category" value="${ccategory}">
-
-	<div class="input-group input-group-lg">
-		<div class="input-group-prepend">
-			<span class="input-group-text" id="inputGroup-sizing-lg">닉네임</span>
-		</div>
-		<input type="text" name="name" class="form-control"
-			aria-label="Sizing example input"
-			aria-describedby="inputGroup-sizing-lg">
-	</div>
-
-	<div class="input-group input-group-lg">
-		<div class="input-group-prepend">
-			<span class="input-group-text" id="inputGroup-sizing-lg">제목</span>
-		</div>
-		<input type="text" name="title" class="form-control"
-			aria-label="Sizing example input"
-			aria-describedby="inputGroup-sizing-lg">
-	</div>
-	<textarea id="summernote" name="content"></textarea>
-	<input class="btn btn-danger" type="submit" value="입력">
-	&nbsp;&nbsp; <a class="btn btn-danger" href="${action}.do">목록보기</a>
+<div class="container-fluid">
+<form action="write.do" method="post" class="mt-2">
+<input type="hidden" name="category" value="${ccategory}">
+<input type="hidden" name="memberNo" value="${member.no}">
+ <fieldset disabled>
+  <div class="form-group row">
+    <label for="inputName" class="col-sm-2 col-form-label">이름</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="name"  placeholder="${member.nickName}" >
+    </div>
+  </div>
+  </fieldset>
+    <div class="form-group row">
+    <label for="inputTitle" class="col-sm-2 col-form-label">제목</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="title" name="title" placeholder="제목" >
+    </div>
+  </div>
+  <div class="form-group row">
+      <div class="col-sm-12">
+  <textarea id="summernote" name="content"></textarea>
+  </div>	
+  </div>
+   <div class="form-group row">
+    <div class="col-sm-12">
+      <button type="submit" class="btn btn-danger">입력</button>
+      <a class="btn btn-danger" href="${action}.do">목록보기</a>
+    </div>
+  </div>
 </form>
-
-
-
+</div>
 <jsp:include page="../footer.jsp"></jsp:include>

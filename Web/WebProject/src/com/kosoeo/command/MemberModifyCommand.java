@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.jasper.runtime.JspRuntimeLibrary;
 
 import com.kosoeo.dao.MemberDAO;
-import com.kosoeo.dto.MemberDTO;
+import com.kosoeo.dto.Member;
 
 
 
@@ -24,7 +24,7 @@ public class MemberModifyCommand implements Command {
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession();
-		MemberDTO dto = (MemberDTO) session.getAttribute("MemberDTO");
+		Member dto = (Member) session.getAttribute("member");
 		JspRuntimeLibrary.introspect(dto, request);
 		MemberDAO dao = MemberDAO.getInstance();
 		

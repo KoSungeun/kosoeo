@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kosoeo.dao.BoardDAO;
-import com.kosoeo.dto.BoardDTO;
+import com.kosoeo.dto.Board;
 
 
 public class BoardContentCommand implements Command{
@@ -16,7 +16,7 @@ public class BoardContentCommand implements Command{
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String no = request.getParameter("no");
 		BoardDAO dao = new BoardDAO();
-		BoardDTO dto = dao.contentView(no);
+		Board dto = dao.contentView(no);
 		
 		request.setAttribute("content_view", dto);
 	}

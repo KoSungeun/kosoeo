@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jasper.runtime.JspRuntimeLibrary;
 
 import com.kosoeo.dao.MemberDAO;
-import com.kosoeo.dto.MemberDTO;
+import com.kosoeo.dto.Member;
 
 
 public class MemberJoinCommand implements Command {
@@ -21,7 +21,7 @@ public class MemberJoinCommand implements Command {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-		MemberDTO dto = new MemberDTO();
+		Member dto = new Member();
 		JspRuntimeLibrary.introspect(dto, request);
 		MemberDAO dao = MemberDAO.getInstance();
 		String result = null;

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 
 @WebServlet("/hw2")
-public class Helloworld2 extends HttpServlet {
+public class HelloWorld2 extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 

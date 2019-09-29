@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>	
 <jsp:include page="../header.jsp"></jsp:include>
 
 <style>
@@ -131,7 +132,7 @@
 	}
 
 	function loginAjax(type, email, name, nickName) {
-
+		
 		var checkOk = false;
 		var queryString;
 		if (type == "normal") {
@@ -149,7 +150,13 @@
 			if (result == 1) {
 				msg = data["msg"];
 				checkOk = true;
-				location.href = "../main.do"
+				var refere = "${header.referer}";
+				if(refere.length == 0) {
+					location.href = "../main.do";
+				} else {
+					location.href = refere;
+				}
+				
 			} else if (result == 0) {
 				msg = data["msg"];
 				toggleVaild("#passwordGroup", msg, checkOk);

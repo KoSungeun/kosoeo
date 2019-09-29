@@ -14,20 +14,20 @@ public class BoardWriteCommand implements Command {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String name = request.getParameter("name");
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");
-		
 
+		int memberNo = 0;
 		int category = 0;
 		try {
 			category = Integer.parseInt(request.getParameter("category"));
+			memberNo = Integer.parseInt(request.getParameter("memberNo"));
 		} catch (NumberFormatException e) {
 			// TODO: handle exception
 		}
 		
 		BoardDAO dao = new BoardDAO();
-		dao.write(name, title, content, category);
+		request.setAttribute("seq", dao.write(memberNo, title, content, category));
 	}
 
 }

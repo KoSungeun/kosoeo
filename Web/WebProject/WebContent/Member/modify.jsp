@@ -1,12 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <jsp:include page="../header.jsp"></jsp:include>
-<div class=container>
+
+<div class="container-fluid mt-2">
 	<form action="modify.do" method="post" id="modifyForm">
+		<input type="hidden" name="referer" value="${header.referer}">
 		<div class="form-group" id="emailGroup">
 			<label for="inputEmail">이메일</label> <input type="email" name="email"
 				class="form-control" id="email" aria-describedby="emailHelp"
-				placeholder="이메일" value="${MemberDTO.email}">
+				placeholder="이메일" value="${member.email}">
 			<div></div>
 		</div>
 		<div class="form-group" id="passwordGroup">
@@ -24,13 +26,13 @@
 		<div class="form-group" id="nameGroup">
 			<label for="inputName">이름</label> <input type="text" name="name"
 				class="form-control" id="name" placeholder="이름"
-				value="${MemberDTO.name}">
+				value="${member.name}">
 			<div></div>
 		</div>
 		<div class="form-group" id="nickNameGroup">
 			<label for="inputNickName">별명</label> <input type="text"
 				name="nickName" class="form-control" id="nickName" placeholder="별명"
-				value="${MemberDTO.nickName}">
+				value="${member.nickName}">
 			<div></div>
 		</div>
 		<button type="submit" id="submitBtn" class="btn btn-primary">수정</button>

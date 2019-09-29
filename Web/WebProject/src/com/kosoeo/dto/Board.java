@@ -2,10 +2,10 @@ package com.kosoeo.dto;
 
 import java.sql.Timestamp;
 
-public class BoardDTO {
+public class Board {
 	private int no;
 	private int category;
-	private String name;
+	private Member member;
 	private String title;
 	private String content;
 	private int blike;
@@ -16,25 +16,37 @@ public class BoardDTO {
 	private int indent;
 	
 	
-	public BoardDTO() {
+	public Board() {
 
 	}
 	
 	
-	public BoardDTO(int no, int category, String name, String title, String content, int blike, Timestamp postdate,
-			int hit, int bgroup, int setep, int indent) {
+
+
+
+	public Board(int no, int category, Member member, String title, String content, int blike, Timestamp postdate,
+			int hit, int bgroup, int step, int indent) {
+		super();
 		this.no = no;
 		this.category = category;
-		this.name = name;
+		this.member = member;
 		this.title = title;
 		this.content = content;
 		this.blike = blike;
 		this.postdate = postdate;
 		this.hit = hit;
 		this.bgroup = bgroup;
-		this.step = setep;
+		this.step = step;
 		this.indent = indent;
 	}
+
+
+
+
+
+
+
+
 	public int getNo() {
 		return no;
 	}
@@ -47,11 +59,11 @@ public class BoardDTO {
 	public void setCategory(int category) {
 		this.category = category;
 	}
-	public String getName() {
-		return name;
+	public Member getMember() {
+		return member;
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setMember(Member member) {
+		this.member = member;
 	}
 	public String getTitle() {
 		return title;

@@ -91,13 +91,13 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/logout.do")) {
 			command = new MemberLogoutCommand();
 			command.execute(request, response);
-			response.sendRedirect("../main.do");
+			response.sendRedirect(request.getHeader("referer"));
 		} else if (com.equals("/Member/modifyView.do")){
 			viewPage = "modify.jsp";
 		} else if (com.equals("/Member/modify.do")){
 			command = new MemberModifyCommand();
 			command.execute(request, response);
-			viewPage = "../main.jsp";
+			response.sendRedirect(request.getParameter("referer"));
 		} else if (com.equals("/Member/withdrawView.do")){
 			viewPage = "withdraw.jsp";
 		} else if (com.equals("/Member/withdraw.do")){
@@ -124,7 +124,7 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Board/write.do")) {
 			command = new BoardWriteCommand();
 			command.execute(request, response);
-			response.sendRedirect(action + ".do");
+			response.sendRedirect("content.do?no="+ request.getAttribute("seq"));
 		} else if (com.equals("/Board/content.do")) {
 			command = new BoardContentCommand();
 			command.execute(request, response);

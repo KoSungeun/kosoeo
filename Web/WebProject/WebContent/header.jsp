@@ -33,14 +33,27 @@
 </head>
 
 
-<body>
+<body class="bg-light">
 
-<!-- <div class="alert alert-primary fixed-top" role="alert">
-  A simple primary alert—check it out!
-	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  	</button>
-</div> -->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">알림</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="modalLoginBtn">로그인</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
   
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark">
 		<a class="navbar-brand" href="/WebProject/main.do">WebProject</a>
@@ -67,21 +80,26 @@
 							class="dropdown-item" href="/WebProject/Board/free.do">자유게시판</a> <a
 							class="dropdown-item" href="/WebProject/Board/down.do">자료실</a>
 					</div></li>
+					<c:if test="${member.isAdmin()}">
+						<li class="nav-item"><a class="nav-link" href="#"
+						tabindex="-1" aria-disabled="true">관리자</a></li>	
+					</c:if>
+				
 			</ul>
 			<c:choose>
 
-				<c:when test="${MemberDTO == null}">	
-					<div class="my-2 my-lg-0">
-						<button class="btn btn-secondary mr-sm-2"
+				<c:when test="${member == null}">	
+					<div class="my-2 my-md-0">
+						<button class="btn btn-secondary mr-2"
 							onclick="location.href='/WebProject/Member/loginView.do'">로그인</button>
-						<button class="btn btn-secondary my-2 my-sm-0"
+						<button class="btn btn-secondary"
 							onclick="location.href='/WebProject/Member/joinView.do'">회원가입</button>
 					</div>
 				</c:when>
 				<c:otherwise>
-					<div class="my-2 my-lg-0">
-						<button class="btn btn-secondary mr-sm-2" onclick=logout()>로그아웃</button>
-						<button class="btn btn-secondary my-2 my-sm-0"
+					<div class="my-2 my-md-0">
+						<button class="btn btn-secondary mr-2" onclick=logout()>로그아웃</button>
+						<button class="btn btn-secondary"
 							onclick="location.href='/WebProject/Member/modifyView.do'">정보수정</button>
 					</div>
 				</c:otherwise>
@@ -118,20 +136,13 @@
 				naverLogin.init();
 				
 				function logout() {
-					
 					var auth2 = gapi.auth2.getAuthInstance();
-					
 					FB.logout();
-	
 					Kakao.Auth.logout();
-	
 					naverLogin.logout();
-					
 					auth2.signOut().then(function(){
 						location.href = '/WebProject/Member/logout.do';
 					});
-					
-
 				}
 			
 			</script>

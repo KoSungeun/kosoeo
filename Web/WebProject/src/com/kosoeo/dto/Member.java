@@ -2,28 +2,41 @@ package com.kosoeo.dto;
 
 import java.sql.Timestamp;
 
-public class MemberDTO {
+public class Member {
 	int no;
 	String email;
 	String password;
 	String name;
 	String nickName;
 	Timestamp joinDate;
+	boolean isAdmin;
 	
 	
-	public MemberDTO() {
-	}
+
+	public Member() {}
 
 
-	public MemberDTO(int no, String email, String password, String name, String nickName, Timestamp joinDate) {
+	public Member(int no, String email, String password, String name, String nickName, Timestamp joinDate,
+			boolean isAdmin) {
+		super();
 		this.no = no;
 		this.email = email;
 		this.password = password;
 		this.name = name;
 		this.nickName = nickName;
 		this.joinDate = joinDate;
+		this.isAdmin = isAdmin;
 	}
 
+	
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 	public int getNo() {
 		return no;
