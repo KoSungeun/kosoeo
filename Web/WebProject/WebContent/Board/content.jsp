@@ -63,9 +63,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			
-		</tbody>
-		
+		</tbody>	
 	</table>
 	
 	
@@ -78,8 +76,7 @@
     <c:choose>
     	<c:when test="${member != null}">
     		${member.nickName}
-    		<c:set var="placeholder" value="여기에 댓글을 입력"></c:set>
-    		
+    		<c:set var="placeholder" value="여기에 댓글을 입력"></c:set> 		
     	</c:when>
     	<c:otherwise>
     		이름
@@ -127,22 +124,39 @@ function commentList(isScroll){
 	    url: 'commentList.do',
 	    type: 'post',
 	    dataType: 'json',
-	    data: "boardNo=" + "${content_view.no}"
+	    data: {
+	    	boardNo: "${content_view.no}"
+	    }
 	}).done(function(data) {
 		$("#commnetList > tbody").empty();
-		data.forEach(function(e){
+		
+		$.each(data, function(i, e){
 			var btn = $("<button>").addClass("btn btn-danger");
 			$("<tr>").appendTo($("#commnetList > tbody"))
 			.append($("<td>").text(e["member"]["nickName"]))
 			.append($("<td>").text(e["content"]))
 			.append($("<td>").text(e["commentDate"]))
-			.append($("<td>").append(btn.text("수정").click(function(){
-				$("#commnetList > tbody").append($("<tr>")).append($("<td>"));
+			.append($("<td>").append(btn.text("수정").addClass("mr-0 mt-2 mr-md-2 mt-md-0").click(function(){
+				$("#commnetList > tbody > tr").eq(i)
+				.after($("<tr>")
+					.append($("<td>").attr("colspan", 3)
+					.append($("<input>").attr({
+						type: "text",
+						value: e["content"],
+						id: "updateText" + e["no"]
+					}).addClass("form-control"))						
+				).append($("<td>")
+					.append($(this).off().click(function(){
+						commentUpdate(e["member"]["no"], e["no"], $("#updateText" + e["no"]).val());
+					})))
+					.hide().show('slow'));
 				
-			})).append(btn.clone().text("삭제").addClass("ml-0 mt-2 ml-md-2 mt-md-0").click(function(){
+				
+			})).append(btn.clone().text("삭제").addClass("mt-2 mt-md-0").click(function(){
 				commentDelete(e["member"]["no"], e["no"]);
 			})));
 		});
+
 		if(isScroll) {
 			$(document).scrollTop($(document).height());	
 		}
@@ -150,18 +164,29 @@ function commentList(isScroll){
 }
 
 function commentDelete(memberNo, commentNo) {
-	console.log(memberNo);
-	console.log(commentNo);
-	var	data =	{
-		memberNo: memberNo,
-		commentNo: commentNo
-	}
-	console.log(data);
 	$.ajax({
 	    url: 'commentDelete.do',
 	    type: 'post',
 	    dataType: 'json',
-	    data: data
+	    data: {
+			memberNo: memberNo,
+			commentNo: commentNo
+		}
+	}).done(function(data) {
+		commentList(false);
+	});
+}
+
+function commentUpdate(memberNo, commentNo, content) {
+	$.ajax({
+	    url: 'commentUpdate.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: {
+			memberNo: memberNo,
+			commentNo: commentNo,
+			content: content
+		}
 	}).done(function(data) {
 		commentList(false);
 	});

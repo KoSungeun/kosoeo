@@ -18,6 +18,7 @@ import com.kosoeo.command.BoardWriteCommand;
 import com.kosoeo.command.Command;
 import com.kosoeo.command.CommentDeleteCommand;
 import com.kosoeo.command.CommentListCommand;
+import com.kosoeo.command.CommentUpdateCommand;
 import com.kosoeo.command.CommentWriteCommand;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
@@ -137,6 +138,9 @@ public class FrontController extends HttpServlet {
 			command.execute(request, response);
 		} else if (com.equals("/Board/commentDelete.do")) {
 			command = new CommentDeleteCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Board/commentUpdate.do")) {
+			command = new CommentUpdateCommand();
 			command.execute(request, response);
 		}
 		

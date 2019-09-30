@@ -28,6 +28,7 @@ public class CommentListCommand implements Command {
 		
 		CommentDAO dao = CommentDAO.getInstance();
 				
+
 		out.println(new Gson().toJson(dao.list(boardNo)));	
 	
 	}

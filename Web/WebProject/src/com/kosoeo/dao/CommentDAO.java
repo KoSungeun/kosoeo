@@ -66,7 +66,8 @@ public class CommentDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 	
-		String query = "select * from comments join member on comments.memberNo = member.no where boardNo = ?";
+		String query = "select * from comments join member on comments.memberNo = member.no "
+				+ " where boardNo = ? order by comments.no asc";
 
 		try {
 			con = dataSource.getConnection();
@@ -113,6 +114,30 @@ public class CommentDAO {
 			String query = "delete from comments where no = ?";
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, commentNo);
+			pstmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+	
+	public void update(int commentNo, String content) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = dataSource.getConnection();
+			
+			String query = "update comments set content = ?, commentDate = sysdate where no = ?";
+			pstmt = con.prepareStatement(query);
+			pstmt.setString(1, content);
+			pstmt.setInt(2, commentNo);
 			pstmt.executeUpdate();
 
 		} catch (SQLException e) {
