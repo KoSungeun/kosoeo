@@ -60,6 +60,7 @@ public class MemberLoginCommand implements Command {
 					+ "\"msg\": \"로그인 성공.\"}");	
 		}
 		
+		
 	}
 
 }

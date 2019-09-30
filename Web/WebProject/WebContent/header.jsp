@@ -27,7 +27,13 @@
 	content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
 <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script src="/WebProject/Member/naveridlogin_js_sdk_2.0.0.js"></script>
-
+<script>
+	$(document).ready(function() {
+		$("#modalLoginBtn").click(function() {
+			location.href="/WebProject/Member/loginView.do";
+		});
+	})
+</script>
 </body>
 <title>WebProject</title>
 </head>
@@ -47,9 +53,15 @@
       <div class="modal-body">
         ...
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="modalLoginBtn">로그인</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+      <div class="modal-footer d-none" id="loginFooter">
+	        <button type="button" class="btn btn-primary" id="modalLoginBtn">로그인</button>
+	        <script>
+	
+	        </script>
+	        <button type="button" class="btn btn-secondary" id="cancelBtn" data-dismiss="modal">취소</button>      	
+      </div>
+      <div class="modal-footer d-none" id="confirmFooter">
+	        <button type="button" class="btn btn-primary" id="confirmBtn" data-dismiss="modal">확인</button>   	
       </div>
     </div>
   </div>

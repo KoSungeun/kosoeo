@@ -35,8 +35,6 @@ public class BoardListCommand implements Command {
 		
 		if(type != null) {
 			if(type.equals("title") || type.equals("nickName") || type.equals("content") ) {
-				request.setAttribute("type", type);
-				request.setAttribute("word", word);
 				word = "'%"+ word + "%'";
 			} else {
 				type = null;
@@ -66,6 +64,8 @@ public class BoardListCommand implements Command {
 		
 		
 		request.setAttribute("yesterday", Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
+		
+		
 
 		request.setAttribute("action", action);
 		ArrayList<Board> dtos = dao.list(nPage, category, type, word);

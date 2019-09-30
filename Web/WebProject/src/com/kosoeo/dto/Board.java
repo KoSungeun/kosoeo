@@ -20,10 +20,6 @@ public class Board {
 
 	}
 	
-	
-
-
-
 	public Board(int no, int category, Member member, String title, String content, int blike, Timestamp postdate,
 			int hit, int bgroup, int step, int indent) {
 		super();
@@ -39,12 +35,6 @@ public class Board {
 		this.step = step;
 		this.indent = indent;
 	}
-
-
-
-
-
-
 
 
 	public int getNo() {

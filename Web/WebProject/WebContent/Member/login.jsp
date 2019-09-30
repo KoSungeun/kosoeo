@@ -85,6 +85,9 @@
 	function getINFO() {
 		FB.api('/me?fields=id,name,email,picture.width(100).height(100).as(picture_small)',
 				function(response) {
+			if(response.id == null) {
+				return;
+			}
 			loginAjax("facebook", response.email, response.name);
 		});
 	}

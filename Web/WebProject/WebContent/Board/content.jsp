@@ -53,20 +53,28 @@
 		
 	</table>
 	
-	<table class="table table-hover table-striped table-dark shadow p-3 mb-5">	
-
-		<tr>
-			<td> 이름 </td>
-			<td class="w-75 "> 내용 </td>
-		</tr>
+	<table class="table table-hover table-striped table-dark shadow p-3 mb-5" id="commnetList">	
+		<thead>
+			<tr>
+				<td> 이름 </td>
+				<td class="w-50"> 내용 </td>
+				<td> 날짜 </td>
+				<td> 수정 / 삭제 </td>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
 		
 	</table>
 	
 	
 
-<form>
-  <div class="form-group row">
-    <label for="inputEmail3" class="col-12 col-sm-2 col-xl-1 col-form-label">
+<form id="commentForm">
+	<input type="hidden" name="memberNo" value="${member.no}">
+	<input type="hidden" name="boardNo" value="${content_view.no}">
+  	<div class="form-group row">
+    <label for="inputComment" class="col-12 col-sm-2 col-xl-1 col-form-label">
     <c:choose>
     	<c:when test="${member != null}">
     		${member.nickName}
@@ -81,12 +89,87 @@
     </c:choose>
     </label>
     <div class="col">
-      <input type="email" class="form-control" id="inputEmail3" placeholder="${placeholder}" ${readonly}>
+      <input type="text" class="form-control" id="content" name="content" placeholder="${placeholder}" ${readonly}>
     </div>
     <div class="col-12 mt-2 mt-md-0 col-md-2 col-xl-1">
-    	<button type="button" class="btn btn-danger btn-block">댓글</button>
+    	<button type="button" id="commentWriteBtn" class="btn btn-danger btn-block">댓글</button>
     </div>
   </div>
 </form>
 </div>
+
+<script>
+$("#commentWriteBtn").click(function(){
+	$.ajax({
+	    url: 'commentWrite.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: $("#commentForm").serialize()
+	}).done(function(data) {
+		$("#content").val("");
+		var result = data["result"];
+		if (result == 1) {
+			commentList(true);
+		} else {
+			$(".modal-body").html(data["msg"]);
+			if(result == 0) {
+				$("#loginFooter").removeClass("d-none");
+			} else {
+				$("#confirmFooter").removeClass("d-none");	
+			}
+			$("#alertModal").modal();
+		}
+	});
+})
+
+function commentList(isScroll){
+	$.ajax({
+	    url: 'commentList.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: "boardNo=" + "${content_view.no}"
+	}).done(function(data) {
+		$("#commnetList > tbody").empty();
+		data.forEach(function(e){
+			var btn = $("<button>").addClass("btn btn-danger");
+			$("<tr>").appendTo($("#commnetList > tbody"))
+			.append($("<td>").text(e["member"]["nickName"]))
+			.append($("<td>").text(e["content"]))
+			.append($("<td>").text(e["commentDate"]))
+			.append($("<td>").append(btn.text("수정").click(function(){
+				$("#commnetList > tbody").append($("<tr>")).append($("<td>"));
+				
+			})).append(btn.clone().text("삭제").addClass("ml-0 mt-2 ml-md-2 mt-md-0").click(function(){
+				commentDelete(e["member"]["no"], e["no"]);
+			})));
+		});
+		if(isScroll) {
+			$(document).scrollTop($(document).height());	
+		}
+	});
+}
+
+function commentDelete(memberNo, commentNo) {
+	console.log(memberNo);
+	console.log(commentNo);
+	var	data =	{
+		memberNo: memberNo,
+		commentNo: commentNo
+	}
+	console.log(data);
+	$.ajax({
+	    url: 'commentDelete.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: data
+	}).done(function(data) {
+		commentList(false);
+	});
+}
+
+$(document).ready(function(){
+	commentList(false);
+});
+
+</script>
 <jsp:include page="../footer.jsp"></jsp:include>

@@ -11,8 +11,6 @@ public class Member {
 	Timestamp joinDate;
 	boolean isAdmin;
 	
-	
-
 	public Member() {}
 
 

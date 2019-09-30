@@ -52,8 +52,8 @@
 
 <ul class="pagination justify-content-center pagination-lg">
 	<!-- 처음 -->
-	<c:if test="${type != null || word != null}">
-		<c:set var="pageQuery" value="&type=${type}&word=${word}"></c:set>
+	<c:if test="${param.type != null || param.word != null}">
+		<c:set var="pageQuery" value="&type=${param.type}&word=${param.word}"></c:set>
 	</c:if>
 	<c:choose>
 		<c:when test="${(page.curPage - 1) < 1}">
@@ -136,13 +136,11 @@
 	$("#writeBtn").click(function() {
 		if(${member == null}) {
 			$(".modal-body").html("로그인후 이용해주세요.");
+			$("#loginFooter").removeClass("d-none");
 			$("#alertModal").modal();
 		} else {
 			location.href="writeView.do";
 		}
-	});
-	$("#modalLoginBtn").click(function() {
-		location.href="/WebProject/Member/loginView.do";
 	});
 </script>
 

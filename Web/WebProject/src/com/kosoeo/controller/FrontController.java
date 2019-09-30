@@ -16,6 +16,9 @@ import com.kosoeo.command.BoardContentCommand;
 import com.kosoeo.command.BoardListCommand;
 import com.kosoeo.command.BoardWriteCommand;
 import com.kosoeo.command.Command;
+import com.kosoeo.command.CommentDeleteCommand;
+import com.kosoeo.command.CommentListCommand;
+import com.kosoeo.command.CommentWriteCommand;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
 import com.kosoeo.command.MemberLoginCommand;
@@ -55,12 +58,9 @@ public class FrontController extends HttpServlet {
 		
 		HttpSession session = null;
 		session = request.getSession();
-		int curPage = 1;
 		int curCategory = 0;
 		String action = "";
-		if(session.getAttribute("cpage") != null ) {
-			curPage = (int) session.getAttribute("cpage");
-		}
+
 		if(session.getAttribute("ccategory") != null ) {
 			curCategory = (int) session.getAttribute("ccategory");
 			if(curCategory == 0) {
@@ -129,7 +129,16 @@ public class FrontController extends HttpServlet {
 			command = new BoardContentCommand();
 			command.execute(request, response);
 			viewPage = "content.jsp";
-		} 
+		} else if (com.equals("/Board/commentWrite.do")) {
+			command = new CommentWriteCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Board/commentList.do")) {
+			command = new CommentListCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Board/commentDelete.do")) {
+			command = new CommentDeleteCommand();
+			command.execute(request, response);
+		}
 		
 		
 		
