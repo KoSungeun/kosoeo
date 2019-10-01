@@ -129,32 +129,35 @@ function commentList(isScroll){
 	    }
 	}).done(function(data) {
 		$("#commnetList > tbody").empty();
-		
 		$.each(data, function(i, e){
 			var btn = $("<button>").addClass("btn btn-danger");
-			$("<tr>").appendTo($("#commnetList > tbody"))
+			$("<tr>").attr("id", "comment"+i).appendTo($("#commnetList > tbody"))
 			.append($("<td>").text(e["member"]["nickName"]))
 			.append($("<td>").text(e["content"]))
 			.append($("<td>").text(e["commentDate"]))
-			.append($("<td>").append(btn.text("수정").addClass("mr-0 mt-2 mr-md-2 mt-md-0").click(function(){
-				$("#commnetList > tbody > tr").eq(i)
-				.after($("<tr>")
-					.append($("<td>").attr("colspan", 3)
-					.append($("<input>").attr({
-						type: "text",
-						value: e["content"],
-						id: "updateText" + e["no"]
-					}).addClass("form-control"))						
-				).append($("<td>")
-					.append($(this).off().click(function(){
-						commentUpdate(e["member"]["no"], e["no"], $("#updateText" + e["no"]).val());
-					})))
-					.hide().show('slow'));
-				
-				
-			})).append(btn.clone().text("삭제").addClass("mt-2 mt-md-0").click(function(){
-				commentDelete(e["member"]["no"], e["no"]);
-			})));
+			.append($("<td>"));
+			
+			if(e["member"]["no"] == "${member.no}"){
+				$("#comment" + i + " > td:eq(3)").append(btn.text("수정").addClass("mr-0 mt-2 mr-md-2 mt-md-0").click(function(){
+					$("#comment"+i)
+					.after($("<tr>")
+						.append($("<td>").attr("colspan", 3)
+						.append($("<input>").attr({
+							type: "text",
+							value: e["content"],
+							id: "updateText" + e["no"]
+						}).addClass("form-control"))						
+					).append($("<td>")
+						.append($(this).off().click(function(){
+							commentUpdate(e["member"]["no"], e["no"], $("#updateText" + e["no"]).val());
+						})))
+						.hide().show('slow'));
+				})).append(btn.clone().text("삭제").addClass("mt-2 mt-md-0").click(function(){
+					commentDelete(e["member"]["no"], e["no"]);
+				}))	
+			}
+			
+			
 		});
 
 		if(isScroll) {

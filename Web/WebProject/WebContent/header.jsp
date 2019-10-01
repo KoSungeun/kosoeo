@@ -27,6 +27,7 @@
 	content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">
 <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script src="/WebProject/Member/naveridlogin_js_sdk_2.0.0.js"></script>
+
 <script>
 	$(document).ready(function() {
 		$("#modalLoginBtn").click(function() {

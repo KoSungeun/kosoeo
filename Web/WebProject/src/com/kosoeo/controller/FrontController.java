@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import com.kosoeo.command.CommentDeleteCommand;
 import com.kosoeo.command.CommentListCommand;
 import com.kosoeo.command.CommentUpdateCommand;
 import com.kosoeo.command.CommentWriteCommand;
+import com.kosoeo.command.FileUploadCommand;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
 import com.kosoeo.command.MemberLoginCommand;
@@ -30,6 +32,11 @@ import com.kosoeo.command.MemberWithdrawCommand;
 
 
 @WebServlet("*.do")
+@MultipartConfig(
+		fileSizeThreshold = 1024 * 1024 * 10,
+		maxFileSize = 1024 * 1024 * 50,
+		maxRequestSize = 1024 * 1024 * 100
+)
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -48,13 +55,14 @@ public class FrontController extends HttpServlet {
 	private void actionDo(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		request.setCharacterEncoding("UTF-8");
 		String viewPage = null;
 		Command command = null;
 
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
+		
+		
 		
 		
 		HttpSession session = null;
@@ -124,6 +132,8 @@ public class FrontController extends HttpServlet {
 			viewPage = "/Board/write.jsp";
 		} else if (com.equals("/Board/write.do")) {
 			command = new BoardWriteCommand();
+			command.execute(request, response);
+			command = new FileUploadCommand();
 			command.execute(request, response);
 			response.sendRedirect("content.do?no="+ request.getAttribute("seq"));
 		} else if (com.equals("/Board/content.do")) {
