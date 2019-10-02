@@ -161,8 +161,8 @@ public class BoardDAO {
 		
 	}
 	
-	public Board contentView(String strID) {
-		upHit(strID);
+	public Board contentView(int no) {
+		upHit(no);
 		
 		Board bdto = null;
 		Connection con = null;
@@ -173,7 +173,7 @@ public class BoardDAO {
 			con = dataSource.getConnection();
 			String query = "select * from board join member on board.memberno = member.no where board.no = ? ";
 			pstmt = con.prepareStatement(query);
-			pstmt.setInt(1, Integer.parseInt(strID));
+			pstmt.setInt(1, no);
 			resultSet = pstmt.executeQuery();
 			
 			while (resultSet.next()) {
@@ -240,7 +240,7 @@ public class BoardDAO {
 		}
 	}
 	
-	public void upHit(String no) {
+	public void upHit(int no) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		
@@ -250,7 +250,7 @@ public class BoardDAO {
 						   "   set hit =  hit + 1 " +
 						   " where no = ?";
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, no);
+			pstmt.setInt(1, no);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

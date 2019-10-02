@@ -22,6 +22,8 @@
 	integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
 	crossorigin="anonymous"></script>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
+<script src="https://kit.fontawesome.com/bb6a1b4c50.js" crossorigin="anonymous"></script>
+
 
 <meta name="google-signin-client_id"
 	content="13163274827-kv63tai19hqgak1tj0juug34svp37osa.apps.googleusercontent.com">

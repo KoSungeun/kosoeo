@@ -34,6 +34,17 @@
 			<td> ${content_view.title} </td>
 		</tr>
 		<tr>
+			<td> 첨부파일 </td>
+			<td> 	
+				<c:forEach items="${files}" var="file">
+				<i class="far fa-file"></i>
+				<a href="${file.path}${file.realName}"  class="text-white Stretched link">${file.submitName}</a> 
+				<i class="fas fa-download"></i>
+				<a href="fileDown.do?realName=${file.realName}&submitName=${file.submitName}" class="text-white Stretched link">다운로드</a>
+				</c:forEach> 
+			</td>
+		</tr>
+		<tr>
 			<td> 내용 </td>
 			<td> ${content_view.content} </td>
 		</tr>
@@ -52,6 +63,16 @@
 		</tr>
 		
 	</table>
+		<div class="d-flex justify-content-center mb-5">
+			<button class="btn btn-outline-dark mr-3">
+				<i class="far fa-thumbs-up text-primary h1 m-3"> 0</i>
+			</button>
+			<button class="btn btn-outline-dark">
+				<i class="far fa-thumbs-down text-danger h1 m-3"> 0</i>
+			</button>
+		</div>
+	
+	
 	
 	<table class="table table-hover table-striped table-dark shadow p-3 mb-5" id="commnetList">	
 		<thead>
