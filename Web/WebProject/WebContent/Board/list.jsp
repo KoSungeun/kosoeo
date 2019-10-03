@@ -28,8 +28,7 @@
 				<td>${dto.no}</td>
 				<td>${dto.member.nickName}</td>
 				<td><c:forEach begin="1" end="${dto.indent}">-</c:forEach> 
-				<a href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}
-				</a>	
+				<a href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}</a>	
 				<c:if test="${dto.postdate.compareTo(yesterday) > 0}">
 				<span class="badge badge-secondary">New</span>
 				</c:if>
