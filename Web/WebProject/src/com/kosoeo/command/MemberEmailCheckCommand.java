@@ -13,9 +13,10 @@ public class MemberEmailCheckCommand implements Command {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		
 		String email = request.getParameter("email");
 		MemberDAO dao = MemberDAO.getInstance();
-		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
 

@@ -15,7 +15,7 @@ public class BoardWriteCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-
+		
 		
 		String title = request.getParameter("title");
 		String content = request.getParameter("content");

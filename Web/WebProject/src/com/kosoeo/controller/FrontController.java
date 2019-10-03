@@ -54,21 +54,23 @@ public class FrontController extends HttpServlet {
 
 	private void actionDo(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		request.setCharacterEncoding("UTF-8");
+	
 		String viewPage = null;
 		Command command = null;
-
+		
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
 		
-		
-		
+		System.out.println(uri);
+		System.out.println(conPath);
 		
 		HttpSession session = null;
 		session = request.getSession();
 		int curCategory = 0;
 		String action = "";
+		
 
 		if(session.getAttribute("ccategory") != null ) {
 			curCategory = (int) session.getAttribute("ccategory");

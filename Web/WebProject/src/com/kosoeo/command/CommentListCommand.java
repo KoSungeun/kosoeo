@@ -15,8 +15,9 @@ public class CommentListCommand implements Command {
 
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("UTF-8");
+
 		response.setContentType("application/json; charset=UTF-8");
+		
 		PrintWriter out = response.getWriter();
 		
 		int boardNo = 0;
@@ -24,11 +25,8 @@ public class CommentListCommand implements Command {
 			boardNo = Integer.parseInt(request.getParameter("boardNo"));
 		} catch (NumberFormatException e) {
 		}
-		
-		
-		CommentDAO dao = CommentDAO.getInstance();
 				
-
+		CommentDAO dao = CommentDAO.getInstance();
 		out.println(new Gson().toJson(dao.list(boardNo)));	
 	
 	}

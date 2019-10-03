@@ -21,8 +21,9 @@ try {
 	
 	file = multi.getFilesystemName(str);
 	oriFile = multi.getOriginalFileName(str);
-
 	
+	out.print(file);
+	out.print(oriFile);
 } catch (Exception e) {
 	e.printStackTrace();
 }
