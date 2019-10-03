@@ -162,7 +162,7 @@ public class BoardDAO {
 	}
 	
 	public Board contentView(int no) {
-		upHit(no);
+		
 		
 		Board bdto = null;
 		Connection con = null;
@@ -194,7 +194,9 @@ public class BoardDAO {
 				bdto.setStep(resultSet.getInt("step"));
 				bdto.setIndent(resultSet.getInt("indent"));
 				
+				upHit(no);
 			}
+				
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

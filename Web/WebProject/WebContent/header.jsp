@@ -37,7 +37,7 @@
 		});
 	})
 </script>
-</body>
+
 <title>WebProject</title>
 </head>
 

@@ -1,38 +1,20 @@
 package com.kosoeo.dto;
 
 public class Thumb {
-	private int no;
-	private int memberNo;
-	private int boardNo;
+
 	private int up;
 	private int down;
+	private int upCount;
+	private int downCount;
+	
 	
 	public Thumb() {}
-	public Thumb(int no, int memberNo, int boardNo, int up, int down) {
-		super();
-		this.no = no;
-		this.memberNo = memberNo;
-		this.boardNo = boardNo;
+	
+	public Thumb(int up, int down, int upCount, int downCount) {
 		this.up = up;
 		this.down = down;
-	}
-	public int getNo() {
-		return no;
-	}
-	public void setNo(int no) {
-		this.no = no;
-	}
-	public int getMemberNo() {
-		return memberNo;
-	}
-	public void setMemberNo(int memberNo) {
-		this.memberNo = memberNo;
-	}
-	public int getBoardNo() {
-		return boardNo;
-	}
-	public void setBoardNo(int boardNo) {
-		this.boardNo = boardNo;
+		this.upCount = upCount;
+		this.downCount = downCount;
 	}
 	public int getUp() {
 		return up;
@@ -46,6 +28,20 @@ public class Thumb {
 	public void setDown(int down) {
 		this.down = down;
 	}
+	public int getUpCount() {
+		return upCount;
+	}
+	public void setUpCount(int upCount) {
+		this.upCount = upCount;
+	}
+	public int getDownCount() {
+		return downCount;
+	}
+	public void setDownCount(int downCount) {
+		this.downCount = downCount;
+	}
+	
+	
 	
 	
 }

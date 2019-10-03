@@ -16,6 +16,9 @@
 
 
 <jsp:include page="../header.jsp"></jsp:include>
+
+
+
 <div class="container-fluid">
 	<table class="table table-hover table-striped table-dark  shadow p-3 mb-5 mt-2">
 		<tr>
@@ -65,10 +68,10 @@
 		
 	</table>
 		<div class="d-flex justify-content-center mb-5">
-			<button class="btn btn-outline-dark mr-3">
+			<button class="btn btn-outline-dark mr-3" id="thumbUpBtn">
 				<i class="far fa-thumbs-up text-primary h1 m-3"> 0</i>
 			</button>
-			<button class="btn btn-outline-dark">
+			<button class="btn btn-outline-dark thumb" id="thumbDownBtn">
 				<i class="far fa-thumbs-down text-danger h1 m-3"> 0</i>
 			</button>
 		</div>
@@ -140,6 +143,41 @@ $("#commentWriteBtn").click(function(){
 		}
 	});
 })
+
+$("#thumbUpBtn").click(function(){
+	thumbUpDown("up");
+})
+
+$("#thumbDownBtn").click(function(){
+	thumbUpDown("down");
+})
+
+function thumbUpDown(upDown){
+	
+	$.ajax({
+	    url: 'upDown.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: {
+	    	memberNo: "${member.no}",
+	    	boardNo: ${content_view.no},
+	    	upDown: upDown
+	    }
+	}).done(function(data) {
+		var result = data["result"];
+		if (result == 1) {
+		} else {
+			$(".modal-body").html(data["msg"]);
+			if(result == 0) {
+				$("#loginFooter").removeClass("d-none");
+			} else {
+				$("#confirmFooter").removeClass("d-none");	
+			}
+			$("#alertModal").modal();
+		}
+	});
+	
+}
 
 function commentList(isScroll){
 	$.ajax({

@@ -16,11 +16,7 @@ import com.kosoeo.dto.Member;
 
 public class CommentUpdateCommand implements Command {
 
-	final int LOGIN_FAIL = 0;
-	final int CONTENT_FAIL = -1;
-	final int COMMENT_FAIL = -2;
-	final int SESSION_FAIL = -3;
-	final int SUCEESS = 1;
+
 	
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -66,6 +62,7 @@ public class CommentUpdateCommand implements Command {
 			CommentDAO dao = CommentDAO.getInstance();
 			dao.update(commentNo, content);
 		}
+		
 		JsonObject json = new JsonObject();
 		json.addProperty("result", result);
 		json.addProperty("msg", msg);

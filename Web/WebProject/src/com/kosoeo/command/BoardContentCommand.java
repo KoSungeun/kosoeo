@@ -25,8 +25,12 @@ public class BoardContentCommand implements Command{
 		}
 		BoardDAO cdao = new BoardDAO();
 		Board cdto = cdao.contentView(no);
-		FileDAO fdao = new FileDAO();
-		List<File> files = fdao.list(no);
+		List<File> files = null;
+		if(cdto != null) {
+			FileDAO fdao = new FileDAO();
+			files = fdao.list(no);
+		}
+		
 		request.setAttribute("content_view", cdto);
 		request.setAttribute("files", files);
 	}

@@ -29,6 +29,7 @@ import com.kosoeo.command.MemberLoginCommand;
 import com.kosoeo.command.MemberLogoutCommand;
 import com.kosoeo.command.MemberModifyCommand;
 import com.kosoeo.command.MemberWithdrawCommand;
+import com.kosoeo.command.ThumbUpDownCommand;
 
 
 
@@ -63,10 +64,7 @@ public class FrontController extends HttpServlet {
 		String uri = request.getRequestURI();
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
-		
-		System.out.println(uri);
-		System.out.println(conPath);
-		
+
 		HttpSession session = null;
 		session = request.getSession();
 		int curCategory = 0;
@@ -142,7 +140,13 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Board/content.do")) {
 			command = new BoardContentCommand();
 			command.execute(request, response);
-			viewPage = "content.jsp";
+			System.out.println(request.getHeader("referer"));
+			if(request.getAttribute("content_view") == null) {
+				request.setAttribute("msg", "게시물이 없거나 삭제 됐습니다.");
+				viewPage = "/error.jsp";
+			} else {
+				viewPage = "content.jsp";
+			}
 		} else if (com.equals("/Board/commentWrite.do")) {
 			command = new CommentWriteCommand();
 			command.execute(request, response);
@@ -158,13 +162,14 @@ public class FrontController extends HttpServlet {
 		} else if (com.indexOf("fileDown.do") > 0) {
 			command = new FileDownloadCommand();
 			command.execute(request, response);
+		} else if (com.indexOf("upDown.do") > 0) {
+			command = new ThumbUpDownCommand();
+			command.execute(request, response);
 		}
-		
-		
-		
+
 		if(viewPage != null) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);
 			dispatcher.forward(request, response);
-		}
+		} 
 	}
 }
