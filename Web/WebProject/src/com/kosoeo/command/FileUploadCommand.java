@@ -32,7 +32,14 @@ public class FileUploadCommand implements Command  {
 					String name = submitFileName.substring(0, submitFileName.lastIndexOf("."));
 					String extension = submitFileName.substring(submitFileName.lastIndexOf("."));
 					String contentType = part.getContentType();
-					int boardNo = (int) request.getAttribute("seq");
+					
+					int boardNo = 0;
+					if(request.getAttribute("seq") == null) {
+						boardNo = Integer.parseInt(request.getParameter("no"));
+					} else {
+						boardNo = (int) request.getAttribute("seq");
+					}
+					
 					long fileSize = part.getSize();
 					
 					File file = new File(filePath, realFileName);

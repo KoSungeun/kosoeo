@@ -59,14 +59,19 @@ public class ThumbDAO {
 			
 			if(thumb == 0) {
 				pstmt.close();
-				query = "update thumb set " + upDown + " = 1 where memberNo = ? and boardNo = ?";
+				if(upDown.equals("up")) {
+					query = "update thumb set up = 1, down = 0 where memberNo = ? and boardNo = ?";
+				} else if(upDown.equals("down")) {
+					query = "update thumb set up = 0 , down = 1 where memberNo = ? and boardNo = ?";
+				}
+				
 				pstmt = con.prepareStatement(query);
 				pstmt.setInt(1, memberNo);
 				pstmt.setInt(2, boardNo);
 				
 			} else if (thumb == 1) {
 				pstmt.close();
-				query = "update thumb set " + upDown + " = 0 where memberNo = ? and boardNo = ?";
+				query = "update thumb set up = 0, down = 0 where memberNo = ? and boardNo = ?";
 				pstmt = con.prepareStatement(query);
 				pstmt.setInt(1, memberNo);
 				pstmt.setInt(2, boardNo);
@@ -92,21 +97,31 @@ public class ThumbDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		Thumb thumb = null;
-		
-		String query = "select up, down, (select count(*) from thumb where boardno = ? and up = 1) upCount, "
-				+ " (select count(*) from thumb where boardNo = ? and down = 1) downCount from thumb where memberNo = ?";
+		String query = null;
+		if(memberNo == 0) {
+			query = "select (select count(*) from thumb where boardno = ? and up = 1) upCount, "
+					+ " (select count(*) from thumb where boardNo = ? and down = 1) downCount from dual";
+		} else {			
+			query = "select up, down, (select count(*) from thumb where boardno = ? and up = 1) upCount, "
+					+ " (select count(*) from thumb where boardNo = ? and down = 1) downCount from thumb where memberNo = ? and boardNo = ?";
+		}
 
 		try {
 			con = dataSource.getConnection();
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, boardNo);
 			pstmt.setInt(2, boardNo);
-			pstmt.setInt(3, memberNo);
+			if(memberNo != 0) {
+				pstmt.setInt(3, memberNo);
+				pstmt.setInt(4, boardNo);
+			}
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
 				thumb = new Thumb();
-				thumb.setUp(rs.getInt("up"));
-				thumb.setDown(rs.getInt("down"));
+				if(memberNo != 0) {
+					thumb.setUp(rs.getInt("up"));
+					thumb.setDown(rs.getInt("down"));
+				}
 				thumb.setUpCount(rs.getInt("upCount"));
 				thumb.setDownCount(rs.getInt("downCount"));
 			}

@@ -213,22 +213,20 @@ public class BoardDAO {
 		
 	}
 	
-	public void modify(String no, String name, String title, String content) {
+	public void update(Board board) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
-		
+
 		try {
 			con = dataSource.getConnection();
 			String query = "update board " + 
-						   "   set name = ?, " +
-						   "       bTitle = ?, " +
-						   "       bContent = ? " +
-						   " where bId = ?";
+						   "   set title = ?, " +
+						   "       content = ? " +
+						   " where no = ?";
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, name);
-			pstmt.setString(2, title);	
-			pstmt.setString(3, content);
-			pstmt.setString(4, no);
+			pstmt.setString(1, board.getTitle());	
+			pstmt.setString(2, board.getContent());
+			pstmt.setInt(3, board.getNo());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -266,15 +264,34 @@ public class BoardDAO {
 		}
 	}
 	
-	public void delete(String no) {
+	public void delete(int no) {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		
 		try {
 			con = dataSource.getConnection();
-			String query = "delete from board where no = ?";
+			
+			String query = "delete from files where boardNo = ?";
 			pstmt = con.prepareStatement(query);
-			pstmt.setString(1, no);
+			pstmt.setInt(1, no);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
+			query = "delete from comments where boardNo = ?";
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, no);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
+			query = "delete from thumb where boardNo = ?";
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, no);
+			pstmt.executeUpdate();
+			pstmt.close();
+			
+			query = "delete from board where no = ?";
+			pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, no);
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();

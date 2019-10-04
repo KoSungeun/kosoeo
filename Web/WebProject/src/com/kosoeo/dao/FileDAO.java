@@ -102,7 +102,39 @@ public class FileDAO {
 			}
 		}
 		return files;
-		
 	}
 	
+	
+	
+	public void delete(int boardNo, int fileNo) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			con = dataSource.getConnection();
+			String query = null;
+			if(boardNo != 0) {
+				query = "delete from files where boardNo = ?";
+				pstmt = con.prepareStatement(query);
+				pstmt.setInt(1, boardNo);
+			} else if(fileNo != 0) {
+				query = "delete from files where no = ?";
+				pstmt = con.prepareStatement(query);
+				pstmt.setInt(1, fileNo);
+			}
+			
+			pstmt.executeUpdate();
+			
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
 }

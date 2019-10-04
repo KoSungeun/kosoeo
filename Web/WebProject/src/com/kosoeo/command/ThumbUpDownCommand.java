@@ -1,17 +1,15 @@
 package com.kosoeo.command;
 
-import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonObject;
-import com.kosoeo.dao.CommentDAO;
 import com.kosoeo.dao.ThumbDAO;
 
 

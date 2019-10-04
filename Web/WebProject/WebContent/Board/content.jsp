@@ -20,7 +20,7 @@
 
 
 <div class="container-fluid">
-	<table class="table table-hover table-striped table-dark  shadow p-3 mb-5 mt-2">
+	<table class="table table-hover table-striped shadow p-3 mb-5 mt-2">
 		<tr>
 			<td> 번호 </td>
 			<td class="w-75"> ${content_view.no} </td>
@@ -41,10 +41,10 @@
 			<td> 첨부파일 </td>
 			<td> 	
 				<c:forEach items="${files}" var="file">
-				<i class="far fa-file"></i>
-				<a href="${file.path}${file.realName}"  class="text-white Stretched link">${file.submitName}</a> 
-				<i class="fas fa-download"></i>
-				<a href="fileDown.do?realName=${file.realName}&submitName=${file.submitName}" class="text-white Stretched link">다운로드</a>
+					<i class="far fa-file"></i>
+					<a href="${file.path}${file.realName}"  class="text-dark Stretched link mr-2">${file.submitName}</a> 
+					<i class="fas fa-download"></i>
+					<a href="fileDown.do?realName=${file.realName}&submitName=${file.submitName}" class="text-dark Stretched link mr-5">다운로드</a>
 				</c:forEach> 
 			</td>
 		</tr>
@@ -56,11 +56,11 @@
 			<td colspan="2">
 				<div class="d-flex justify-content-end">
 				<c:if test="${member.no == content_view.member.no}">
-					<a class="btn btn-danger" href="modify_view.do?bId=${content_view.no}">수정</a> &nbsp;&nbsp;
-					<a class="btn btn-danger" href="delete.do?bId=${content_view.no}">삭제</a> &nbsp;&nbsp;
+					<a class="btn btn-danger" href="updateView.do?no=${content_view.no}">수정</a> &nbsp;&nbsp;
+					<button class="btn btn-danger" id="deleteBtn">삭제</button> &nbsp;&nbsp;
 				</c:if>
-				<a class="btn btn-danger" href="${action}.do?page=<%= session.getAttribute("cpage") %>">목록보기</a> &nbsp;&nbsp;
-				<a class="btn btn-danger" href="reply_view.do?bId=${content_view.no}">답변</a>
+				<a class="btn btn-danger" href="${action}?page=${cpage}">목록보기</a> &nbsp;&nbsp;
+				<a class="btn btn-danger" href="updateView.do?no=${content_view.no}">답변</a>
 				</div>
 			</td>
 	
@@ -69,16 +69,34 @@
 	</table>
 		<div class="d-flex justify-content-center mb-5">
 			<button class="btn btn-outline-dark mr-3" id="thumbUpBtn">
-				<i class="far fa-thumbs-up text-primary h1 m-3"> 0</i>
+				<i class="far fa-thumbs-up <c:if test="${thumb.up == 1}">text-primary</c:if> h1 m-3"> 
+					<c:choose>
+						<c:when test="${thumb.upCount == null}">
+							0
+						</c:when>
+						<c:otherwise>
+							${thumb.upCount}
+						</c:otherwise>
+					</c:choose>
+				</i>
 			</button>
 			<button class="btn btn-outline-dark thumb" id="thumbDownBtn">
-				<i class="far fa-thumbs-down text-danger h1 m-3"> 0</i>
+				<i class="far fa-thumbs-down <c:if test="${thumb.down == 1}">text-danger</c:if> h1 m-3">
+					<c:choose>
+						<c:when test="${thumb.downCount == null}">
+							0
+						</c:when>
+						<c:otherwise>
+							${thumb.downCount}
+						</c:otherwise>
+					</c:choose>
+				</i>
 			</button>
 		</div>
 	
 	
 	
-	<table class="table table-hover table-striped table-dark shadow p-3 mb-5" id="commnetList">	
+	<table class="table table-hover table-striped shadow p-3 mb-5" id="commnetList">	
 		<thead>
 			<tr>
 				<td> 이름 </td>
@@ -142,7 +160,37 @@ $("#commentWriteBtn").click(function(){
 			$("#alertModal").modal();
 		}
 	});
-})
+});
+
+$("#deleteBtn").click(function() {	
+	$.ajax({
+	    url: 'delete.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: {
+	    	memberNo: ${content_view.member.no},
+	    	boardNo: ${content_view.no}
+	    }
+	}).done(function(data) {
+		alert("SDf");
+		var result = data.result;
+		$(".modal-body").html(data.msg);
+		if (result == 1) {
+			$("#confirmFooter").removeClass("d-none");
+			$('#alertModal').on('hidden.bs.modal', function (e) {
+				location.href = data.location;
+			});
+		} else {
+			if(result == 0) {
+				$("#loginFooter").removeClass("d-none");
+			} else {
+				$("#confirmFooter").removeClass("d-none");	
+			}
+			
+		}
+		$("#alertModal").modal();
+	});
+});
 
 $("#thumbUpBtn").click(function(){
 	thumbUpDown("up");
@@ -166,6 +214,7 @@ function thumbUpDown(upDown){
 	}).done(function(data) {
 		var result = data["result"];
 		if (result == 1) {
+			thumbState();
 		} else {
 			$(".modal-body").html(data["msg"]);
 			if(result == 0) {
@@ -175,6 +224,35 @@ function thumbUpDown(upDown){
 			}
 			$("#alertModal").modal();
 		}
+	});
+	
+}
+
+function thumbState() {
+	$.ajax({
+	    url: 'thumbState.do',
+	    type: 'post',
+	    dataType: 'json',
+	    data: {
+	    	no: ${content_view.no}
+	    }
+	}).done(function(data) {
+		
+		if(data.up == 0 && data.down == 0) {
+			$("#thumbUpBtn > i ").removeClass("text-primary");
+			$("#thumbDownBtn > i ").removeClass("text-danger");
+		} else if(data.up == 1) {
+			$("#thumbUpBtn > i ").addClass("text-primary");
+			$("#thumbDownBtn > i ").removeClass("text-danger");
+		} else if(data.down == 1) {
+			$("#thumbDownBtn > i ").addClass("text-danger");
+			$("#thumbUpBtn > i ").removeClass("text-primary");
+		}
+		
+
+		$("#thumbUpBtn > i ").text(" " + data["upCount"]);
+		$("#thumbDownBtn > i ").text(" " + data["downCount"]);
+
 	});
 	
 }

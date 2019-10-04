@@ -11,17 +11,21 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
 
 import com.kosoeo.command.BoardContentCommand;
+import com.kosoeo.command.BoardDeleteCommand;
 import com.kosoeo.command.BoardListCommand;
+import com.kosoeo.command.BoardUpdateCommand;
 import com.kosoeo.command.BoardWriteCommand;
 import com.kosoeo.command.Command;
 import com.kosoeo.command.CommentDeleteCommand;
 import com.kosoeo.command.CommentListCommand;
 import com.kosoeo.command.CommentUpdateCommand;
 import com.kosoeo.command.CommentWriteCommand;
+import com.kosoeo.command.FileDeleteCommand;
 import com.kosoeo.command.FileDownloadCommand;
+import com.kosoeo.command.FileListCommand;
 import com.kosoeo.command.FileUploadCommand;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
@@ -29,6 +33,7 @@ import com.kosoeo.command.MemberLoginCommand;
 import com.kosoeo.command.MemberLogoutCommand;
 import com.kosoeo.command.MemberModifyCommand;
 import com.kosoeo.command.MemberWithdrawCommand;
+import com.kosoeo.command.ThumbStateCommand;
 import com.kosoeo.command.ThumbUpDownCommand;
 
 
@@ -65,23 +70,8 @@ public class FrontController extends HttpServlet {
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
 
-		HttpSession session = null;
-		session = request.getSession();
-		int curCategory = 0;
-		String action = "";
-		
 
-		if(session.getAttribute("ccategory") != null ) {
-			curCategory = (int) session.getAttribute("ccategory");
-			if(curCategory == 0) {
-				action = "notice";
-			} else if(curCategory == 1) {
-				action = "free";
-			} else if(curCategory == 2) {
-				action = "down";
-			}
-		}
-		
+
 		if(com.equals("/main.do")) {
 			viewPage = "main.jsp";
 		} else if (com.equals("/Member/joinView.do")) {
@@ -129,7 +119,6 @@ public class FrontController extends HttpServlet {
 			command.execute(request, response);
 			viewPage = "/Board/list.jsp";
 		} else if (com.equals("/Board/writeView.do")) {
-			request.setAttribute("action", action);
 			viewPage = "/Board/write.jsp";
 		} else if (com.equals("/Board/write.do")) {
 			command = new BoardWriteCommand();
@@ -137,10 +126,30 @@ public class FrontController extends HttpServlet {
 			command = new FileUploadCommand();
 			command.execute(request, response);
 			response.sendRedirect("content.do?no="+ request.getAttribute("seq"));
+		} else if (com.equals("/Board/delete.do")) {
+			command = new FileDeleteCommand();
+			command.execute(request, response);
+			command = new BoardDeleteCommand();
+			command.execute(request, response);
+		} else if (com.equals("/Board/updateView.do")) {
+			command = new BoardContentCommand();
+			command.execute(request, response);
+			command = new FileListCommand();
+			command.execute(request, response);
+			viewPage = "update.jsp";
+		}  else if (com.equals("/Board/update.do")) {
+			command = new BoardUpdateCommand();
+			command.execute(request, response);
+			command = new FileUploadCommand();
+			command.execute(request, response);
+			response.sendRedirect("content.do?no=" + request.getParameter("no"));
 		} else if (com.equals("/Board/content.do")) {
 			command = new BoardContentCommand();
 			command.execute(request, response);
-			System.out.println(request.getHeader("referer"));
+			command = new FileListCommand();
+			command.execute(request, response);
+			command = new ThumbStateCommand();
+			command.execute(request, response);
 			if(request.getAttribute("content_view") == null) {
 				request.setAttribute("msg", "게시물이 없거나 삭제 됐습니다.");
 				viewPage = "/error.jsp";
@@ -162,8 +171,14 @@ public class FrontController extends HttpServlet {
 		} else if (com.indexOf("fileDown.do") > 0) {
 			command = new FileDownloadCommand();
 			command.execute(request, response);
+		}  else if (com.indexOf("fileDelete.do") > 0) {
+			command = new FileDeleteCommand();
+			command.execute(request, response);
 		} else if (com.indexOf("upDown.do") > 0) {
 			command = new ThumbUpDownCommand();
+			command.execute(request, response);
+		} else if (com.indexOf("thumbState.do") > 0) {
+			command = new ThumbStateCommand();
 			command.execute(request, response);
 		}
 

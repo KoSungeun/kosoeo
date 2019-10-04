@@ -52,21 +52,20 @@ public class BoardListCommand implements Command {
 		session = request.getSession();
 		session.setAttribute("cpage", nPage);
 		session.setAttribute("ccategory", category);
-
 		String action = "";
 		if(category == 0) {
-			action = "notice";
+			action = "notice.do";
 		} else if(category == 1) {
-			action = "free";
+			action = "free.do";
 		} else if(category == 2) {
-			action = "down";
+			action = "down.do";
 		}
 		
 		
 		request.setAttribute("yesterday", Timestamp.valueOf(LocalDateTime.now().minusDays(1)));
 		
 		
-
+		session.setAttribute("action", action);
 		request.setAttribute("action", action);
 		ArrayList<Board> dtos = dao.list(nPage, category, type, word);
 		

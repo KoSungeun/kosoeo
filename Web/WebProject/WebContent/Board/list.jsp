@@ -12,8 +12,8 @@
 <div class="container-fluid">
 
 <table
-	class="table table-hover table-striped table-dark shadow p-3 mb-4 mt-2">
-	<thead class="bg-danger">
+	class="table table-hover table-striped shadow p-3 mb-4 mt-2">
+	<thead class="thead-dark">
 		<tr>
 			<th>번호</th>
 			<th>이름</th>
@@ -28,9 +28,9 @@
 				<td>${dto.no}</td>
 				<td>${dto.member.nickName}</td>
 				<td><c:forEach begin="1" end="${dto.indent}">-</c:forEach> 
-				<a href="content.do?no=${dto.no}" class="text-white Stretched link">${dto.title}</a>	
+				<a href="content.do?no=${dto.no}" class="text-dark Stretched link">${dto.title}</a>	
 				<c:if test="${dto.postdate.compareTo(yesterday) > 0}">
-				<span class="badge badge-secondary">New</span>
+				<span class="badge badge-danger">New</span>
 				</c:if>
 				</td>
 				
@@ -56,20 +56,20 @@
 	</c:if>
 	<c:choose>
 		<c:when test="${(page.curPage - 1) < 1}">
-			<li class="page-item disabled"><a class="page-link" href="">&lt;&lt;</a></li>
+			<li class="page-item disabled"><a class="page-link" href=""><i class="fas fa-angle-double-left"></i></a></li>
 		</c:when>
 		<c:otherwise>
-			<li class="page-item"><a class="page-link" href="${action}.do?page=1">&lt;&lt;</a></li>
+			<li class="page-item"><a class="page-link" href="${action}?page=1"><i class="fas fa-angle-double-left"></i></a></li>
 		</c:otherwise>
 	</c:choose>
 	<!-- 이전 -->
 	<c:choose>
 		<c:when test="${(page.curPage -1) < 1}">
-			<li class="page-item disabled"><a class="page-link" href="">&lt;</a></li>
+			<li class="page-item disabled"><a class="page-link" href=""><i class="fas fa-angle-left"></i></a></li>
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="${action}.do?page=${page.curPage -1}${pageQuery}">&lt;</a></li>
+				href="${action}?page=${page.curPage -1}${pageQuery}"><i class="fas fa-angle-left"></i></a></li>
 		</c:otherwise>
 	</c:choose>
 	<!--  개별 페이지 -->
@@ -83,29 +83,29 @@
 			</c:when>
 			<c:otherwise>
 				<li class="page-item"><a class="page-link"
-					href="${action}.do?page=${fEach}${pageQuery}">${fEach}</a></li>
+					href="${action}?page=${fEach}${pageQuery}">${fEach}</a></li>
 			</c:otherwise>
 		</c:choose>
 	</c:forEach>
 	<!-- 다음 -->
 	<c:choose>
 		<c:when test="${(page.curPage + 1) > page.totalPage}">
-			<li class="page-item disabled"><a class="page-link" href="">&gt;</a></li>
+			<li class="page-item disabled"><a class="page-link" href=""><i class="fas fa-angle-right"></i></a></li>
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="${action}.do?page=${page.curPage + 1}${pageQuery}">&gt;</a></li>
+				href="${action}?page=${page.curPage + 1}${pageQuery}"><i class="fas fa-angle-right"></i></a></li>
 		</c:otherwise>
 	</c:choose>
 	<!-- 끝 -->
 	<c:choose>
 		
 		<c:when test="${page.curPage == page.totalPage}">
-			<li class="page-item disabled"><a class="page-link" href="">&gt;&gt;</a></li>
+			<li class="page-item disabled"><a class="page-link" href=""><i class="fas fa-angle-double-right"></i></a></li>
 		</c:when>
 		<c:otherwise>
 			<li class="page-item"><a class="page-link"
-				href="${action}.do?page=${page.totalPage}${pageQuery}">&gt;&gt;</a></li>
+				href="${action}?page=${page.totalPage}${pageQuery}"><i class="fas fa-angle-double-right"></i></a></li>
 		</c:otherwise>
 	</c:choose>
 </ul>
@@ -125,7 +125,7 @@
 			<input type="text" class="form-control" name="word" value="${word}">
 		</div>
 		<div class="col-auto">
-			<button type="submit" class="btn btn-primary btn-block">검색</button>
+			<button type="submit" class="btn btn-danger btn-block">검색</button>
 		</div>
 	</div>
 </form>

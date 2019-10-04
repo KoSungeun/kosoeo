@@ -13,6 +13,7 @@ public interface Command {
 	final int BOARD_FAIL = -2;
 	final int COMMENT_FAIL = -3;
 	final int SESSION_FAIL = -4;
+	final int PARAM_FAIL = -5;
 	final int SUCEESS = 1;
 	
 	void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
