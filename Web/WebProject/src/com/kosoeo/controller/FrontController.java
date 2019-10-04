@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.kosoeo.command.BoardContentCommand;
 import com.kosoeo.command.BoardDeleteCommand;
 import com.kosoeo.command.BoardListCommand;
+import com.kosoeo.command.BoardReplyCommand;
+import com.kosoeo.command.BoardReplyViewCommand;
 import com.kosoeo.command.BoardUpdateCommand;
 import com.kosoeo.command.BoardWriteCommand;
 import com.kosoeo.command.Command;
@@ -137,7 +139,20 @@ public class FrontController extends HttpServlet {
 			command = new FileListCommand();
 			command.execute(request, response);
 			viewPage = "update.jsp";
-		}  else if (com.equals("/Board/update.do")) {
+		} else if (com.equals("/Board/update.do")) {
+			command = new BoardUpdateCommand();
+			command.execute(request, response);
+			command = new FileUploadCommand();
+			command.execute(request, response);
+			response.sendRedirect("content.do?no=" + request.getParameter("no"));
+		} else if (com.equals("/Board/replyView.do")) {
+			command = new BoardReplyViewCommand();
+			command.execute(request, response);
+			viewPage = "reply.jsp";
+		} 
+		
+		
+		else if (com.equals("/Board/reply.do")) {
 			command = new BoardUpdateCommand();
 			command.execute(request, response);
 			command = new FileUploadCommand();

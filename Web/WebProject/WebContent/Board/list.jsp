@@ -7,6 +7,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../header.jsp"></jsp:include>
 
+<style>
+.page-item.active .page-link {
+  z-index: 1;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+.page-link {
+  color: #dc3545;
+   &:hover {
+   	 color: #dc3545;
+  }
+}
+</style>
 
 
 <div class="container-fluid">
