@@ -3,6 +3,7 @@ package com.kosoeo.controller;
 
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -11,8 +12,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-
+import com.kosoeo.command.AdminBoardDeleteCommnad;
+import com.kosoeo.command.AdminBoardListCommnad;
+import com.kosoeo.command.AdminMemberBlockCommand;
+import com.kosoeo.command.AdminMemberListCommand;
+import com.kosoeo.command.AdminMemberWithdrawCommand;
 import com.kosoeo.command.BoardContentCommand;
 import com.kosoeo.command.BoardDeleteCommand;
 import com.kosoeo.command.BoardListCommand;
@@ -72,7 +78,7 @@ public class FrontController extends HttpServlet {
 		String conPath = request.getContextPath();
 		String com = uri.substring(conPath.length());
 
-
+		HttpSession session = request.getSession();
 
 		if(com.equals("/main.do")) {
 			viewPage = "main.jsp";
@@ -83,7 +89,7 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/join.do")) {
 			command = new MemberJoinCommand();
 			command.execute(request, response);
-			viewPage = "../main.jsp";
+			response.sendRedirect("../main.jsp");
 		} else if (com.equals("/Member/emailCheck.do")) {
 			command = new MemberEmailCheckCommand();
 			command.execute(request, response);
@@ -149,11 +155,8 @@ public class FrontController extends HttpServlet {
 			command = new BoardReplyViewCommand();
 			command.execute(request, response);
 			viewPage = "reply.jsp";
-		} 
-		
-		
-		else if (com.equals("/Board/reply.do")) {
-			command = new BoardUpdateCommand();
+		} else if (com.equals("/Board/reply.do")) {
+			command = new BoardReplyCommand();
 			command.execute(request, response);
 			command = new FileUploadCommand();
 			command.execute(request, response);
@@ -195,7 +198,31 @@ public class FrontController extends HttpServlet {
 		} else if (com.indexOf("thumbState.do") > 0) {
 			command = new ThumbStateCommand();
 			command.execute(request, response);
-		}
+		} else if (com.equals("/Admin/member.do")) {
+			command = new AdminMemberListCommand();
+			command.execute(request, response);
+			if((boolean) request.getAttribute("isAdmin")) {
+				viewPage= "member.jsp";
+			} else {
+				response.sendRedirect("../main.do");
+			}
+		} else if (com.equals("/Admin/withdraw.do")){
+			command = new AdminMemberWithdrawCommand();
+			command.execute(request, response);
+			response.sendRedirect("member.do?page=" + session.getAttribute("cpage") +"&type=" + request.getParameter("type") + "&word=" + URLEncoder.encode(request.getParameter("word"),"UTF-8"));
+		} else if (com.equals("/Admin/block.do")){
+			command = new AdminMemberBlockCommand();
+			command.execute(request, response);
+			response.sendRedirect("member.do?page=" + session.getAttribute("cpage") +"&type=" + request.getParameter("type") + "&word=" + URLEncoder.encode(request.getParameter("word"),"UTF-8"));
+		} else if (com.equals("/Admin/board.do")){
+			command = new AdminBoardListCommnad();
+			command.execute(request, response);
+			viewPage = "board.jsp";
+		} else if (com.equals("/Admin/boardDelete.do")){
+			command = new AdminBoardDeleteCommnad();
+			command.execute(request, response);	
+			response.sendRedirect("board.do?category="+ session.getAttribute("ccategory") + "&page=" + session.getAttribute("cpage") +"&type=" + request.getParameter("type") + "&word=" + URLEncoder.encode(request.getParameter("word"),"UTF-8"));	
+		} 
 
 		if(viewPage != null) {
 			RequestDispatcher dispatcher = request.getRequestDispatcher(viewPage);

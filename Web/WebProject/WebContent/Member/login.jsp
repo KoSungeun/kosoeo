@@ -163,7 +163,8 @@
 			} else if (result == 0) {
 				msg = data["msg"];
 				toggleVaild("#passwordGroup", msg, checkOk);
-			} else if (result == -1) {
+			} else if (result == -1 || result == -2) {
+				naverLogin.logout();
 				msg = data["msg"];
 				toggleVaild("#emailGroup", msg, checkOk);
 			}

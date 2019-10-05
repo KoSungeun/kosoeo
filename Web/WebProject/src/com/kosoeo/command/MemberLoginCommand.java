@@ -8,9 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
+import com.google.gson.JsonObject;
 import com.kosoeo.dao.MemberDAO;
 import com.kosoeo.dto.Member;
+
+import jdk.nashorn.internal.ir.Block;
 
 
 
@@ -29,12 +31,16 @@ public class MemberLoginCommand implements Command {
 		String nickName = request.getParameter("nickName");
 		String type = request.getParameter("type"); 
 		
+		JsonObject json = new JsonObject();
+
+		
 		MemberDAO dao = MemberDAO.getInstance();
 		
 		int checkNum = dao.userCheck(email, password, type);
+		String msg = "";
+		
 		if(checkNum == MemberDAO.MEMBER_LOGIN_IS_NOT && type.equals("normal")) {
-			out.println("{\"result\": \"-1\","
-					+ "\"msg\": \"이메일이 존재하지 않습니다.\"}");	
+			msg = "이메일이 존재하지 않습니다.";
 		} else if(checkNum == MemberDAO.MEMBER_LOGIN_IS_NOT && !type.equals("normal")) {
 			Member dto = new Member();
 			dto.setEmail(email);
@@ -47,19 +53,25 @@ public class MemberLoginCommand implements Command {
 			dao.join(dto);
 			dto = dao.getMember(email);
 			session.setAttribute("member", dto);
-			out.println("{\"result\": \"1\","
-					+ "\"msg\": \"로그인 성공.\"}");
+			checkNum = MemberDAO.MEMBER_LOGIN_SUCCESS;
+			msg = "로그인 성공.";
 		} else if(checkNum == MemberDAO.MEMBER_LOGIN_PW_NO_GOOD) {
-			out.println("{\"result\": \"0\","
-					+ "\"msg\": \"비밀번호가 틀립니다.\"}");	
+			msg = "비밀번호가 틀립니다.";
 		} else if(checkNum == MemberDAO.MEMBER_LOGIN_SUCCESS) {
 			Member dto = dao.getMember(email);
-			session.setAttribute("member", dto);
-			out.println("{\"result\": \"1\","
-					+ "\"msg\": \"로그인 성공.\"}");	
+			if(dao.blockCheck(dto.getNo())) {
+				checkNum = MemberDAO.MEMBER_LOGIN_BLOCK;
+				msg = "정지된 사용자입니다";
+			} else {
+				session.setAttribute("member", dto);
+				msg = "로그인 성공.";
+			}
+
 		}
 		
-		
+		json.addProperty("result", checkNum);
+		json.addProperty("msg", msg);
+		out.println(json);
 	}
 
 }

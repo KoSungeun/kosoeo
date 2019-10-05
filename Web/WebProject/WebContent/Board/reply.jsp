@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <jsp:include page="../header.jsp"></jsp:include>
 <link
@@ -18,10 +19,14 @@
 </script>
 
 <div class="container-fluid">
-	<form action="write.do" method="post" class="mt-2"
+	<form action="reply.do" method="post" class="mt-2"
 		enctype="multipart/form-data">
-		<input type="hidden" name="category" value="${ccategory}"> <input
-			type="hidden" name="memberNo" value="${member.no}">
+		<input type="hidden" name="category" value="${ccategory}"> 
+		<input type="hidden" name="memberNo" value="${member.no}">
+		<input type="hidden" name="no" value="${reply_view.no}">
+		<input type="hidden" name="bgroup" value="${reply_view.bgroup}">
+		<input type="hidden" name="step" value="${reply_view.step}">
+		<input type="hidden" name="indent" value="${reply_view.indent}">
 		<fieldset disabled>
 			<div class="form-group row">
 				<label for="inputName" class="col-sm-2 col-form-label">이름</label>
@@ -62,12 +67,14 @@
 
 		<div class="form-group row">
 			<div class="col-sm-12">
-				<button type="submit" class="btn btn-danger">입력</button>
-				<a class="btn btn-danger" href="${action}">목록보기</a>
+				<button type="submit" class="btn btn-danger">답변</button>
+				<a class="btn btn-danger" href="content.do?no=${reply_view.no}">취소</a>
+				<a class="btn btn-danger" href="${action}">목록</a>
 			</div>
 		</div>
 	</form>
 </div>
+
 
 
 <jsp:include page="../footer.jsp"></jsp:include>

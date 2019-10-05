@@ -48,7 +48,7 @@
 		var email = $('#email').val().trim();
 		var emailCheck = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
 
-		if("${MemberDTO.email}" != email) {
+		if("${member.email}" != email) {
 			if (emailCheck.test(email)) {
 				$.ajax({
 					url : 'emailCheck.do',
@@ -153,24 +153,24 @@
 
 		emailCheck(function(emailCheck) {
 			var checkOk = 0;
+
+			if (!emailCheck) {
+				checkOk++;
+			}
+			if (!passwordCheck()) {
+				checkOk++;
+			}
+			if (!passwordConfirm()) {
+				checkOk++;
+			}
+			if (!nameCheck()) {
+				checkOk++;
+			}
+			if (!nickNameCheck()) {
+				checkOk++;
+			}
 			
-
-			if (emailCheck == false) {
-				checkOk++;
-			}	
-
-			if (passwordCheck() == false) {
-				checkOk++;
-			}
-			if (passwordConfirm() == false) {
-				checkOk++;
-			}
-			if (nameCheck() == false) {
-				checkOk++;
-			}
-			if (nickNameCheck() == false) {
-				checkOk++;
-			}
+			console.log(checkOk);
 			if (checkOk == 0) {
 				$("#modifyForm").submit();
 			}

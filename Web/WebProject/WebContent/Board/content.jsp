@@ -2,18 +2,6 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<c:choose>
-	<c:when test="${content_view.category == 0}">
-		<c:set var="action" value="notice"></c:set>
-	</c:when>
-	<c:when test="${content_view.category == 1}">
-		<c:set var="action" value="free"></c:set>
-	</c:when>	
-	<c:when test="${content_view.category == 2}">
-		<c:set var="action" value="down"></c:set>
-	</c:when>	
-</c:choose>
-
 
 <jsp:include page="../header.jsp"></jsp:include>
 
@@ -60,7 +48,7 @@
 					<button class="btn btn-danger" id="deleteBtn">삭제</button> &nbsp;&nbsp;
 				</c:if>
 				<a class="btn btn-danger" href="${action}?page=${cpage}">목록보기</a> &nbsp;&nbsp;
-				<a class="btn btn-danger" href="updateView.do?no=${content_view.no}">답변</a>
+				<a class="btn btn-danger" href="replyView.do?boardNo=${content_view.no}">답변</a>
 				</div>
 			</td>
 	

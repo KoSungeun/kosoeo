@@ -17,7 +17,6 @@ public class BoardDeleteCommand implements Command {
 	@Override
 	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		request.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession();
@@ -35,13 +34,14 @@ public class BoardDeleteCommand implements Command {
 		String msg = "";
 		try {
 			memberNo = Integer.parseInt(request.getParameter("memberNo"));
+			
+		} catch (NumberFormatException e) {}
+		
+		try {
 			boardNo = Integer.parseInt(request.getParameter("boardNo"));
 		} catch (NumberFormatException e) {
+			
 		}
-		
-		
-		System.out.println(memberNo);
-		System.out.println(boardNo);
 		if(sessionNo == 0) {
 			result = LOGIN_FAIL;
 			msg = "로그인 해주세요.";
