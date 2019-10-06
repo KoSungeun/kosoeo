@@ -30,7 +30,8 @@ public class BoardReplyCommand implements Command {
 		JspRuntimeLibrary.introspect(board, request);
 		board.setMember(member);
 		BoardDAO dao = new BoardDAO();
-		dao.reply(board);
+		request.setAttribute("seq", dao.reply(board));
+		
 	}
 
 }

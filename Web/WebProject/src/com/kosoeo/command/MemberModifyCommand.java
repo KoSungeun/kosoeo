@@ -39,6 +39,7 @@ public class MemberModifyCommand implements Command {
 			result = "success";
 			msg = "정보가 수정되었습니다";
 		}
+		session.setAttribute("modalMsg", msg);
 		out.println("{\"result\": \"" + result + "\","
 				+ "\"msg\": \"" +  msg + "\"}");	
 		

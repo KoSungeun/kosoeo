@@ -70,13 +70,13 @@
 		event.preventDefault();
 		var checkNum = 0;
 		var checkOk = false;
-		if(passwordCheck() == false){
+		if(!passwordCheck()){
 			checkNum++;
-		} else if(passwordConfirm() == false){
+		} else if(!passwordConfirm()){
 			checkNum++;
 		}
 		
-		if(checkNum == 0) {			
+		if(checkNum == 0) {
 			var password = $('#password').val().trim();
 			$.ajax({
 			    url: 'withdraw.do',
@@ -86,8 +86,13 @@
 			}).done(function(data) {
 				var result =  data["result"];
 		        if(result == "success") {
-		        	logout();
-		        	location.href="logout.do";
+		        	
+					$(".modal-body").html(data.msg);
+					$("#confirmFooter").removeClass("d-none");	
+					$("#alertModal").modal();
+					$('#alertModal').on('hidden.bs.modal', function (e) {
+						logout();
+					});
 		        	} else if(result == "fail") {
 		        	msg = data["msg"];
 		        }

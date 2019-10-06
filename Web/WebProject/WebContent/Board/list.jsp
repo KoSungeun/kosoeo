@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../header.jsp"></jsp:include>
 
@@ -49,6 +50,8 @@
 	</thead>
 	<tbody>
 		<c:forEach items="${list }" var="dto">
+		<c:set var="formatter" value="${ DateTimeFormatter.ofPattern('yyyy-MM-dd HH:mm:ss')}"></c:set>
+		<c:set var="postdate" value="${ dto.postdate.toLocalDateTime()}"></c:set>
 			<tr>
 				<td>${dto.no}</td>
 				<td>${dto.member.nickName}</td>
@@ -58,8 +61,7 @@
 				<span class="badge badge-danger">New</span>
 				</c:if>
 				</td>
-				
-				<td>${dto.postdate}</td>
+				<td>${postdate.format(formatter)}</td>
 				<td>${dto.hit}</td>
 			</tr>
 		</c:forEach>
@@ -141,13 +143,13 @@
 	<div class="form-row">
 		<div class="col-auto">
 			<select name="type" class="form-control">
-				<option <c:if test="${type == 'title'}">selected</c:if> selected value="title">제목</option>
-				<option <c:if test="${type == 'nickName'}">selected</c:if> value="nickName">이름</option>
-				<option <c:if test="${type == 'content'}">selected</c:if> value="content">내용</option>
+				<option <c:if test="${param.type == 'title'}">selected</c:if> selected value="title">제목</option>
+				<option <c:if test="${param.type == 'nickName'}">selected</c:if> value="nickName">이름</option>
+				<option <c:if test="${param.type == 'content'}">selected</c:if> value="content">내용</option>
 			</select>
 		</div>
 		<div class="col-auto">
-			<input type="text" class="form-control" name="word" value="${word}">
+			<input type="text" class="form-control" name="word" value="${param.word}">
 		</div>
 		<div class="col-auto">
 			<button type="submit" class="btn btn-danger btn-block">검색</button>

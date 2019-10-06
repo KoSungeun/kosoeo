@@ -19,6 +19,7 @@ import com.kosoeo.command.AdminBoardListCommnad;
 import com.kosoeo.command.AdminMemberBlockCommand;
 import com.kosoeo.command.AdminMemberListCommand;
 import com.kosoeo.command.AdminMemberWithdrawCommand;
+import com.kosoeo.command.AdminRankCommand;
 import com.kosoeo.command.BoardContentCommand;
 import com.kosoeo.command.BoardDeleteCommand;
 import com.kosoeo.command.BoardListCommand;
@@ -35,6 +36,7 @@ import com.kosoeo.command.FileDeleteCommand;
 import com.kosoeo.command.FileDownloadCommand;
 import com.kosoeo.command.FileListCommand;
 import com.kosoeo.command.FileUploadCommand;
+import com.kosoeo.command.MainPageCommand;
 import com.kosoeo.command.MemberEmailCheckCommand;
 import com.kosoeo.command.MemberJoinCommand;
 import com.kosoeo.command.MemberLoginCommand;
@@ -81,6 +83,8 @@ public class FrontController extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		if(com.equals("/main.do")) {
+			command = new MainPageCommand();
+			command.execute(request, response);
 			viewPage = "main.jsp";
 		} else if (com.equals("/Member/joinView.do")) {
 			viewPage = "join.jsp";
@@ -89,7 +93,7 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/join.do")) {
 			command = new MemberJoinCommand();
 			command.execute(request, response);
-			response.sendRedirect("../main.jsp");
+			response.sendRedirect("../main.do");
 		} else if (com.equals("/Member/emailCheck.do")) {
 			command = new MemberEmailCheckCommand();
 			command.execute(request, response);
@@ -99,7 +103,7 @@ public class FrontController extends HttpServlet {
 		} else if (com.equals("/Member/logout.do")) {
 			command = new MemberLogoutCommand();
 			command.execute(request, response);
-			response.sendRedirect(request.getHeader("referer"));
+			response.sendRedirect("../main.do");
 		} else if (com.equals("/Member/modifyView.do")){
 			viewPage = "modify.jsp";
 		} else if (com.equals("/Member/modify.do")){
@@ -160,7 +164,7 @@ public class FrontController extends HttpServlet {
 			command.execute(request, response);
 			command = new FileUploadCommand();
 			command.execute(request, response);
-			response.sendRedirect("content.do?no=" + request.getParameter("no"));
+			response.sendRedirect("content.do?no="+ request.getAttribute("seq"));
 		} else if (com.equals("/Board/content.do")) {
 			command = new BoardContentCommand();
 			command.execute(request, response);
@@ -222,6 +226,14 @@ public class FrontController extends HttpServlet {
 			command = new AdminBoardDeleteCommnad();
 			command.execute(request, response);	
 			response.sendRedirect("board.do?category="+ session.getAttribute("ccategory") + "&page=" + session.getAttribute("cpage") +"&type=" + request.getParameter("type") + "&word=" + URLEncoder.encode(request.getParameter("word"),"UTF-8"));	
+		} else if (com.equals("/Admin/rank.do")){
+			command = new AdminRankCommand();
+			command.execute(request, response);
+			viewPage = "rank.jsp";	
+		} else if (com.equals("/Chat/main.do")){
+			viewPage = "main.jsp";	
+		} else if (com.equals("/map.do")){
+			viewPage = "map.jsp";	
 		} 
 
 		if(viewPage != null) {

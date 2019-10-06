@@ -34,13 +34,36 @@
 	$(document).ready(function() {
 		$("#modalLoginBtn").click(function() {
 			location.href="/WebProject/Member/loginView.do";
+		
 		});
+		<c:if test="${modalMsg != null}">
+			$(".modal-body").html('${modalMsg}');
+			$("#confirmFooter").removeClass("d-none");	
+			$("#alertModal").modal();
+			<c:remove var="modalMsg" scope="session"/>
+		</c:if>	
+		
 	})
 </script>
 
 <title>WebProject</title>
 </head>
 
+
+
+
+<c:if test="${requestScope['javax.servlet.forward.servlet_path'].indexOf('Chat') > -1}">
+<c:set var="nav" value="0"></c:set>
+</c:if>
+<c:if test="${requestScope['javax.servlet.forward.servlet_path'].indexOf('Board') > -1}">
+<c:set var="nav" value="1"></c:set>
+</c:if>
+<c:if test="${requestScope['javax.servlet.forward.servlet_path'].indexOf('map') > -1}">
+<c:set var="nav" value="2"></c:set>
+</c:if>
+<c:if test="${requestScope['javax.servlet.forward.servlet_path'].indexOf('Admin') > -1}">
+<c:set var="nav" value="3"></c:set>
+</c:if>
 
 <body class="bg-light">
 
@@ -81,11 +104,11 @@
 
 		<div class="collapse navbar-collapse" id="navbarsExampleDefault">
 			<ul class="navbar-nav mr-auto">
-				<li class="nav-item active">
-					<a class="nav-link" href="#">채팅</a>
+				<li class="nav-item <c:if test='${nav == 0}'>active</c:if> ">
+					<a class="nav-link" href="/WebProject/Chat/main.do">채팅</a>
 				</li>
 
-				<li class="nav-item dropdown"><a
+				<li class="nav-item dropdown <c:if test='${nav == 1}'>active</c:if>"><a
 					class="nav-link dropdown-toggle" href="#" id="dropdown01"
 					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">게시판</a>
 					<div class="dropdown-menu" aria-labelledby="dropdown01">
@@ -93,16 +116,22 @@
 							class="dropdown-item" href="/WebProject/Board/free.do">자유게시판</a> <a
 							class="dropdown-item" href="/WebProject/Board/down.do">자료실</a>
 					</div></li>
+					
+								<li class="nav-item <c:if test='${nav == 2}'>active</c:if>">
+					<a class="nav-link" href="/WebProject/map.do">찾아오기</a>
+				</li>
 					<c:if test="${member.isAdmin()}">
 					
-						<li class="nav-item"><a class="nav-link" href="/WebProject/Admin/member.do"
+						<li class="nav-item <c:if test='${nav == 3}'>active</c:if>"><a class="nav-link" href="/WebProject/Admin/member.do"
 						tabindex="-1" aria-disabled="true">관리자</a></li>	
 					</c:if>
+				
 				
 			</ul>
 			<c:choose>
 
 				<c:when test="${member == null}">	
+				
 					<div class="my-2 my-md-0">
 						<button class="btn btn-secondary mr-2"
 							onclick="location.href='/WebProject/Member/loginView.do'">로그인</button>
@@ -111,6 +140,8 @@
 					</div>
 				</c:when>
 				<c:otherwise>
+				
+					<div class="text-white mr-2">${member.nickName }님 환영합니다.</div>
 					<div class="my-2 my-md-0">
 						<button class="btn btn-secondary mr-2" onclick=logout()>로그아웃</button>
 						<button class="btn btn-secondary"

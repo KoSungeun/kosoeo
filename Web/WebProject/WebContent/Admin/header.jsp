@@ -67,3 +67,4 @@
     <a class="nav-link <c:if test='${nav == 2}'>active</c:if>" href="rank.do">순위</a>
   </li>
 </ul>	
+

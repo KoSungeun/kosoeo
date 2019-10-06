@@ -45,7 +45,6 @@ public class AdminMemberListCommand implements Command{
 			session.setAttribute("cpage", nPage);
 			request.setAttribute("list", dao.list(nPage, type, word));
 		}
-		System.out.println(request.getParameter("type"));
 		request.setAttribute("isAdmin", isAdmin);
 	}
 

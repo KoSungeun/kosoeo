@@ -14,15 +14,15 @@ public class Board {
 	private int bgroup;
 	private int step;
 	private int indent;
+	private int thumbUpCount;
 	
 	
-	public Board() {
+	
+	public Board() {}
 
-	}
-	
 	public Board(int no, int category, Member member, String title, String content, int blike, Timestamp postdate,
-			int hit, int bgroup, int step, int indent) {
-		super();
+			int hit, int bgroup, int step, int indent, int thumbUpCount) {
+
 		this.no = no;
 		this.category = category;
 		this.member = member;
@@ -34,9 +34,8 @@ public class Board {
 		this.bgroup = bgroup;
 		this.step = step;
 		this.indent = indent;
+		this.thumbUpCount = thumbUpCount;
 	}
-
-
 	public int getNo() {
 		return no;
 	}
@@ -102,6 +101,14 @@ public class Board {
 	}
 	public void setIndent(int indent) {
 		this.indent = indent;
+	}
+
+	public int getThumbUpCount() {
+		return thumbUpCount;
+	}
+
+	public void setThumbUpCount(int thumbUpCount) {
+		this.thumbUpCount = thumbUpCount;
 	}
 	
 	

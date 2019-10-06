@@ -53,6 +53,7 @@ public class BoardDAO {
 			}
 			pstmt.close();
 			rs.close();
+			
 			query = "insert into board " + 
 						   " (no, category, memberNo, title, content, bGroup, step, indent) " +
 						   " values " + 
@@ -130,6 +131,7 @@ public class BoardDAO {
 			while (resultSet.next()) {
 				Board bdto = new Board();
 				Member mdto = new Member();
+				bdto.setContent(resultSet.getString("content"));
 				mdto.setEmail(resultSet.getString("email"));
 				mdto.setName(resultSet.getString("name"));
 				mdto.setNickName(resultSet.getString("nickName"));
@@ -137,7 +139,6 @@ public class BoardDAO {
 				bdto.setCategory(resultSet.getInt("category"));
 				bdto.setMember(mdto);
 				bdto.setTitle(resultSet.getString("title"));
-				bdto.setContent(resultSet.getString("content"));
 				bdto.setPostdate(resultSet.getTimestamp("postdate"));
 				bdto.setHit(resultSet.getInt("hit"));
 				bdto.setBgroup(resultSet.getInt("bgroup"));
@@ -179,6 +180,7 @@ public class BoardDAO {
 			while (resultSet.next()) {
 				bdto = new Board();
 				Member mdto = new Member();
+				bdto.setContent(resultSet.getString("content"));
 				mdto.setNo(resultSet.getInt("memberNo"));
 				mdto.setEmail(resultSet.getString("email"));
 				mdto.setName(resultSet.getString("name"));
@@ -187,7 +189,6 @@ public class BoardDAO {
 				bdto.setCategory(resultSet.getInt("category"));
 				bdto.setMember(mdto);
 				bdto.setTitle(resultSet.getString("title"));
-				bdto.setContent(resultSet.getString("content"));
 				bdto.setPostdate(resultSet.getTimestamp("postdate"));
 				bdto.setHit(resultSet.getInt("hit"));
 				bdto.setBgroup(resultSet.getInt("bgroup"));
@@ -321,6 +322,7 @@ public class BoardDAO {
 			while (resultSet.next()) {
 				board = new Board();
 				Member mdto = new Member();
+				board.setContent(resultSet.getString("content"));
 				mdto.setNo(resultSet.getInt("memberNo"));
 				mdto.setEmail(resultSet.getString("email"));
 				mdto.setName(resultSet.getString("name"));
@@ -329,7 +331,6 @@ public class BoardDAO {
 				board.setCategory(resultSet.getInt("category"));
 				board.setMember(mdto);
 				board.setTitle(resultSet.getString("title"));
-				board.setContent(resultSet.getString("content"));
 				board.setPostdate(resultSet.getTimestamp("postdate"));
 				board.setHit(resultSet.getInt("hit"));
 				board.setBgroup(resultSet.getInt("bgroup"));
@@ -423,6 +424,165 @@ public class BoardDAO {
 				e2.printStackTrace();
 			}
 		}
+	}
+	
+	public ArrayList<Board> mostThumbUpList() {
+		
+		ArrayList<Board> dtos = new ArrayList<Board>();
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+	
+		String query = null;
+		query = " select a.* " + 
+				" from ( " +
+				" select * from board b join " +
+				" (select boardno, count(*) upcount " +	
+				" from thumb " + 
+				" where up = 1 " + 
+				" group by boardno " + 
+				" order by upcount desc) t " + 
+				" on b.no = t.boardno " +
+				" join member m " +
+				" on b.memberno = m.no " +
+				" order by t.upcount desc " +
+				" ) a " +
+				" where rownum <=5 ";
+		
+		try {
+			con = dataSource.getConnection();
+
+			pstmt = con.prepareStatement(query);
+			resultSet = pstmt.executeQuery();
+			
+			while (resultSet.next()) {
+				Board bdto = new Board();
+				Member mdto = new Member();
+				bdto.setContent(resultSet.getString("content"));
+				mdto.setEmail(resultSet.getString("email"));
+				mdto.setName(resultSet.getString("name"));
+				mdto.setNickName(resultSet.getString("nickName"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setCategory(resultSet.getInt("category"));
+				bdto.setMember(mdto);
+				bdto.setTitle(resultSet.getString("title"));
+				bdto.setPostdate(resultSet.getTimestamp("postdate"));
+				bdto.setHit(resultSet.getInt("hit"));
+				bdto.setBgroup(resultSet.getInt("bgroup"));
+				bdto.setStep(resultSet.getInt("step"));
+				bdto.setIndent(resultSet.getInt("indent"));
+				bdto.setThumbUpCount(resultSet.getInt("upcount"));
+				dtos.add(bdto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(resultSet != null) resultSet.close();
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return dtos;
+		
+	}
+	public ArrayList<Board> mostHitList() {
+		
+		ArrayList<Board> dtos = new ArrayList<Board>();
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+		System.out.println();
+		String query = null;
+		query = " select a.* " +
+				" from (select * from board b " +
+				" join member m " +
+				" on b.memberno = m.no " + 
+				" order by hit desc ) a " +
+				" where rownum <=5 ";
+		try {
+			con = dataSource.getConnection();
+
+			pstmt = con.prepareStatement(query);
+			resultSet = pstmt.executeQuery();
+			
+			while (resultSet.next()) {
+				Board bdto = new Board();
+				Member mdto = new Member();
+				bdto.setContent(resultSet.getString("content"));
+				mdto.setEmail(resultSet.getString("email"));
+				mdto.setName(resultSet.getString("name"));
+				mdto.setNickName(resultSet.getString("nickName"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setCategory(resultSet.getInt("category"));
+				bdto.setMember(mdto);
+				bdto.setTitle(resultSet.getString("title"));
+				bdto.setPostdate(resultSet.getTimestamp("postdate"));
+				bdto.setHit(resultSet.getInt("hit"));
+				bdto.setBgroup(resultSet.getInt("bgroup"));
+				bdto.setStep(resultSet.getInt("step"));
+				bdto.setIndent(resultSet.getInt("indent"));
+				dtos.add(bdto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(resultSet != null) resultSet.close();
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return dtos;
+		
+	}
+	
+	public ArrayList<Board> miniNotice() {
+		
+		ArrayList<Board> dtos = new ArrayList<Board>();
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet resultSet = null;
+		System.out.println();
+		String query = null;
+		query = " select a.* " +
+				" from ( " +
+				" select no, title, content from board where category = 0 " +
+				" order by no desc) a "+
+				" where rownum <=3";
+		try {
+			con = dataSource.getConnection();
+
+			pstmt = con.prepareStatement(query);
+			resultSet = pstmt.executeQuery();
+			
+			while (resultSet.next()) {
+				Board bdto = new Board();
+				bdto.setContent(resultSet.getString("content"));
+				bdto.setNo(resultSet.getInt("no"));
+				bdto.setTitle(resultSet.getString("title"));
+				dtos.add(bdto);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(resultSet != null) resultSet.close();
+				if(pstmt != null) pstmt.close();
+				if(con != null) con.close();
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+		}
+		return dtos;
+		
 	}
 	
 	public Page articlePage(int curPage, int category, String type, String word) {

@@ -98,32 +98,34 @@ public class ThumbDAO {
 		ResultSet rs = null;
 		Thumb thumb = null;
 		String query = null;
-		if(memberNo == 0) {
-			query = "select (select count(*) from thumb where boardno = ? and up = 1) upCount, "
+	
+		query = "select (select count(*) from thumb where boardno = ? and up = 1) upCount, "
 					+ " (select count(*) from thumb where boardNo = ? and down = 1) downCount from dual";
-		} else {			
-			query = "select up, down, (select count(*) from thumb where boardno = ? and up = 1) upCount, "
-					+ " (select count(*) from thumb where boardNo = ? and down = 1) downCount from thumb where memberNo = ? and boardNo = ?";
-		}
 
 		try {
 			con = dataSource.getConnection();
 			pstmt = con.prepareStatement(query);
 			pstmt.setInt(1, boardNo);
 			pstmt.setInt(2, boardNo);
-			if(memberNo != 0) {
-				pstmt.setInt(3, memberNo);
-				pstmt.setInt(4, boardNo);
-			}
 			rs = pstmt.executeQuery();
+			thumb = new Thumb();
 			while (rs.next()) {
-				thumb = new Thumb();
-				if(memberNo != 0) {
+					
+				thumb.setUpCount(rs.getInt("upCount"));
+				thumb.setDownCount(rs.getInt("downCount"));
+			}
+			pstmt.close();
+			rs.close();
+			if(memberNo != 0) {
+				query = "select up, down from thumb where memberNo = ? and boardNo = ?";
+				pstmt = con.prepareStatement(query);
+				pstmt.setInt(1, memberNo);
+				pstmt.setInt(2, boardNo);
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
 					thumb.setUp(rs.getInt("up"));
 					thumb.setDown(rs.getInt("down"));
 				}
-				thumb.setUpCount(rs.getInt("upCount"));
-				thumb.setDownCount(rs.getInt("downCount"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

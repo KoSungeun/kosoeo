@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.jasper.runtime.JspRuntimeLibrary;
 
@@ -25,6 +26,9 @@ public class MemberJoinCommand implements Command {
 		MemberDAO dao = MemberDAO.getInstance();
 		String result = null;
 		String msg = null;
+		
+		
+		
 		if(dao.emailCheck(dto.getEmail()) == MemberDAO.MEMBER_EXISTENT) {
 			result = "fail";
 			msg = "사용중인 이메일입니다";
@@ -33,6 +37,8 @@ public class MemberJoinCommand implements Command {
 			result = "success";
 			msg = "회원가입 성공";
 		}
+		HttpSession session = request.getSession();
+		session.setAttribute("modalMsg", msg);
 		out.println("{\"result\": \"" + result + "\","
 				+ "\"msg\": \"" +  msg + "\"}");	
 	}

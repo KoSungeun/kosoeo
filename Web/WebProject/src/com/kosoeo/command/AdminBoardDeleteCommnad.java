@@ -40,13 +40,15 @@ public class AdminBoardDeleteCommnad implements Command {
 					file.delete();
 				}
 			});
+			
+			BoardDAO dao = new BoardDAO();
+			dao.delete(boardNo);
+			
+			HttpSession session = request.getSession();
+			session.setAttribute("msg", "삭제했습니다.");
 		}
+	
 		
-		BoardDAO dao = new BoardDAO();
-		dao.delete(boardNo);
-		
-		HttpSession session = request.getSession();
-		session.setAttribute("msg", "삭제했습니다.");
 
 	}
 

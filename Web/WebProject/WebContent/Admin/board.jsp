@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="../header.jsp"></jsp:include>
 <jsp:include page="header.jsp"></jsp:include>
@@ -24,6 +25,8 @@
 	</thead>
 	<tbody>
 		<c:forEach items="${list }" var="dto">
+		<c:set var="formatter" value="${ DateTimeFormatter.ofPattern('yyyy-MM-dd HH:mm:ss')}"></c:set>
+		<c:set var="postdate" value="${ dto.postdate.toLocalDateTime()}"></c:set>
 			<tr>
 				<td>${dto.no}</td>
 				<td>${dto.member.nickName}</td>
@@ -33,7 +36,7 @@
 				<span class="badge badge-danger">New</span>
 				</c:if>
 				</td>
-				<td>${dto.postdate}</td>
+				<td>${postdate.format(formatter)}</td>
 				<td>${dto.hit}</td>
 				<td><a href="boardDelete.do?boardNo=${dto.no}&type=${param.type}&word=${param.word}" class="text-dark"><i class="fas fa-trash-alt"></a></i></td>
 			</tr>

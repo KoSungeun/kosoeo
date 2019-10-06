@@ -23,14 +23,14 @@ public class MemberWithdrawCommand implements Command {
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
 		HttpSession session = request.getSession();
-		Member dto = (Member) session.getAttribute("MemberDTO");
+		Member dto = (Member) session.getAttribute("member");
 		dto.setPassword(request.getParameter("password"));
 		MemberDAO dao = MemberDAO.getInstance();
 		
 		String result = null;
 		String msg = null;
 		
-		
+		System.out.println("???");
 
 		if(dao.userCheck(dto.getEmail(), dto.getPassword(), "normal") == MemberDAO.MEMBER_LOGIN_PW_NO_GOOD) {
 			result = "fail";
@@ -40,7 +40,6 @@ public class MemberWithdrawCommand implements Command {
 			msg = "탈퇴하였습니다";
 			dao.withdraw(dto.getNo());
 		}
-		
 		out.println("{\"result\": \"" + result + "\","
 				+ "\"msg\": \"" +  msg + "\"}");	
 		

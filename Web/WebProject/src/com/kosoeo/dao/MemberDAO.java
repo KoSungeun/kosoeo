@@ -12,6 +12,7 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import com.kosoeo.dto.Member;
+import com.kosoeo.dto.MemberRank;
 import com.kosoeo.dto.Page;
 
 public class MemberDAO {
@@ -489,5 +490,92 @@ public class MemberDAO {
 			e.printStackTrace();
 		}
 		return con;
+	}
+	
+
+	public List<MemberRank> boardRank() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<MemberRank> list = new ArrayList<>();
+		MemberRank rank = null;
+		
+
+		String query = 	" select a.* " +
+						" from (select  m.email, m.nickname,  count(*) posts " + 
+						" from board b join member m " +
+						" on b.memberno = m.no " + 
+						" where b.postdate > (sysdate-7) " + 
+						" group by  m.email, m.nickname " + 
+						" order by posts desc) a " + 
+						" where rownum <= 5 ";
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				String email = rs.getString("email");
+				String nickName = rs.getString("nickName");
+				int posts = rs.getInt("posts");
+				rank = new MemberRank(email, nickName, posts);
+				list.add(rank);
+			}
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+				con.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
+	public List<MemberRank> commantRank() {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		List<MemberRank> list = new ArrayList<>();
+		MemberRank rank = null;
+		
+
+		String query = 	" select a.* " +
+						" from (select m.email, m.nickname,  count(*) posts " + 
+						" from comments c join member m " + 
+						" on c.memberno = m.no " + 
+						" where c.commentdate > (sysdate-7) " + 
+						" group by m.email, m.nickname " +
+						" order by posts desc) a " +
+						" where rownum <= 5";
+		try {
+			con = getConnection();
+			pstmt = con.prepareStatement(query);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				String email = rs.getString("email");
+				String nickName = rs.getString("nickName");
+				int posts = rs.getInt("posts");
+				rank = new MemberRank(email, nickName, posts);
+				list.add(rank);
+			}
+
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				rs.close();
+				pstmt.close();
+				con.close();
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		return list;
 	}
 }
