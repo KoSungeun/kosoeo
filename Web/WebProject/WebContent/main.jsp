@@ -5,7 +5,7 @@
 <style>
 
 .carousel-item > img {
-	max-height: 800px;
+	max-height: 500px;
 	object-fit: cover;
 }
 
