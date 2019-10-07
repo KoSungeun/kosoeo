@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,5 +36,12 @@ public class MainActivity extends AppCompatActivity {
     public void onButton3Clicked(View v) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01074693800"));
         startActivity(intent);
+    }
+
+    public void onButton4Clicked(View v) {
+        EditText editText = findViewById(R.id.editText1);
+        TextView textView = findViewById(R.id.textView1);
+
+        textView.setText(editText.getText());
     }
 }
