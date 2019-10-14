@@ -1,0 +1,2 @@
+include ':app'
+rootProject.name='Ex28_Thread2'
