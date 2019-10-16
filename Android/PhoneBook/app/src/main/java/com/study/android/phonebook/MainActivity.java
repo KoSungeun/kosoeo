@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
 
-    private  static final String TAG = "lecture";
+    private static final String TAG = "lecture";
 
 
     SingerAdapter adapter;
