@@ -29,8 +29,8 @@ public class HttpGetActivity extends AppCompatActivity {
     }
 
     public void onBtnGet (View v) {
-        String sUrl = getString(R.string.server_addr) + "/JspInServer/login.jsp";
-
+    //    String sUrl = getString(R.string.server_addr) + "/JspInServer/login.jsp";
+        String sUrl = "https://book.naver.com/bestsell/home_bestseller_json.nhn";
         GetAction myGetAct = new GetAction();
         myGetAct.execute(sUrl);
 
@@ -59,6 +59,8 @@ public class HttpGetActivity extends AppCompatActivity {
                 if (conn != null) {
                     conn.setConnectTimeout(10000);
                     conn.setRequestMethod("GET");
+                    conn.setRequestProperty("cp_cate","");
+                    conn.setRequestProperty("cp_name","kyobo");
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
 
