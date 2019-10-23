@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             // <word>aaa<any>any text</any>bbb</word>에서 bbb의 결과를 확인해 보세요.
             boolean useStack = true;
 
+
             // XML 파서
             XmlPullParser parser = getResources().getXml(R.xml.test);
 

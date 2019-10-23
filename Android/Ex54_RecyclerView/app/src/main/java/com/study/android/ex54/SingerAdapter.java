@@ -47,7 +47,7 @@ public class SingerAdapter extends RecyclerView.Adapter<SingerAdapter.SingerItem
         this.context = context;
     }
 
-    public  void addItem(SingerItem item) {
+    public void addItem(SingerItem item) {
         items.add(item);
     }
 
