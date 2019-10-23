@@ -1,6 +1,7 @@
 package com.study.android.booklog;
 
 
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
     private List<Book> bookList;
     private ImageRequester imageRequester;
 
+    private ViewGroup parent;
+
     public BestsellerCardRecyclerViewAdapter(List<Book> bookList) {
         this.bookList = bookList;
         imageRequester = ImageRequester.getInstance();
@@ -24,19 +27,23 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
     @Override
     public BestsellerCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bestseller_card, parent, false);
+        this.parent = parent;
+
+
         return new BestsellerCardViewHolder(layoutView);
     }
 
 
     @Override
-    public void onBindViewHolder(@NonNull BestsellerCardViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final BestsellerCardViewHolder holder, int position) {
         final Book book = bookList.get(position);
-        holder.view.setOnClickListener(new View.OnClickListener() {
-
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NavigationHost) BooklogApplication.getActivitContext()).navigateTo(new BookDetailFragment(), true);
-
+                TransitionManager.beginDelayedTransition(parent);
+                 holder.itemView.getLayoutParams().width = 500;
+                 holder.itemView.requestLayout();
+         //       ((NavigationHost) BooklogApplication.getActivitContext()).navigateTo(new BookDetailFragment(), true);
             }
         });
         holder.title.setText(book.title);
