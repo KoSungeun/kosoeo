@@ -17,16 +17,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.study.android.booklog.BestsellerCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
 import com.study.android.booklog.BooklogApplication;
 import com.study.android.booklog.R;
+import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
+
+import java.util.List;
 
 
 public class BestsellerFragment extends Fragment {
 
-
     RecyclerView recyclerView;
+
     ViewGroup container;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,9 +49,18 @@ public class BestsellerFragment extends Fragment {
         setUpToolbar(view);
         recyclerView = view.findViewById(R.id.recycler_view);
 
+
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
-        Book.initBookList(recyclerView);
+
+
+        Book.getBestsellerBookList(new VolleyCallback(){
+            @Override
+            public void onSuccess(Object result) {
+                BestsellerCardRecyclerViewAdapter adapter = new BestsellerCardRecyclerViewAdapter((List<Book>) result);
+                recyclerView.setAdapter(adapter);
+            }
+        });
 
 
         int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);

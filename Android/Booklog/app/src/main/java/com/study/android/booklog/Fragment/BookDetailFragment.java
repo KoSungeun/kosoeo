@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.study.android.booklog.R;
+import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
 
 
@@ -42,9 +43,14 @@ public class BookDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_book_detail, container, false);
-        TextView textView = view.findViewById(R.id.detial_title);
+        final TextView textView = view.findViewById(R.id.detial_title);
         setUpToolbar(view);
-        Book.initBookDetail(getArguments().getString("bid"), textView);
+        Book.initBookDetail(getArguments().getString("bid"), new VolleyCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                textView.setText((String) result);
+            }
+        });
         return view;
     }
 
