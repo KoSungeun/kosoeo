@@ -44,7 +44,6 @@ public class BestsellerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         this.container = container;
-        BooklogApplication.getInstance().setActivitContext(getActivity());
         View view = inflater.inflate(R.layout.fragment_bestseller, container, false);
         setUpToolbar(view);
         recyclerView = view.findViewById(R.id.recycler_view);

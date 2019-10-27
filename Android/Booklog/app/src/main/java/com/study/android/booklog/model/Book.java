@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import com.study.android.booklog.MyRequestQueue;
-import com.study.android.booklog.Translator;
 import com.study.android.booklog.VolleyCallback;
 
 import org.json.JSONArray;
@@ -20,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
 
 import java.lang.reflect.Type;
@@ -42,6 +43,18 @@ public class Book {
     public boolean isAdult;
     public String coverUrl;
     private String rating;
+    private String publisher;
+    private String publicationDate;
+    private String originalTitle;
+    private String page;
+    private String isbn;
+    private String price;
+    private String disPrice;
+    private String discount;
+    private String ebookPrice;
+    private String ebookDisPrice;
+    private String ebookDiscount;
+    private String introContent;
 
 
     public Book() {
@@ -72,9 +85,7 @@ public class Book {
                     List<Book> list = gson.fromJson(result.toString(), bookListType);
 
                     for(Book book : list) {
-                        String covertedBid = "00000000".substring(0,8-book.bid.length()) + book.bid;
-                        String coverUrl = "https://bookthumb-phinf.pstatic.net/cover/" + covertedBid.substring(0,3) + "/" + covertedBid.substring(3,6) + "/" + covertedBid + ".jpg";
-                        book.setCoverUrl(coverUrl);
+                        book.setCoverUrl(book.bid);
                     }
 
                     callback.onSuccess(list);
@@ -114,18 +125,70 @@ public class Book {
                 String rating = bookInfo.select("div.review_point2").next().text();
                 rating = rating.substring(0, rating.length()-1);
                 book.setRating(rating);
-                Author author = new Author();
-                author.setName(bookInfo.select("div>em").eq(0).next().text());
-                book.getAuthorList().add(author);
+
+                for (Element e : bookInfo.select("a[class*=author]")) {
+                    Author author = new Author();
+                    author.setName(e.text());
+                    book.getAuthorList().add(author);
+                }
+
+                book.setPublisher(bookInfo.select("a[class*=publisher]").text());
+
+                for (Element e : bookInfo.select("a[class*=translator]")) {
+                    Translator translator = new Translator();
+                    translator.setName(e.text());
+                    book.getTranslatorList().add(translator);
+                }
+
+                for(TextNode tn : bookInfo.select(".txt_desc").next().first().textNodes()) {
+                    if(!tn.isBlank()) {
+                        book.setPublicationDate(tn.text().trim());
+                    }
+                }
 
 
-                callback.onSuccess(book.getRating());
+                if(bookInfo.select("div.tit_ori").first() != null) {
+                    for(TextNode tn : bookInfo.select("div.tit_ori").first().textNodes()) {
+                        if(!tn.isBlank()) {
+                            book.setOriginalTitle(tn.text().trim());
+                        }
+                    }
+                }
+
+
+                int i = 0;
+                for(TextNode tn : bookInfo.select("div.price_area").prev().first().textNodes()) {
+                    if(!tn.isBlank()) {
+                        if(i == 0) {
+                            book.setPage(tn.text().trim());
+                        } else if (i == 1) {
+                            book.setIsbn(tn.text().trim());
+                            break;
+                        }
+                        i++;
+                    }
+                }
+
+                book.setDisPrice(bookInfo.select("div.lowest > strong").text());
+                book.setPrice(bookInfo.select("div.lowest > .price").text());
+                book.setDiscount(bookInfo.select("div.lowest > .discount").text());
+
+                book.setEbookDisPrice(bookInfo.select("div.ebook > strong").text());
+                book.setEbookPrice(bookInfo.select("div.ebook > .price").text());
+                book.setEbookDiscount(bookInfo.select("div.ebook > .discount").text());
+
+                book.setIntroContent(document.select("#bookIntroContent").text());
+
+
+                book.setCoverUrl(bid);
+
+                callback.onSuccess(book);
             }
 
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-//                initBookDetail(bid, callback);
+
             }
         }) {
             @Override
@@ -141,7 +204,9 @@ public class Book {
     }
 
 
-    public void setCoverUrl(String coverUrl) {
+    public void setCoverUrl(String bid) {
+        String covertedBid = "00000000".substring(0,8-bid.length()) + bid;
+        String coverUrl = "https://bookthumb-phinf.pstatic.net/cover/" + covertedBid.substring(0,3) + "/" + covertedBid.substring(3,6) + "/" + covertedBid + ".jpg";
         this.coverUrl = coverUrl;
     }
 
@@ -241,4 +306,103 @@ public class Book {
         this.rating = rating;
     }
 
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(String publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public String getPage() {
+        return page;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getDisPrice() {
+        return disPrice;
+    }
+
+    public void setDisPrice(String disPrice) {
+        this.disPrice = disPrice;
+    }
+
+    public String getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(String discount) {
+        this.discount = discount;
+    }
+
+    public String getEbookPrice() {
+        return ebookPrice;
+    }
+
+    public void setEbookPrice(String ebookPrice) {
+        this.ebookPrice = ebookPrice;
+    }
+
+    public String getEbookDisPrice() {
+        return ebookDisPrice;
+    }
+
+    public void setEbookDisPrice(String ebookDisPrice) {
+        this.ebookDisPrice = ebookDisPrice;
+    }
+
+    public String getEbookDiscount() {
+        return ebookDiscount;
+    }
+
+    public void setEbookDiscount(String ebookDiscount) {
+        this.ebookDiscount = ebookDiscount;
+    }
+
+    public String getIntroContent() {
+        return introContent;
+    }
+
+    public void setIntroContent(String introContent) {
+        this.introContent = introContent;
+    }
 }

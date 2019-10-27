@@ -6,6 +6,10 @@ public class Translator {
     public String job;
     public String name;
 
+
+    public Translator() {
+    }
+
     public Translator(String authorID, String job, String name) {
         this.authorID = authorID;
         this.job = job;

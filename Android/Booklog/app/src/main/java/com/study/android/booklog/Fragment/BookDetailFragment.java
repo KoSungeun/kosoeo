@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.NetworkImageView;
+import com.study.android.booklog.ImageRequester;
 import com.study.android.booklog.R;
 import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
@@ -28,8 +29,12 @@ import com.study.android.booklog.model.Book;
  */
 public class BookDetailFragment extends Fragment {
 
+    private TextView tvTitle;
+    private ImageRequester imageRequester;
+    private NetworkImageView coverImg;
+
     public BookDetailFragment() {
-        // Required empty public constructor
+        imageRequester = ImageRequester.getInstance();
     }
 
     @Override
@@ -43,12 +48,15 @@ public class BookDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_book_detail, container, false);
-        final TextView textView = view.findViewById(R.id.detial_title);
+        tvTitle = view.findViewById(R.id.tvTitleData);
+        coverImg = view.findViewById(R.id.cover_image);
         setUpToolbar(view);
         Book.initBookDetail(getArguments().getString("bid"), new VolleyCallback() {
             @Override
             public void onSuccess(Object result) {
-                textView.setText((String) result);
+                Book book = (Book) result;
+                tvTitle.setText(book.getTitle());
+                imageRequester.setImageFromUrl(coverImg, book.getCoverUrl());
             }
         });
         return view;
