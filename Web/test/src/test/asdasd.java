@@ -18,7 +18,7 @@ public class asdasd {
 		            .header("accept-language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,es;q=0.6") ;
 			Document dom = conn.get();
 			Elements bookInfo = dom.select("div.book_info");
-			for(Elements e : bookInfo.select("em")) {
+			for(Element e : bookInfo.select("em")) {
 				
 			}
 			
