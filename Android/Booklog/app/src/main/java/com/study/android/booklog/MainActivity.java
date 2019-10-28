@@ -29,13 +29,27 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
                     .add(R.id.container, bestsellerFragment)
                     .commit();
         }
+
+
     }
 
     @Override
     public void navigateTo(Fragment fragment, boolean addToBackstack) {
 
+        FragmentTransaction transaction =
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+                        .replace(R.id.container, fragment);
 
+        if (addToBackstack) {
+            transaction.addToBackStack(null);
+        }
+        transaction.commit();
+    }
 
+    @Override
+    public void navigateAdd(Fragment fragment, boolean addToBackstack) {
         FragmentTransaction transaction =
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -46,9 +60,6 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         if (addToBackstack) {
             transaction.addToBackStack(null);
         }
-
-
-
         transaction.commit();
     }
 }

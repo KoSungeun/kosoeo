@@ -12,7 +12,6 @@ import com.android.volley.toolbox.Volley;
 public class BooklogApplication extends Application {
     private static BooklogApplication instance;
     private static Context appContext;
-    private static Context activitContext;
 
     public static BooklogApplication getInstance() {
         return instance;
@@ -22,9 +21,6 @@ public class BooklogApplication extends Application {
         return appContext;
     }
 
-    public static Context getActivitContext() {
-        return activitContext;
-    }
     public void setAppContext(Context mAppContext) {
         this.appContext = mAppContext;
     }
@@ -34,12 +30,8 @@ public class BooklogApplication extends Application {
         super.onCreate();
         instance = this;
 
-
         this.setAppContext(getApplicationContext());
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
 
-    public void setActivitContext(Context activitContext) {
-        this.activitContext = activitContext;
-    }
 }
