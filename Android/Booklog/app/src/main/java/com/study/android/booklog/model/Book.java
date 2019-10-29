@@ -1,6 +1,10 @@
 package com.study.android.booklog.model;
 
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -8,9 +12,18 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import com.study.android.booklog.BooklogApplication;
 import com.study.android.booklog.MyRequestQueue;
 import com.study.android.booklog.VolleyCallback;
 
@@ -206,6 +219,47 @@ public class Book {
         queue.add(stringRequest);
     }
 
+
+    public static void addMyBook(String bid) {
+        Map<String, Object> bookdata = new HashMap<>();
+        bookdata.put("bid", bid);
+        bookdata.put("isRead", false);
+        List<Map<String, Object>> booklist = new ArrayList<>();
+        booklist.add(bookdata);
+        Map<String, Object> data = new HashMap<>();
+        data.put("book", FieldValue.arrayUnion(bookdata));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+
+        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("asd0","OK");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+    }
+
+    public static void getMyBook(final VolleyCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if(task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+
+                    callback.onSuccess(document.get("book"));
+                }
+            }
+        });
+    }
 
     public void setCoverUrl(String bid) {
         String covertedBid = "00000000".substring(0,8-bid.length()) + bid;

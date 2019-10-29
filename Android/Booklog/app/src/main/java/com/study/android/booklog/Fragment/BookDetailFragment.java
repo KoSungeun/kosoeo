@@ -47,6 +47,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.study.android.booklog.ImageRequester;
 import com.study.android.booklog.MyRequestQueue;
 import com.study.android.booklog.R;
@@ -69,6 +70,7 @@ public class BookDetailFragment extends Fragment {
     private TextView tvIntroContent;
     private ImageRequester imageRequester;
     private NetworkImageView coverImg;
+    private FloatingActionButton floatingActionButton;
 
     private SupportMapFragment supportMapFragment;
     private GoogleMap map;
@@ -84,9 +86,6 @@ public class BookDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
-
     }
 
     @Override
@@ -98,11 +97,22 @@ public class BookDetailFragment extends Fragment {
         tvTitle = view.findViewById(R.id.tvTitleData);
         tvIntroContent = view.findViewById(R.id.tvIntroContent);
         coverImg = view.findViewById(R.id.cover_image);
+
+        floatingActionButton = view.findViewById(R.id.floating_add_button);
+
         setUpToolbar(view);
+
         Book.initBookDetail(getArguments().getString("bid"), new VolleyCallback() {
             @Override
             public void onSuccess(Object result) {
-                Book book = (Book) result;
+                final Book book = (Book) result;
+
+                floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Book.addMyBook(book.bid);
+                    }
+                });
                 tvTitle.setText(book.getTitle());
                 tvIntroContent.setText(book.getIntroContent());
                 imageRequester.setImageFromUrl(coverImg, book.getCoverUrl());
@@ -231,7 +241,7 @@ public class BookDetailFragment extends Fragment {
                                             myLocationMarker.position(new LatLng(bookStoreLocation.getLatitude(), bookStoreLocation.getLongitude()));
                                             myLocationMarker.title(item.getString("name"));
                                             myLocationMarker.snippet(item.getString("formatted_address"));
-                                            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+                                            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.room));
                                             map.addMarker(myLocationMarker);
 
 
@@ -348,7 +358,7 @@ public class BookDetailFragment extends Fragment {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));
             myLocationMarker.title(title);
             myLocationMarker.snippet("GPS로 확인한 위치");
-            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.room));
             map.addMarker(myLocationMarker);
         } else {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));

@@ -1,5 +1,6 @@
 package com.study.android.booklog;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -11,9 +12,12 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.study.android.booklog.Fragment.BestsellerFragment;
 import com.study.android.booklog.Fragment.LoginFragment;
+import com.study.android.booklog.Fragment.MyBookFragment;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationHost {
@@ -21,12 +25,40 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     private static final String TAG = "lecture";
 
     private BestsellerFragment bestsellerFragment;
-
+    private MyBookFragment myBookFragment;
+    private LoginFragment loginFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
+
+
+        bestsellerFragment = new BestsellerFragment();
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment selectedFragment = null;
+                switch (item.getItemId()) {
+                    case R.id.action_bestseller:
+                        selectedFragment = bestsellerFragment;
+                        break;
+                    case R.id.action_mybook:
+                        selectedFragment = new MyBookFragment();
+                        break;
+                    case R.id.action_search:
+                        selectedFragment = new LoginFragment();
+                        break;
+                }
+                navigateTo(selectedFragment, false);
+
+                return true;
+            }
+        });
+
 
 
         if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -35,11 +67,11 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
         }
 
 
-        bestsellerFragment = new BestsellerFragment();
+
         if(savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, bestsellerFragment)
+                    .add(R.id.container, bestsellerFragment,"cur")
                     .commit();
         }
 
@@ -50,12 +82,20 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     @Override
     public void navigateTo(Fragment fragment, boolean addToBackstack) {
 
+
+
         FragmentTransaction transaction =
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                        .replace(R.id.container, fragment);
+                        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .show(fragment)
+                        .replace(R.id.container, fragment, "cur");
 
+        Fragment detail = getSupportFragmentManager().findFragmentByTag("detail");
+        if(detail != null) {
+            transaction.remove(detail);
+
+        }
         if (addToBackstack) {
             transaction.addToBackStack(null);
         }
@@ -64,12 +104,13 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
 
     @Override
     public void navigateAdd(Fragment fragment, boolean addToBackstack) {
+
         FragmentTransaction transaction =
                 getSupportFragmentManager()
                         .beginTransaction()
                         .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                        .hide(bestsellerFragment)
-                        .add(R.id.container, fragment);
+                        .hide(getSupportFragmentManager().findFragmentByTag("cur"))
+                        .add(R.id.container, fragment, "detail");
 
         if (addToBackstack) {
             transaction.addToBackStack(null);

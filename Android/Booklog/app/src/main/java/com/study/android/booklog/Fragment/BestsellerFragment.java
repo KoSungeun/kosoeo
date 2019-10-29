@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 
 import com.study.android.booklog.Adapter.BestsellerCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
@@ -48,15 +50,16 @@ public class BestsellerFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
 
-
+        final BestsellerCardRecyclerViewAdapter adapter = new BestsellerCardRecyclerViewAdapter();
+        recyclerView.setAdapter(adapter);
         Book.getBestsellerBookList(new VolleyCallback(){
             @Override
             public void onSuccess(Object result) {
-                BestsellerCardRecyclerViewAdapter adapter = new BestsellerCardRecyclerViewAdapter((List<Book>) result);
-                recyclerView.setAdapter(adapter);
+                adapter.setBookList((List<Book>) result);
+                adapter.notifyDataSetChanged();
+
             }
         });
-
 
         int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
         int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
@@ -85,8 +88,7 @@ public class BestsellerFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter:
-                // TransitionManager.beginDelayedTransition(container);
-                //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1, GridLayoutManager.VERTICAL, false));
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

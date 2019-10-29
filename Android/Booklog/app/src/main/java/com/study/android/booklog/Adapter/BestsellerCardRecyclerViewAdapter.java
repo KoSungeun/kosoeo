@@ -5,11 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -19,16 +21,19 @@ import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
 import com.study.android.booklog.model.Book;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<BestsellerCardRecyclerViewAdapter.BestsellerCardViewHolder> {
-    private List<Book> bookList;
+    public List<Book> bookList;
     private ImageRequester imageRequester;
 
-
-    public BestsellerCardRecyclerViewAdapter(List<Book> bookList) {
-        this.bookList = bookList;
+    public BestsellerCardRecyclerViewAdapter() {
         imageRequester = ImageRequester.getInstance();
+    }
+
+    public void setBookList(List<Book> bookList) {
+        this.bookList = bookList;
     }
 
     @NonNull
@@ -42,6 +47,7 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
     @Override
     public void onBindViewHolder(@NonNull final BestsellerCardViewHolder holder, final int position) {
         final Book book = bookList.get(position);
+        holder.itemView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(),R.anim.fade_in));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +66,9 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
 
     @Override
     public int getItemCount() {
+        if(bookList == null) {
+            return 0;
+        }
         return bookList.size();
     }
 
