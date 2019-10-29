@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.study.android.booklog.Fragment.BestsellerFragment;
+import com.study.android.booklog.Fragment.LoginFragment;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationHost {

@@ -1,13 +1,11 @@
-package com.study.android.booklog;
+package com.study.android.booklog.Adapter;
 
 
 import android.os.Bundle;
-import android.transition.Scene;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,30 +13,33 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.study.android.booklog.Fragment.BookDetailFragment;
+import com.study.android.booklog.ImageRequester;
+import com.study.android.booklog.NavigationHost;
+import com.study.android.booklog.R;
 import com.study.android.booklog.model.Book;
 
 import java.util.List;
 
-public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<BestsellerCardRecyclerViewAdapter.BestsellerCardViewHolder> {
+public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCardRecyclerViewAdapter.MyBookCardViewHolder> {
     private List<Book> bookList;
     private ImageRequester imageRequester;
 
 
-    public BestsellerCardRecyclerViewAdapter(List<Book> bookList) {
+    public MyBookCardRecyclerViewAdapter(List<Book> bookList) {
         this.bookList = bookList;
         imageRequester = ImageRequester.getInstance();
     }
 
     @NonNull
     @Override
-    public BestsellerCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyBookCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bestseller_card, parent, false);
-        return new BestsellerCardViewHolder(layoutView);
+        return new MyBookCardViewHolder(layoutView);
     }
 
 
     @Override
-    public void onBindViewHolder(@NonNull final BestsellerCardViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final MyBookCardViewHolder holder, final int position) {
         final Book book = bookList.get(position);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +62,7 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         return bookList.size();
     }
 
-    class BestsellerCardViewHolder extends RecyclerView.ViewHolder {
+    class MyBookCardViewHolder extends RecyclerView.ViewHolder {
 
 
         NetworkImageView coverImage;
@@ -69,7 +70,7 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         TextView author;
 
 
-        BestsellerCardViewHolder(@NonNull View itemView) {
+        MyBookCardViewHolder(@NonNull View itemView) {
             super(itemView);
             coverImage = itemView.findViewById(R.id.cover_image);
             title = itemView.findViewById(R.id.book_title);

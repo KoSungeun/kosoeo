@@ -17,9 +17,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.study.android.booklog.BestsellerCardRecyclerViewAdapter;
+import com.study.android.booklog.Adapter.BestsellerCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
-import com.study.android.booklog.BooklogApplication;
 import com.study.android.booklog.R;
 import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
@@ -31,19 +30,16 @@ public class BestsellerFragment extends Fragment {
 
     RecyclerView recyclerView;
 
-    ViewGroup container;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        this.container = container;
+
         View view = inflater.inflate(R.layout.fragment_bestseller, container, false);
         setUpToolbar(view);
         recyclerView = view.findViewById(R.id.recycler_view);

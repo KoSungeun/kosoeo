@@ -133,7 +133,7 @@ public class BookDetailFragment extends Fragment {
                     }
                 });
 
-//                getBookStorePlace();
+               getBookStorePlace();
 
             }
         });

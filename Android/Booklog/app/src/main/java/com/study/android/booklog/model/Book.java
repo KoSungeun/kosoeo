@@ -107,9 +107,12 @@ public class Book {
 
 
 
+
+
     public static void initBookDetail(final String bid, final VolleyCallback callback) {
         RequestQueue queue = MyRequestQueue.getInstance();
         String url = "https://book.naver.com/bookdb/book_detail.nhn?bid=" + bid;
+
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
