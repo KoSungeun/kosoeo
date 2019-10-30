@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,6 +32,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,11 +57,13 @@ import java.util.Map;
 public class MyBookFragment extends Fragment {
 
     private FirebaseAuth mAuth;
-    public static final String TAG = "lecture";
-    RecyclerView recyclerView;
+    private static final String TAG = "lecture";
+    private RecyclerView recyclerView;
     private int RC_SIGN_IN = 9001;
     private SignInButton mBtnGoogleSignIn; // 로그인 버튼
     private GoogleSignInClient mGoogleSignInClient;
+    private LinearLayout loginLayout;
+    private MyBookCardRecyclerViewAdapter adapter;
 
 
     @Override
@@ -71,11 +75,6 @@ public class MyBookFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
-        initFirebaseAuth();
-
-
 
         View view = inflater.inflate(R.layout.fragment_my_book, container, false);
         setUpToolbar(view);
@@ -97,8 +96,30 @@ public class MyBookFragment extends Fragment {
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
 
 
+        initFirebaseAuth();
+
+        loginLayout = view.findViewById(R.id.login_layout);
 
 
+        adapter = new MyBookCardRecyclerViewAdapter();
+
+        recyclerView.setAdapter(adapter);
+        if(mAuth.getCurrentUser() != null) {
+            adapterSetMyBookData();
+        }
+
+
+        int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
+        int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
+        recyclerView.addItemDecoration(new BestsellerGridItemDecoration(largePadding, smallPadding));
+
+        return view;
+
+    }
+
+    private void adapterSetMyBookData() {
+
+        loginLayout.setVisibility(View.GONE);
         Book.getMyBook(new VolleyCallback() {
             @Override
             public void onSuccess(Object result) {
@@ -121,31 +142,13 @@ public class MyBookFragment extends Fragment {
                 MyRequestQueue.getInstance().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
                     @Override
                     public void onRequestFinished(Request<Object> request) {
-                        MyBookCardRecyclerViewAdapter adapter = new MyBookCardRecyclerViewAdapter(bookList);
-                        recyclerView.setAdapter(adapter);
+                        adapter.setBookList(bookList);
+                        adapter.notifyDataSetChanged();
                     }
                 });
 
             }
         });
-
-
-
-//        Book.getBestsellerBookList(new VolleyCallback(){
-//            @Override
-//            public void onSuccess(Object result) {
-//                MyBookCardRecyclerViewAdapter adapter = new MyBookCardRecyclerViewAdapter((List<Book>) result);
-//                recyclerView.setAdapter(adapter);
-//            }
-//        });
-
-
-        int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
-        int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
-        recyclerView.addItemDecoration(new BestsellerGridItemDecoration(largePadding, smallPadding));
-
-        return view;
-
     }
 
 
@@ -197,11 +200,9 @@ public class MyBookFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            Snackbar.make(getView(),"로그인 성공", 1000);
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Log.d(TAG, user.getEmail());
-                            Log.d(TAG, user.getUid());
-
+                            adapterSetMyBookData();
 
                         } else {
                             // If sign in fails, display a message to the user.

@@ -11,12 +11,11 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.study.android.booklog.Fragment.BestsellerFragment;
-import com.study.android.booklog.Fragment.LoginFragment;
+import com.study.android.booklog.Fragment.SearchFragment;
 import com.study.android.booklog.Fragment.MyBookFragment;
 
 
@@ -26,14 +25,13 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
 
     private BestsellerFragment bestsellerFragment;
     private MyBookFragment myBookFragment;
-    private LoginFragment loginFragment;
+    private SearchFragment searchFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
 
 
         bestsellerFragment = new BestsellerFragment();
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
                         selectedFragment = new MyBookFragment();
                         break;
                     case R.id.action_search:
-                        selectedFragment = new LoginFragment();
+                        selectedFragment = new SearchFragment();
                         break;
                 }
                 navigateTo(selectedFragment, false);

@@ -21,12 +21,12 @@ import com.study.android.booklog.model.Book;
 
 import java.util.List;
 
-public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCardRecyclerViewAdapter.MyBookCardViewHolder> {
+public class SearchCardRecyclerViewAdapter extends RecyclerView.Adapter<SearchCardRecyclerViewAdapter.SearchCardViewHolder> {
     private List<Book> bookList;
     private ImageRequester imageRequester;
 
 
-    public MyBookCardRecyclerViewAdapter() {
+    public SearchCardRecyclerViewAdapter() {
         imageRequester = ImageRequester.getInstance();
     }
 
@@ -36,14 +36,14 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
 
     @NonNull
     @Override
-    public MyBookCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bestseller_card, parent, false);
-        return new MyBookCardViewHolder(layoutView);
+    public SearchCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.search_card, parent, false);
+        return new SearchCardViewHolder(layoutView);
     }
 
 
     @Override
-    public void onBindViewHolder(@NonNull final MyBookCardViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final SearchCardViewHolder holder, final int position) {
         final Book book = bookList.get(position);
         holder.itemView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(),R.anim.fade_in));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +72,7 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
         return bookList.size();
     }
 
-    class MyBookCardViewHolder extends RecyclerView.ViewHolder {
+    class SearchCardViewHolder extends RecyclerView.ViewHolder {
 
 
         NetworkImageView coverImage;
@@ -80,7 +80,7 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
         TextView author;
 
 
-        MyBookCardViewHolder(@NonNull View itemView) {
+        SearchCardViewHolder(@NonNull View itemView) {
             super(itemView);
             coverImage = itemView.findViewById(R.id.cover_image);
             title = itemView.findViewById(R.id.title);

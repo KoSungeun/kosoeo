@@ -57,7 +57,7 @@ public class Book {
     public String coverUrl;
     private String rating;
     private String publisher;
-    private String publicationDate;
+    private String pubDate;
     private String originalTitle;
     private String page;
     private String isbn;
@@ -82,12 +82,12 @@ public class Book {
         JSONObject jsonRequest = new JSONObject();
         try {
             jsonRequest.put("cp_cate", "");
-            jsonRequest.put("cp_name", "kyobo");
+            jsonRequest.put("cp_name", "yes24");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        JsonObjectRequest stringRequest = new JsonObjectRequest(url, jsonRequest, new Response.Listener<JSONObject>() {
+        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, jsonRequest, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
 
@@ -158,7 +158,7 @@ public class Book {
 
                 for(TextNode tn : bookInfo.select(".txt_desc").next().first().textNodes()) {
                     if(!tn.isBlank()) {
-                        book.setPublicationDate(tn.text().trim());
+                        book.setPubDate(tn.text().trim());
                     }
                 }
 
@@ -217,6 +217,69 @@ public class Book {
         };
 
         queue.add(stringRequest);
+    }
+
+    public static void searchBook(final String keyword, final VolleyCallback callback) {
+
+        RequestQueue queue = MyRequestQueue.getInstance();
+        String url = "https://openapi.naver.com/v1/search/book.json?query=" + keyword;
+
+        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+                List<Book> bookList = new ArrayList<>();
+                JSONObject result = null;
+                try {
+                    result = new JSONObject(response);
+                    JSONArray items = result.getJSONArray("items");
+                    for(int i = 0; i < items.length(); i++) {
+
+                        Book book = new Book();
+                        JSONObject item = items.getJSONObject(i);
+                        book.setTitle(item.getString("title"));
+                        Author author = new Author();
+                        author.setName(item.getString("author"));
+                        List<Author> authors = new ArrayList<>();
+                        authors.add(author);
+                        book.setAuthorList(authors);
+                        book.setPublisher(item.getString("publisher"));
+                        book.setPubDate(item.getString("pubdate"));
+                        book.setIntroContent(item.getString("description"));
+
+                        String link = item.getString("link");
+                        String bid = link.substring(link.indexOf("=")+1);
+                        book.setCoverUrl(bid);
+                        book.setBid(bid);
+                        bookList.add(book);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                callback.onSuccess(bookList);
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                headers.put("X-Naver-Client-Id", "Q3dhyU8bwlHFmOtgUBN5");
+                headers.put("X-Naver-Client-Secret", "E4cYWwBYLz");
+
+                return headers;
+            }
+
+        };
+
+        queue.add(stringRequest);
+
+
     }
 
 
@@ -371,12 +434,12 @@ public class Book {
         this.publisher = publisher;
     }
 
-    public String getPublicationDate() {
-        return publicationDate;
+    public String getPubDate() {
+        return pubDate;
     }
 
-    public void setPublicationDate(String publicationDate) {
-        this.publicationDate = publicationDate;
+    public void setPubDate(String pubDate) {
+        this.pubDate = pubDate;
     }
 
     public String getOriginalTitle() {

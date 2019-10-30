@@ -25,14 +25,14 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/book_title"
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bestseller_title"
                 android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <TextView
-                android:id="@+id/book_author"
+                android:id="@+id/author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/bestseller_author"

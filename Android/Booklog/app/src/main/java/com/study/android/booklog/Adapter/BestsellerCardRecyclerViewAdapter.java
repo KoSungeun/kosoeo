@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
@@ -21,7 +20,6 @@ import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
 import com.study.android.booklog.model.Book;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<BestsellerCardRecyclerViewAdapter.BestsellerCardViewHolder> {
@@ -83,8 +81,8 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         BestsellerCardViewHolder(@NonNull View itemView) {
             super(itemView);
             coverImage = itemView.findViewById(R.id.cover_image);
-            title = itemView.findViewById(R.id.book_title);
-            author = itemView.findViewById(R.id.book_author);
+            title = itemView.findViewById(R.id.title);
+            author = itemView.findViewById(R.id.author);
 
         }
 

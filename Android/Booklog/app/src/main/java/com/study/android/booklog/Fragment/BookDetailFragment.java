@@ -48,6 +48,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.study.android.booklog.ImageRequester;
 import com.study.android.booklog.MyRequestQueue;
 import com.study.android.booklog.R;
@@ -93,7 +94,7 @@ public class BookDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        View view = inflater.inflate(R.layout.fragment_book_detail, container, false);
+        final View view = inflater.inflate(R.layout.fragment_book_detail, container, false);
         tvTitle = view.findViewById(R.id.tvTitleData);
         tvIntroContent = view.findViewById(R.id.tvIntroContent);
         coverImg = view.findViewById(R.id.cover_image);
@@ -111,6 +112,9 @@ public class BookDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Book.addMyBook(book.bid);
+                        Snackbar.make(getView(), "내책에 추가하였습니다.", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+
                     }
                 });
                 tvTitle.setText(book.getTitle());
@@ -241,7 +245,7 @@ public class BookDetailFragment extends Fragment {
                                             myLocationMarker.position(new LatLng(bookStoreLocation.getLatitude(), bookStoreLocation.getLongitude()));
                                             myLocationMarker.title(item.getString("name"));
                                             myLocationMarker.snippet(item.getString("formatted_address"));
-                                            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.room));
+                                            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
                                             map.addMarker(myLocationMarker);
 
 
@@ -358,7 +362,7 @@ public class BookDetailFragment extends Fragment {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));
             myLocationMarker.title(title);
             myLocationMarker.snippet("GPS로 확인한 위치");
-            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.room));
+            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
             map.addMarker(myLocationMarker);
         } else {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));
