@@ -2,10 +2,12 @@ package com.study.android.booklog.Adapter;
 
 
 import android.os.Bundle;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,8 +61,11 @@ public class SearchCardRecyclerViewAdapter extends RecyclerView.Adapter<SearchCa
                 ((NavigationHost) v.getContext()).navigateAdd(bookDetail, true);
             }
         });
-        holder.title.setText(book.title);
-        holder.author.setText(book.authorList.get(0).name);
+        holder.title.setText(Html.fromHtml(book.title));
+        holder.author.setText(Html.fromHtml(book.authorList.get(0).name));
+        holder.pubDate.setText(book.getPubDate());
+        holder.description.setText(Html.fromHtml(book.getIntroContent()));
+        holder.publisher.setText(Html.fromHtml(book.getPublisher()));
         imageRequester.setImageFromUrl(holder.coverImage, book.coverUrl);
     }
 
@@ -78,6 +83,9 @@ public class SearchCardRecyclerViewAdapter extends RecyclerView.Adapter<SearchCa
         NetworkImageView coverImage;
         TextView title;
         TextView author;
+        TextView pubDate;
+        TextView publisher;
+        TextView description;
 
 
         SearchCardViewHolder(@NonNull View itemView) {
@@ -85,6 +93,10 @@ public class SearchCardRecyclerViewAdapter extends RecyclerView.Adapter<SearchCa
             coverImage = itemView.findViewById(R.id.cover_image);
             title = itemView.findViewById(R.id.title);
             author = itemView.findViewById(R.id.author);
+            pubDate = itemView.findViewById(R.id.pubdate);
+            publisher = itemView.findViewById(R.id.publisher);
+            description = itemView.findViewById(R.id.description);
+
 
         }
 

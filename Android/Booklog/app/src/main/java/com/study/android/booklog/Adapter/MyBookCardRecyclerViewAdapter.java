@@ -2,21 +2,31 @@ package com.study.android.booklog.Adapter;
 
 
 import android.os.Bundle;
+import android.support.v4.media.RatingCompat;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
-import com.study.android.booklog.Fragment.BookDetailFragment;
+import com.google.android.material.snackbar.Snackbar;
+import com.study.android.booklog.Fragment.MyBookFragment;
 import com.study.android.booklog.ImageRequester;
-import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
+import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
 
 import java.util.List;
@@ -24,7 +34,7 @@ import java.util.List;
 public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCardRecyclerViewAdapter.MyBookCardViewHolder> {
     private List<Book> bookList;
     private ImageRequester imageRequester;
-
+    private ViewGroup praent;
 
     public MyBookCardRecyclerViewAdapter() {
         imageRequester = ImageRequester.getInstance();
@@ -37,30 +47,100 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
     @NonNull
     @Override
     public MyBookCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.bestseller_card, parent, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_book_card, parent, false);
+        this.praent = parent;
         return new MyBookCardViewHolder(layoutView);
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull final MyBookCardViewHolder holder, final int position) {
+
         final Book book = bookList.get(position);
         holder.itemView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(),R.anim.fade_in));
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                PopupMenu popup = new PopupMenu(v.getContext(), v);
 
-                Fragment bookDetail = new BookDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("bid", book.bid);
-                bookDetail.setArguments(bundle);
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
 
-                ((NavigationHost) v.getContext()).navigateAdd(bookDetail, true);
+                        praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                        switch (item.getItemId()) {
+                            case R.id.delete:
+                                Book.deleteMyBook(book.getMyFirebaseData(), new VolleyCallback() {
+
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        bookList.remove(position);
+                                        praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+                                        notifyDataSetChanged();
+                                        Snackbar.make(holder.itemView, "삭제했습니다", Snackbar.LENGTH_LONG)
+                                                .setAction("Action", null).show();
+
+                                    }
+                                });
+                                break;
+
+                            case R.id.read:
+                                final boolean isRead = (boolean) book.getMyFirebaseData().get("isRead");
+
+                                Book.deleteMyBook(book.getMyFirebaseData(), new VolleyCallback() {
+                                    @Override
+                                    public void onSuccess(Object result) {
+                                        book.getMyFirebaseData().put("isRead", !isRead);
+
+                                        Book.updateMyBook(book.getMyFirebaseData(), new VolleyCallback() {
+                                            @Override
+                                            public void onSuccess(Object result) {
+                                                praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+                                                notifyDataSetChanged();
+                                                Snackbar.make(holder.itemView, "업데이트 했습니다", Snackbar.LENGTH_LONG)
+                                                        .setAction("Action", null).show();
+                                            }
+                                        });
+                                    }
+                                });
+                                break;
+                        }
+
+
+                        return false;
+                    }
+                });
+                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+                popup.show();
             }
         });
+
+//        holder.itemView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//
+////                Fragment bookDetail = new BookDetailFragment();
+////                Bundle bundle = new Bundle();
+////                bundle.putString("bid", book.bid);
+////                bookDetail.setArguments(bundle);
+////
+////                ((NavigationHost) v.getContext()).navigateAdd(bookDetail, true);
+//            }
+//        });
         holder.title.setText(book.title);
         holder.author.setText(book.authorList.get(0).name);
+
+        if((Boolean) book.getMyFirebaseData().get("isRead")) {
+            holder.readCheck.setImageResource(R.drawable.read_ok);
+        } else {
+
+            holder.readCheck.setImageResource(R.drawable.not_read);
+        }
+
         imageRequester.setImageFromUrl(holder.coverImage, book.coverUrl);
     }
 
@@ -78,6 +158,7 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
         NetworkImageView coverImage;
         TextView title;
         TextView author;
+        ImageView readCheck;
 
 
         MyBookCardViewHolder(@NonNull View itemView) {
@@ -85,7 +166,7 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
             coverImage = itemView.findViewById(R.id.cover_image);
             title = itemView.findViewById(R.id.title);
             author = itemView.findViewById(R.id.author);
-
+            readCheck = itemView.findViewById(R.id.read_check);
         }
 
 

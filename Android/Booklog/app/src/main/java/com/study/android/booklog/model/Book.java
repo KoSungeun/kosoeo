@@ -68,6 +68,9 @@ public class Book {
     private String ebookDisPrice;
     private String ebookDiscount;
     private String introContent;
+    private int myBookNo;
+    private Boolean isRead;
+    private Map<String, Object> myFirebaseData;
 
 
     public Book() {
@@ -75,9 +78,9 @@ public class Book {
         this.translatorList = new ArrayList<>();
     }
 
-    public static void getBestsellerBookList(final VolleyCallback callback) {
+    public static void getBestsellerBookList(String cp_name, final VolleyCallback callback) {
         RequestQueue queue = MyRequestQueue.getInstance();
-        String url = "https://book.naver.com/bestsell/home_bestseller_json.nhn";
+        String url = "https://book.naver.com/bestsell/home_bestseller_json.nhn?cp_name=" + cp_name;
 
         JSONObject jsonRequest = new JSONObject();
         try {
@@ -236,6 +239,7 @@ public class Book {
                     JSONArray items = result.getJSONArray("items");
                     for(int i = 0; i < items.length(); i++) {
 
+
                         Book book = new Book();
                         JSONObject item = items.getJSONObject(i);
                         book.setTitle(item.getString("title"));
@@ -287,26 +291,27 @@ public class Book {
         Map<String, Object> bookdata = new HashMap<>();
         bookdata.put("bid", bid);
         bookdata.put("isRead", false);
-        List<Map<String, Object>> booklist = new ArrayList<>();
-        booklist.add(bookdata);
         Map<String, Object> data = new HashMap<>();
         data.put("book", FieldValue.arrayUnion(bookdata));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
 
-        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).set(data, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
+
+        db.collection("MyFirestoreDB")
+                .document(BooklogApplication.getmAuth()
+                        .getCurrentUser()
+                        .getUid())
+                .set(data, SetOptions.merge())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("asd0","OK");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
             }
         });
-
     }
 
     public static void getMyBook(final VolleyCallback callback) {
@@ -323,6 +328,36 @@ public class Book {
             }
         });
     }
+
+    public static void deleteMyBook(Map<String, Object> removeData, final VolleyCallback callback) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("book", FieldValue.arrayRemove(removeData));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("adf","성공");
+                callback.onSuccess(null);
+            }
+        });
+    }
+
+    public static void updateMyBook(Map<String, Object> updateData, final VolleyCallback callback) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("book", FieldValue.arrayUnion(updateData));
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("adf","성공");
+                callback.onSuccess(null);
+            }
+        });
+    }
+
+
 
     public void setCoverUrl(String bid) {
         String covertedBid = "00000000".substring(0,8-bid.length()) + bid;
@@ -353,6 +388,7 @@ public class Book {
     public void setRank(int rank) {
         this.rank = rank;
     }
+
 
     public String getRankChange() {
         return rankChange;
@@ -524,5 +560,29 @@ public class Book {
 
     public void setIntroContent(String introContent) {
         this.introContent = introContent;
+    }
+
+    public int getMyBookNo() {
+        return myBookNo;
+    }
+
+    public void setMyBookNo(int myBookNo) {
+        this.myBookNo = myBookNo;
+    }
+
+    public Boolean getRead() {
+        return isRead;
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
+    }
+
+    public Map<String, Object> getMyFirebaseData() {
+        return myFirebaseData;
+    }
+
+    public void setMyFirebaseData(Map<String, Object> myFirebaseData) {
+        this.myFirebaseData = myFirebaseData;
     }
 }

@@ -18,11 +18,13 @@
             android:layout_height="@dimen/bestseller_card_image_height"
             android:background="?attr/colorPrimaryDark"
             android:scaleType="centerCrop" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="14dp">
 
             <TextView
                 android:id="@+id/title"
@@ -41,4 +43,12 @@
 
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/read_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="5dp"
+        app:srcCompat="@drawable/not_read" />
 </com.google.android.material.card.MaterialCardView>

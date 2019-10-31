@@ -1,6 +1,7 @@
 package com.study.android.booklog.Fragment;
 
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 
@@ -62,10 +64,11 @@ public class SearchFragment extends Fragment {
 
         searchEditText = view.findViewById(R.id.search_edit_text);
         searchButton = view.findViewById(R.id.search_button);
-
+        final InputMethodManager inputMethodManager =(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(),0);
                 Book.searchBook(searchEditText.getText().toString(), new VolleyCallback() {
                     @Override
                     public void onSuccess(Object result) {
@@ -77,8 +80,8 @@ public class SearchFragment extends Fragment {
         });
 
 
-        int largePadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing);
-        int smallPadding = getResources().getDimensionPixelSize(R.dimen.shr_product_grid_spacing_small);
+        int largePadding = getResources().getDimensionPixelSize(R.dimen.search_grid_spacing);
+        int smallPadding = getResources().getDimensionPixelSize(R.dimen.search_grid_spacing_small);
         recyclerView.addItemDecoration(new BestsellerGridItemDecoration(largePadding, smallPadding));
 
         return view;

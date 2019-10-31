@@ -1,9 +1,7 @@
 package com.study.android.booklog.Fragment;
 
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -24,17 +20,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.textclassifier.TextLinks;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -69,6 +63,23 @@ public class BookDetailFragment extends Fragment {
     public static final String TAG = "lecture";
     private TextView tvTitle;
     private TextView tvIntroContent;
+    private TextView tvAuthor;
+    private TextView tvPublisher;
+    private TextView tvPubDate;
+    private TextView tvOriginalTitle;
+    private TextView tvPage;
+    private TextView tvIsbn;
+    private TextView tvBookPrice;
+    private TextView tvBookDisPrice;
+    private TextView tvBookDiscount;
+    private TextView tvEBookPrice;
+    private TextView tvEBookDisPrice;
+    private TextView tvEbookDiscount;
+    private TextView tvRatingNum;
+    private RatingBar ratingBar;
+
+
+
     private ImageRequester imageRequester;
     private NetworkImageView coverImg;
     private FloatingActionButton floatingActionButton;
@@ -97,6 +108,20 @@ public class BookDetailFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_book_detail, container, false);
         tvTitle = view.findViewById(R.id.tvTitleData);
         tvIntroContent = view.findViewById(R.id.tvIntroContent);
+        tvAuthor = view.findViewById(R.id.tvAuthorData);
+        tvPublisher = view.findViewById(R.id.tvPublisherData);
+        tvPubDate = view.findViewById(R.id.tvPublicationDateData);
+        tvIsbn = view.findViewById(R.id.tvIsbnData);
+        tvOriginalTitle = view.findViewById(R.id.tvOriginalTitleData);
+        tvPage = view.findViewById(R.id.tvPageData);
+        tvBookPrice = view.findViewById(R.id.tvBookPrice);
+        tvBookDisPrice = view.findViewById(R.id.tvBookDisPrice);
+        tvBookDiscount = view.findViewById(R.id.tvBookDiscount);
+        tvEBookPrice = view.findViewById(R.id.tvEBookPrice);
+        tvEBookDisPrice = view.findViewById(R.id.tvEBookDisPrice);
+        tvEbookDiscount = view.findViewById(R.id.tvEBookDiscount);
+        tvRatingNum = view.findViewById(R.id.rating_num);
+        ratingBar = view.findViewById(R.id.ratingBar);
         coverImg = view.findViewById(R.id.cover_image);
 
         floatingActionButton = view.findViewById(R.id.floating_add_button);
@@ -119,8 +144,23 @@ public class BookDetailFragment extends Fragment {
                 });
                 tvTitle.setText(book.getTitle());
                 tvIntroContent.setText(book.getIntroContent());
+                tvAuthor.setText(book.getAuthorList().get(0).name);
+                tvPublisher.setText(book.getPublisher());
+                tvPubDate.setText(book.getPubDate());
+                tvIsbn.setText(book.getIsbn());
+                tvOriginalTitle.setText(book.getOriginalTitle());
+                tvPage.setText(book.getPage());
+                tvBookDiscount.setText(book.getDiscount());
+                tvBookPrice.setText(book.getPrice());
+                tvBookDisPrice.setText(book.getDisPrice());
+                tvEBookPrice.setText(book.getEbookPrice());
+                tvEBookDisPrice.setText(book.getEbookDisPrice());
+                tvEbookDiscount.setText(book.getDiscount());
+                tvRatingNum.setText(book.getRating());
+                ratingBar.setRating(Float.parseFloat(book.getRating()) / 2);
                 imageRequester.setImageFromUrl(coverImg, book.getCoverUrl());
 
+                Log.d(TAG, book.getDisPrice());
             }
         });
 
@@ -205,27 +245,18 @@ public class BookDetailFragment extends Fragment {
                             RequestQueue queue = MyRequestQueue.getInstance();
 
 //                          String url = "https://maps.googleapis.com/maps/api/place/textsearch/json";
-
+//          https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.480902,126.878855&radius=1000&keyword=%EC%84%9C%EC%A0%90&key=AIzaSyBxOLsR194XUro8eboTUmM9ileNgi9sKP4
                             String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
                                     "location=" + location.getLatitude()+"," +location.getLongitude() +
-                                    "&radius=5000" +
+                                    "&radius=1000" +
                                     "&type=book_store" +
                                     "&language=ko" +
                                     "&key=AIzaSyBxOLsR194XUro8eboTUmM9ileNgi9sKP4";
 
-                            JSONObject jsonRequest = new JSONObject();
-//                            try {
-//                                jsonRequest.put("location", location.getLatitude()+"," +location.getLongitude());
-//                                jsonRequest.put("radius", "5000");
-//                                jsonRequest.put("type", "book_store");
-//                                jsonRequest.put("key", "AIzaSyBxOLsR194XUro8eboTUmM9ileNgi9sKP4");
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
 
+                            Log.d(TAG,url);
 
-
-                            JsonObjectRequest stringRequest = new JsonObjectRequest(url, jsonRequest, new Response.Listener<JSONObject>() {
+                            JsonObjectRequest stringRequest = new JsonObjectRequest(url, null, new Response.Listener<JSONObject>() {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     Log.d(TAG, response.toString());
@@ -247,10 +278,6 @@ public class BookDetailFragment extends Fragment {
                                             myLocationMarker.snippet(item.getString("formatted_address"));
                                             myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
                                             map.addMarker(myLocationMarker);
-
-
-
-
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -263,11 +290,7 @@ public class BookDetailFragment extends Fragment {
                                 public void onErrorResponse(VolleyError error) {
                                 }
                             });
-
                             queue.add(stringRequest);
-
-
-
 
                         }
                     }
@@ -280,7 +303,7 @@ public class BookDetailFragment extends Fragment {
         LocationManager manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         try {
             long minTime = 10000;
-            float minDistance = 0;
+            float minDistance = 2.0f;
 
             manager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,
@@ -350,10 +373,10 @@ public class BookDetailFragment extends Fragment {
 
     private void showCurrentLocation(Location location) {
         LatLng curPoint = new LatLng(location.getLatitude(), location.getLongitude());
-//        map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));
+//       map.animateCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(curPoint, 15));
 
-        showMyLocationMarker(location, "내위치");
+        //showMyLocationMarker(location, "내위치");
     }
 
     private void showMyLocationMarker(Location location, String title) {

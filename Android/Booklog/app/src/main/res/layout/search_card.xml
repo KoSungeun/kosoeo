@@ -10,17 +10,20 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/cover_image"
             android:layout_width="150dp"
             android:layout_height="200dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:background="?attr/colorPrimaryDark"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
         <TextView
             android:id="@+id/title"
@@ -32,32 +35,21 @@
             android:text="Title"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cover_image"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/author"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
             android:text="@string/bestseller_author"
             android:textAppearance="?attr/textAppearanceBody2"
-            app:layout_constraintEnd_toStartOf="@+id/pubdate"
-            app:layout_constraintStart_toStartOf="@+id/title"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="@android:style/Widget.Material.RatingBar.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginEnd="5dp"
-            android:rating="4"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/publisher"
-            app:layout_constraintTop_toTopOf="@+id/publisher" />
+            app:layout_constraintStart_toEndOf="@+id/cover_image"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
         <TextView
             android:id="@+id/description"
@@ -77,26 +69,26 @@
             android:id="@+id/publisher"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            android:textAppearance="?attr/textAppearanceBody2"
             android:text="Publisher"
-            app:layout_constraintEnd_toStartOf="@+id/ratingBar"
-            app:layout_constraintStart_toStartOf="@+id/author"
+            android:textAppearance="?attr/textAppearanceBody2"
+            app:layout_constraintEnd_toStartOf="@+id/pubdate"
+            app:layout_constraintStart_toEndOf="@+id/cover_image"
             app:layout_constraintTop_toBottomOf="@+id/author" />
 
         <TextView
             android:id="@+id/pubdate"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:textAppearance="?attr/textAppearanceBody2"
             android:gravity="right"
             android:text="PubDate"
+            android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/author"
-            app:layout_constraintTop_toTopOf="@+id/author" />
+            app:layout_constraintStart_toEndOf="@+id/publisher"
+            app:layout_constraintTop_toTopOf="@+id/publisher" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

@@ -10,7 +10,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ProgressBar;
 
+import com.google.android.material.tabs.TabLayout;
 import com.study.android.booklog.Adapter.BestsellerCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
 import com.study.android.booklog.R;
@@ -31,6 +35,9 @@ import java.util.List;
 public class BestsellerFragment extends Fragment {
 
     RecyclerView recyclerView;
+    TabLayout tabLayout;
+    ProgressBar progressBar;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,18 +52,80 @@ public class BestsellerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_bestseller, container, false);
         setUpToolbar(view);
         recyclerView = view.findViewById(R.id.recycler_view);
+        tabLayout = view.findViewById(R.id.tabs);
+        progressBar = view.findViewById(R.id.progressBar);
 
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+        //StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, GridLayoutManager.VERTICAL);
+
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+
+
 
         final BestsellerCardRecyclerViewAdapter adapter = new BestsellerCardRecyclerViewAdapter();
         recyclerView.setAdapter(adapter);
-        Book.getBestsellerBookList(new VolleyCallback(){
+        progressBar.setVisibility(View.VISIBLE);
+        Book.getBestsellerBookList("yes24", new VolleyCallback(){
             @Override
             public void onSuccess(Object result) {
                 adapter.setBookList((List<Book>) result);
+                progressBar.setVisibility(View.GONE);
                 adapter.notifyDataSetChanged();
+
+            }
+        });
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                String cpName = "";
+                switch (tab.getPosition()) {
+                    case 0:
+                        cpName = "yse24";
+                        break;
+                    case 1:
+                        cpName = "kyobo";
+                        break;
+                    case 2:
+                        cpName = "aladdin";
+                        break;
+                    case 3:
+                        cpName = "bookpark";
+                        break;
+                    case 4:
+                        cpName = "bandi";
+                        break;
+                    case 5:
+                        cpName = "ypbooks";
+                        break;
+                    case 6:
+                        cpName = "morning365";
+                        break;
+                    case 7:
+                        cpName = "conects";
+                        break;
+                }
+                progressBar.setVisibility(View.VISIBLE);
+                Book.getBestsellerBookList(cpName, new VolleyCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        adapter.setBookList((List<Book>) result);
+                        progressBar.setVisibility(View.GONE);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
             }
         });

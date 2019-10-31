@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -64,6 +65,7 @@ public class MyBookFragment extends Fragment {
     private GoogleSignInClient mGoogleSignInClient;
     private LinearLayout loginLayout;
     private MyBookCardRecyclerViewAdapter adapter;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -80,6 +82,7 @@ public class MyBookFragment extends Fragment {
         setUpToolbar(view);
 
 
+        progressBar = view.findViewById(R.id.progressBar);
         mBtnGoogleSignIn = view.findViewById(R.id.sign_in_button);
         mBtnGoogleSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,35 +123,48 @@ public class MyBookFragment extends Fragment {
     private void adapterSetMyBookData() {
 
         loginLayout.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
         Book.getMyBook(new VolleyCallback() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(final Object result) {
 
-                List<Map<String, Object>> myBookList = (List) result;
+                final List<Map<String, Object>> myBookList = (List) result;
 
                 final List<Book> bookList = new ArrayList<>();
-                for (Map m : myBookList) {
-                    String bid = (String) m.get("bid");
-                    Log.d("sdfas",bid);
-                    Book.initBookDetail(bid,new VolleyCallback() {
+                if(myBookList != null) {
+
+                    for (final Map m : myBookList) {
+                        String bid = (String) m.get("bid");
+                        Book.initBookDetail(bid,new VolleyCallback() {
+                            @Override
+                            public void onSuccess(Object result) {
+                                Book book = (Book) result;
+                                book.setMyFirebaseData(m);
+                                bookList.add((Book) result);
+
+                            }
+                        });
+
+
+                    }
+                    MyRequestQueue.getInstance().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
                         @Override
-                        public void onSuccess(Object result) {
-                            bookList.add((Book) result);
+                        public void onRequestFinished(Request<Object> request) {
+                            if(myBookList.size() == bookList.size()){
+                                adapter.setBookList(bookList);
+                                progressBar.setVisibility(View.GONE);
+                                adapter.notifyDataSetChanged();
+                                MyRequestQueue.getInstance().removeRequestFinishedListener(this);
+                            }
                         }
                     });
-
                 }
 
-                MyRequestQueue.getInstance().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
-                    @Override
-                    public void onRequestFinished(Request<Object> request) {
-                        adapter.setBookList(bookList);
-                        adapter.notifyDataSetChanged();
-                    }
-                });
 
             }
         });
+
+
     }
 
 

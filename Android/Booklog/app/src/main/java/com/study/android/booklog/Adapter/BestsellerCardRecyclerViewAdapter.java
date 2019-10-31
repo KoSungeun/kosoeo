@@ -2,10 +2,13 @@ package com.study.android.booklog.Adapter;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -59,6 +62,37 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         });
         holder.title.setText(book.title);
         holder.author.setText(book.authorList.get(0).name);
+
+
+        holder.rankNum.setText(String.valueOf(book.getRank()));
+
+        String rankChange = book.getRankChange();
+
+        int rankChangeNum = 0;
+        Log.d("test", rankChange);
+        if(!rankChange.equals("NEW") && !rankChange.equals("")) {
+            rankChangeNum = Integer.parseInt(rankChange);
+        }
+        if(rankChangeNum == 0 && !rankChange.equals("NEW")) {
+            holder.rankChangeLayout.setVisibility(View.GONE);
+        } else {
+            if(rankChangeNum < 0) {
+                holder.rankChangeImg.setImageResource(R.drawable.down_black_10dp);
+                holder.rankChangeImg.setColorFilter(R.color.quantum_lightblue);
+                rankChangeNum = Math.abs(rankChangeNum);
+            } else if (rankChange.equals("NEW")) {
+                holder.rankChangeImg.setVisibility(View.GONE);
+            }
+            if(!rankChange.equals("NEW")) {
+                holder.rankChangeNum.setText(String.valueOf(rankChangeNum));
+            } else {
+                holder.rankChangeNum.setText(rankChange);
+            }
+
+        }
+
+
+
         imageRequester.setImageFromUrl(holder.coverImage, book.coverUrl);
     }
 
@@ -76,6 +110,10 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         NetworkImageView coverImage;
         TextView title;
         TextView author;
+        TextView rankNum;
+        TextView rankChangeNum;
+        ImageView rankChangeImg;
+        LinearLayout rankChangeLayout;
 
 
         BestsellerCardViewHolder(@NonNull View itemView) {
@@ -83,6 +121,10 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
             coverImage = itemView.findViewById(R.id.cover_image);
             title = itemView.findViewById(R.id.title);
             author = itemView.findViewById(R.id.author);
+            rankNum = itemView.findViewById(R.id.rank_num);
+            rankChangeNum = itemView.findViewById(R.id.rank_change_num);
+            rankChangeImg = itemView.findViewById(R.id.rank_change_img);
+            rankChangeLayout = itemView.findViewById(R.id.rank_change_layout);
 
         }
 
