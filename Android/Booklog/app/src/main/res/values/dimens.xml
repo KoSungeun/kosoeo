@@ -4,7 +4,7 @@
     <dimen name="shr_product_grid_spacing_small">3dp</dimen>
     <dimen name="search_grid_spacing">4dp</dimen>
     <dimen name="search_grid_spacing_small">2dp</dimen>
-    <dimen name="bestseller_card_image_height">200dp</dimen>
+    <dimen name="bestseller_card_image_height">250dp</dimen>
 
     <dimen name="shr_product_grid_reveal_height">200dp</dimen>
 

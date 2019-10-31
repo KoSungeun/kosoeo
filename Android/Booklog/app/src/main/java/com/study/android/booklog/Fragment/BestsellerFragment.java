@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,10 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ProgressBar;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.study.android.booklog.Adapter.BestsellerCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
@@ -84,7 +89,6 @@ public class BestsellerFragment extends Fragment {
                 String cpName = "";
                 switch (tab.getPosition()) {
                     case 0:
-                        cpName = "yse24";
                         break;
                     case 1:
                         cpName = "kyobo";

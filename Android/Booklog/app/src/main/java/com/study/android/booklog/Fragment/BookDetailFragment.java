@@ -2,6 +2,9 @@ package com.study.android.booklog.Fragment;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -36,6 +40,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -137,8 +142,7 @@ public class BookDetailFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Book.addMyBook(book.bid);
-                        Snackbar.make(getView(), "내책에 추가하였습니다.", Snackbar.LENGTH_LONG)
-                                .setAction("Action", null).show();
+                        Snackbar.make(getView(),"내 책에 추가하였습니다.", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
 
                     }
                 });
@@ -244,8 +248,6 @@ public class BookDetailFragment extends Fragment {
                             Log.d(TAG, location.toString());
                             RequestQueue queue = MyRequestQueue.getInstance();
 
-//                          String url = "https://maps.googleapis.com/maps/api/place/textsearch/json";
-//          https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.480902,126.878855&radius=1000&keyword=%EC%84%9C%EC%A0%90&key=AIzaSyBxOLsR194XUro8eboTUmM9ileNgi9sKP4
                             String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?" +
                                     "location=" + location.getLatitude()+"," +location.getLongitude() +
                                     "&radius=1000" +
@@ -276,7 +278,8 @@ public class BookDetailFragment extends Fragment {
                                             myLocationMarker.position(new LatLng(bookStoreLocation.getLatitude(), bookStoreLocation.getLongitude()));
                                             myLocationMarker.title(item.getString("name"));
                                             myLocationMarker.snippet(item.getString("formatted_address"));
-                                            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+
+                                            myLocationMarker.icon(bitmapDescriptorFromVector(getActivity(), R.drawable.location_on));
                                             map.addMarker(myLocationMarker);
                                         }
                                     } catch (JSONException e) {
@@ -297,6 +300,15 @@ public class BookDetailFragment extends Fragment {
                 });
 
 
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
     private void requestMyLocation() {
@@ -385,10 +397,29 @@ public class BookDetailFragment extends Fragment {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));
             myLocationMarker.title(title);
             myLocationMarker.snippet("GPS로 확인한 위치");
-            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.mylocation));
+            myLocationMarker.icon(BitmapDescriptorFactory.fromResource(R.drawable.location_on));
             map.addMarker(myLocationMarker);
         } else {
             myLocationMarker.position(new LatLng(location.getLatitude(), location.getLongitude()));
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (map != null) {
+            // 권한 체크 후 사용자에 의해 취소되었다면 다시 요청
+            map.setMyLocationEnabled(false);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (map != null) {
+            map.setMyLocationEnabled(true);
         }
     }
 

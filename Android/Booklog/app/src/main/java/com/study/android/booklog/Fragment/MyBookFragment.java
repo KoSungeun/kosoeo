@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -33,6 +34,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -44,6 +46,8 @@ import com.study.android.booklog.Adapter.MyBookCardRecyclerViewAdapter;
 import com.study.android.booklog.BestsellerGridItemDecoration;
 import com.study.android.booklog.BooklogApplication;
 import com.study.android.booklog.MyRequestQueue;
+import com.study.android.booklog.MySnackbar;
+import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
 import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
@@ -94,9 +98,14 @@ public class MyBookFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
 
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
+//        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                return position % 3 == 2 ? 2 : 1;
+//            }
+//        });
+        recyclerView.setLayoutManager(gridLayoutManager);
 
 
         initFirebaseAuth();
@@ -216,7 +225,7 @@ public class MyBookFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Snackbar.make(getView(),"로그인 성공", 1000);
+                            Snackbar.make(getView(),"로그인 성공.", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
                             Log.d(TAG, "signInWithCredential:success");
                             adapterSetMyBookData();
 
@@ -251,13 +260,35 @@ public class MyBookFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.filter:
-                // TransitionManager.beginDelayedTransition(container);
-                //recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1, GridLayoutManager.VERTICAL, false));
+
+//                PopupMenu popup = new PopupMenu(getContext());
+//
+//                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+//                    @Override
+//                    public boolean onMenuItemClick(MenuItem item) {
+//                        switch (item.getItemId()) {
+//                            case R.id.delete:
+//
+//                                break;
+//
+//                            case R.id.read:
+//
+//                                break;
+//                            case R.id.detail:
+//
+//                                break;
+//
+//                        }
+//                        return false;
+//                    }
+//                });
+//                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+//                popup.show();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
 }

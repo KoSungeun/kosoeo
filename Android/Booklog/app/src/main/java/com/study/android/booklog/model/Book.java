@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,6 +39,7 @@ import org.jsoup.select.Elements;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -291,11 +293,10 @@ public class Book {
         Map<String, Object> bookdata = new HashMap<>();
         bookdata.put("bid", bid);
         bookdata.put("isRead", false);
+        bookdata.put("updateDate", new Timestamp(new Date()));
         Map<String, Object> data = new HashMap<>();
         data.put("book", FieldValue.arrayUnion(bookdata));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-
 
 
         db.collection("MyFirestoreDB")
@@ -319,10 +320,8 @@ public class Book {
         db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
                 if(task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
-
                     callback.onSuccess(document.get("book"));
                 }
             }
@@ -337,7 +336,6 @@ public class Book {
         db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("adf","성공");
                 callback.onSuccess(null);
             }
         });
@@ -351,7 +349,6 @@ public class Book {
         db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("adf","성공");
                 callback.onSuccess(null);
             }
         });

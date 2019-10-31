@@ -23,8 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.material.snackbar.Snackbar;
+import com.study.android.booklog.Fragment.BookDetailFragment;
 import com.study.android.booklog.Fragment.MyBookFragment;
 import com.study.android.booklog.ImageRequester;
+import com.study.android.booklog.MainActivity;
+import com.study.android.booklog.MySnackbar;
+import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
 import com.study.android.booklog.VolleyCallback;
 import com.study.android.booklog.model.Book;
@@ -44,9 +48,21 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
         this.bookList = bookList;
     }
 
+
+//    @Override
+//    public int getItemViewType(int position) {
+//        return position %3;
+//    }
+
     @NonNull
     @Override
     public MyBookCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        int layoutId = R.layout.my_book_card_first;
+//        if (viewType == 1) {
+//            layoutId = R.layout.my_book_card_second;
+//        } else if (viewType == 2) {
+//            layoutId = R.layout.my_book_card_third;
+//        }
         View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_book_card, parent, false);
         this.praent = parent;
         return new MyBookCardViewHolder(layoutView);
@@ -62,7 +78,7 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 PopupMenu popup = new PopupMenu(v.getContext(), v);
 
@@ -80,8 +96,8 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
                                         bookList.remove(position);
                                         praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
                                         notifyDataSetChanged();
-                                        Snackbar.make(holder.itemView, "삭제했습니다", Snackbar.LENGTH_LONG)
-                                                .setAction("Action", null).show();
+                                        ((MySnackbar) v.getContext()).show("삭제했습니다", Snackbar.LENGTH_LONG);
+
 
                                     }
                                 });
@@ -100,13 +116,21 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
                                             public void onSuccess(Object result) {
                                                 praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
                                                 notifyDataSetChanged();
-                                                Snackbar.make(holder.itemView, "업데이트 했습니다", Snackbar.LENGTH_LONG)
-                                                        .setAction("Action", null).show();
+                                                ((MySnackbar)v.getContext()).show("업데이트 했습니다", Snackbar.LENGTH_LONG);
                                             }
                                         });
                                     }
                                 });
                                 break;
+                            case R.id.detail:
+                               Fragment bookDetail = new BookDetailFragment();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("bid", book.bid);
+                                bookDetail.setArguments(bundle);
+
+                                ((NavigationHost) v.getContext()).navigateAdd(bookDetail, true);
+                                break;
+
                         }
 
 
@@ -118,19 +142,6 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
             }
         });
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
-////                Fragment bookDetail = new BookDetailFragment();
-////                Bundle bundle = new Bundle();
-////                bundle.putString("bid", book.bid);
-////                bookDetail.setArguments(bundle);
-////
-////                ((NavigationHost) v.getContext()).navigateAdd(bookDetail, true);
-//            }
-//        });
         holder.title.setText(book.title);
         holder.author.setText(book.authorList.get(0).name);
 

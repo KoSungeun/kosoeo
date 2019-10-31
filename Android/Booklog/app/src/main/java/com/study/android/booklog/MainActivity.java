@@ -14,12 +14,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.study.android.booklog.Fragment.BestsellerFragment;
 import com.study.android.booklog.Fragment.SearchFragment;
 import com.study.android.booklog.Fragment.MyBookFragment;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationHost {
+public class MainActivity extends AppCompatActivity implements NavigationHost, MySnackbar {
 
     private static final String TAG = "lecture";
 
@@ -27,14 +28,18 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
     private MyBookFragment myBookFragment;
     private SearchFragment searchFragment;
 
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
 
         bestsellerFragment = new BestsellerFragment();
+        myBookFragment = new MyBookFragment();
+        searchFragment = new SearchFragment();
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -45,10 +50,10 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
                         selectedFragment = bestsellerFragment;
                         break;
                     case R.id.action_mybook:
-                        selectedFragment = new MyBookFragment();
+                        selectedFragment = myBookFragment;
                         break;
                     case R.id.action_search:
-                        selectedFragment = new SearchFragment();
+                        selectedFragment = searchFragment;
                         break;
                 }
                 navigateTo(selectedFragment, false);
@@ -114,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements NavigationHost {
             transaction.addToBackStack(null);
         }
         transaction.commit();
+    }
+
+    @Override
+    public void show(String msg, int duration) {
+        Snackbar.make(findViewById(R.id.drawer_layout), msg, duration).setAnchorView(bottomNavigationView).show();
     }
 }
 
