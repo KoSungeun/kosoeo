@@ -17,9 +17,12 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -294,64 +297,126 @@ public class Book {
         bookdata.put("bid", bid);
         bookdata.put("isRead", false);
         bookdata.put("updateDate", new Timestamp(new Date()));
-        Map<String, Object> data = new HashMap<>();
-        data.put("book", FieldValue.arrayUnion(bookdata));
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).add(bookdata).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
 
-        db.collection("MyFirestoreDB")
-                .document(BooklogApplication.getmAuth()
-                        .getCurrentUser()
-                        .getUid())
-                .set(data, SetOptions.merge())
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
             }
         });
+
     }
 
     public static void getMyBook(final VolleyCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if(task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    callback.onSuccess(document.get("book"));
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<Map<String, Object>> myBookList = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        myBookList.add(document.getData());
+                    }
                 }
+                callback.onSuccess(myBookList);
+            }
+        });
+    }
+
+    public static void getReadStateBook(boolean isRead, final VolleyCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).whereEqualTo("isRead", isRead).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<Map<String, Object>> myBookList = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        myBookList.add(document.getData());
+                    }
+                }
+                callback.onSuccess(myBookList);
+            }
+        });
+    }
+
+    public static void getAddStateBook(String bid, final VolleyCallback callback) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).whereEqualTo("bid", bid).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                boolean state = false;
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                       state = true;
+                    }
+                }
+                callback.onSuccess(state);
             }
         });
     }
 
     public static void deleteMyBook(Map<String, Object> removeData, final VolleyCallback callback) {
-        Map<String, Object> update = new HashMap<>();
-        update.put("book", FieldValue.arrayRemove(removeData));
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).whereEqualTo("bid",removeData.get("bid")).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                callback.onSuccess(null);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        db.collection(BooklogApplication.getmAuth()
+                                .getCurrentUser()
+                                .getUid()).document(document.getId()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                callback.onSuccess(null);
+                            }
+                        });
+
+                    }
+                }
             }
         });
+
+
     }
 
-    public static void updateMyBook(Map<String, Object> updateData, final VolleyCallback callback) {
-        Map<String, Object> update = new HashMap<>();
-        update.put("book", FieldValue.arrayUnion(updateData));
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static void updateMyBook(final Map<String, Object> updateData, final VolleyCallback callback) {
 
-        db.collection("MyFirestoreDB").document(BooklogApplication.getmAuth().getCurrentUser().getUid()).update(update).addOnSuccessListener(new OnSuccessListener<Void>() {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection(BooklogApplication.getmAuth()
+                .getCurrentUser()
+                .getUid()).whereEqualTo("bid", updateData.get("bid")).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(Void aVoid) {
-                callback.onSuccess(null);
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        db.collection(BooklogApplication.getmAuth()
+                                .getCurrentUser()
+                                .getUid()).document(document.getId()).update(updateData).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                callback.onSuccess(null);
+                            }
+                        });
+
+                    }
+                }
             }
         });
+
     }
 
 

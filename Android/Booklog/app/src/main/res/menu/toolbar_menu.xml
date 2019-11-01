@@ -10,5 +10,21 @@
         android:id="@+id/filter"
         android:icon="@drawable/filter"
         android:title="@string/filter_title"
-        app:showAsAction="always" />
+        app:showAsAction="always">
+
+        <menu>
+            <item
+                android:id="@+id/all"
+                android:title="전체" />
+
+            <item
+                android:id="@+id/read"
+                android:title="읽음" />
+            <item
+                android:id="@+id/not_read"
+                android:title="안 읽음" />
+
+
+        </menu>
+    </item>
 </menu>

@@ -2,31 +2,26 @@ package com.study.android.booklog.Adapter;
 
 
 import android.os.Bundle;
-import android.support.v4.media.RatingCompat;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.toolbox.NetworkImageView;
 import com.google.android.material.snackbar.Snackbar;
 import com.study.android.booklog.Fragment.BookDetailFragment;
-import com.study.android.booklog.Fragment.MyBookFragment;
+
 import com.study.android.booklog.ImageRequester;
-import com.study.android.booklog.MainActivity;
 import com.study.android.booklog.MySnackbar;
 import com.study.android.booklog.NavigationHost;
 import com.study.android.booklog.R;
@@ -86,11 +81,11 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
 
-                        praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+
                         switch (item.getItemId()) {
                             case R.id.delete:
+                                praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
                                 Book.deleteMyBook(book.getMyFirebaseData(), new VolleyCallback() {
-
                                     @Override
                                     public void onSuccess(Object result) {
                                         bookList.remove(position);
@@ -105,20 +100,14 @@ public class MyBookCardRecyclerViewAdapter extends RecyclerView.Adapter<MyBookCa
 
                             case R.id.read:
                                 final boolean isRead = (boolean) book.getMyFirebaseData().get("isRead");
-
-                                Book.deleteMyBook(book.getMyFirebaseData(), new VolleyCallback() {
+                                book.getMyFirebaseData().put("isRead", !isRead);
+                                praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.VISIBLE);
+                                Book.updateMyBook(book.getMyFirebaseData(), new VolleyCallback() {
                                     @Override
                                     public void onSuccess(Object result) {
-                                        book.getMyFirebaseData().put("isRead", !isRead);
-
-                                        Book.updateMyBook(book.getMyFirebaseData(), new VolleyCallback() {
-                                            @Override
-                                            public void onSuccess(Object result) {
-                                                praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
-                                                notifyDataSetChanged();
-                                                ((MySnackbar)v.getContext()).show("업데이트 했습니다", Snackbar.LENGTH_LONG);
-                                            }
-                                        });
+                                        praent.getRootView().findViewById(R.id.progressBar).setVisibility(View.GONE);
+                                        notifyDataSetChanged();
+                                        ((MySnackbar)v.getContext()).show("업데이트 했습니다", Snackbar.LENGTH_LONG);
                                     }
                                 });
                                 break;

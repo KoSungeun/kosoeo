@@ -48,6 +48,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.study.android.booklog.BooklogApplication;
 import com.study.android.booklog.ImageRequester;
 import com.study.android.booklog.MyRequestQueue;
 import com.study.android.booklog.R;
@@ -102,7 +103,7 @@ public class BookDetailFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+ //       setHasOptionsMenu(true);
     }
 
     @Override
@@ -133,19 +134,48 @@ public class BookDetailFragment extends Fragment {
 
         setUpToolbar(view);
 
+        String bid = getArguments().getString("bid");
+        if(BooklogApplication.getmAuth().getCurrentUser() != null) {
+            Book.getAddStateBook(bid, new VolleyCallback() {
+                @Override
+                public void onSuccess(Object result) {
+                    if(!(boolean) result) {
+                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Book.addMyBook(getArguments().getString("bid"));
+                                Snackbar.make(getView(),"내 책에 추가하였습니다.", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
+                                floatingActionButton.setImageResource(R.drawable.read_ok);
+                            }
+                        });
+                    } else {
+                        floatingActionButton.setImageResource(R.drawable.read_ok);
+                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Snackbar.make(getView(),"이미 등록된 책입니다.", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
+                            }
+                        });
+                    }
+                }
+            });
+        } else {
+            floatingActionButton.setImageResource(R.drawable.close);
+            floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Snackbar.make(getView(),"로그인 후에 이용해주세요", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
+                }
+            });
+        }
+
+
         Book.initBookDetail(getArguments().getString("bid"), new VolleyCallback() {
             @Override
             public void onSuccess(Object result) {
                 final Book book = (Book) result;
 
-                floatingActionButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Book.addMyBook(book.bid);
-                        Snackbar.make(getView(),"내 책에 추가하였습니다.", Snackbar.LENGTH_LONG).setAnchorView(getActivity().findViewById(R.id.bottom_navigation)).show();
 
-                    }
-                });
                 tvTitle.setText(book.getTitle());
                 tvIntroContent.setText(book.getIntroContent());
                 tvAuthor.setText(book.getAuthorList().get(0).name);
@@ -314,8 +344,8 @@ public class BookDetailFragment extends Fragment {
     private void requestMyLocation() {
         LocationManager manager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         try {
-            long minTime = 10000;
-            float minDistance = 2.0f;
+            long minTime = 20000;
+            float minDistance = 10.0f;
 
             manager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER,

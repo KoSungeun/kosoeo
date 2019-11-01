@@ -99,12 +99,7 @@ public class MyBookFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2, GridLayoutManager.VERTICAL, false);
-//        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-//            @Override
-//            public int getSpanSize(int position) {
-//                return position % 3 == 2 ? 2 : 1;
-//            }
-//        });
+
         recyclerView.setLayoutManager(gridLayoutManager);
 
 
@@ -136,46 +131,47 @@ public class MyBookFragment extends Fragment {
         Book.getMyBook(new VolleyCallback() {
             @Override
             public void onSuccess(final Object result) {
-
-                final List<Map<String, Object>> myBookList = (List) result;
-
-                final List<Book> bookList = new ArrayList<>();
-                if(myBookList != null) {
-
-                    for (final Map m : myBookList) {
-                        String bid = (String) m.get("bid");
-                        Book.initBookDetail(bid,new VolleyCallback() {
-                            @Override
-                            public void onSuccess(Object result) {
-                                Book book = (Book) result;
-                                book.setMyFirebaseData(m);
-                                bookList.add((Book) result);
-
-                            }
-                        });
-
-
-                    }
-                    MyRequestQueue.getInstance().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
-                        @Override
-                        public void onRequestFinished(Request<Object> request) {
-                            if(myBookList.size() == bookList.size()){
-                                adapter.setBookList(bookList);
-                                progressBar.setVisibility(View.GONE);
-                                adapter.notifyDataSetChanged();
-                                MyRequestQueue.getInstance().removeRequestFinishedListener(this);
-                            }
-                        }
-                    });
-                }
-
-
+                bookDataLoad(result);
             }
         });
 
 
     }
 
+
+    public void bookDataLoad(Object result) {
+        progressBar.setVisibility(View.VISIBLE);
+        final List<Map<String, Object>> myBookList = (List) result;
+
+        final List<Book> bookList = new ArrayList<>();
+        if(myBookList != null) {
+
+            for (final Map m : myBookList) {
+                String bid = (String) m.get("bid");
+                Book.initBookDetail(bid,new VolleyCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        Book book = (Book) result;
+                        book.setMyFirebaseData(m);
+                        bookList.add((Book) result);
+
+                    }
+                });
+
+            }
+            MyRequestQueue.getInstance().addRequestFinishedListener(new RequestQueue.RequestFinishedListener<Object>() {
+                @Override
+                public void onRequestFinished(Request<Object> request) {
+                    if(myBookList.size() == bookList.size()){
+                        adapter.setBookList(bookList);
+                        progressBar.setVisibility(View.GONE);
+                        adapter.notifyDataSetChanged();
+                        MyRequestQueue.getInstance().removeRequestFinishedListener(this);
+                    }
+                }
+            });
+        }
+    }
 
     private void initFirebaseAuth() {
         mAuth = BooklogApplication.getmAuth();
@@ -259,32 +255,29 @@ public class MyBookFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.filter:
-
-//                PopupMenu popup = new PopupMenu(getContext());
-//
-//                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-//                    @Override
-//                    public boolean onMenuItemClick(MenuItem item) {
-//                        switch (item.getItemId()) {
-//                            case R.id.delete:
-//
-//                                break;
-//
-//                            case R.id.read:
-//
-//                                break;
-//                            case R.id.detail:
-//
-//                                break;
-//
-//                        }
-//                        return false;
-//                    }
-//                });
-//                popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-//                popup.show();
-
+            case R.id.read:
+                Book.getReadStateBook(true, new VolleyCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        bookDataLoad(result);
+                    }
+                });
+                return true;
+            case R.id.not_read:
+                Book.getReadStateBook(false, new VolleyCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        bookDataLoad(result);
+                    }
+                });
+                return true;
+            case R.id.all:
+                Book.getMyBook(new VolleyCallback() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        bookDataLoad(result);
+                    }
+                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

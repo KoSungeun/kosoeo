@@ -47,7 +47,7 @@ public class BestsellerFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+ //       setHasOptionsMenu(true);
     }
 
     @Override
@@ -160,8 +160,7 @@ public class BestsellerFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.filter:
-
+            case R.id.read:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

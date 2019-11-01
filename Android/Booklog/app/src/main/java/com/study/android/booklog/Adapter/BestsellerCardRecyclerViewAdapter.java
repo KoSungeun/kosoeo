@@ -69,7 +69,6 @@ public class BestsellerCardRecyclerViewAdapter extends RecyclerView.Adapter<Best
         String rankChange = book.getRankChange();
 
         int rankChangeNum = 0;
-        Log.d("test", rankChange);
         if(!rankChange.equals("NEW") && !rankChange.equals("")) {
             rankChangeNum = Integer.parseInt(rankChange);
         }
