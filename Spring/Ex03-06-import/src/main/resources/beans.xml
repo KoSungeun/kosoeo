@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- xml 이 추가되어도 java 코드는 변경하지 않아도 된다. -->
+	<import resource="classpath:config/beans2.xml"/>
+
+
+	<!-- 좀 더 짧게 사용하기가 목적 -->
+	<!-- -->
+	<bean id="hello" class="com.study.spring.Hello"
+		c:name="홍길동"
+		c:nickname="전우치"
+		c:printer-ref="printerA">
+	</bean>
+	
+	<!--
+	<bean id="hello" class="com.study.spring.Hello"
+		p:name="홍길동"
+		p:nickname="전우치"
+		p:printer-ref="printerA">	
+	</bean> 
+	-->
+	
+	<bean id="printerA" class="com.study.spring.PrinterA"/>
+	<bean id="printerB" class="com.study.spring.PrinterB"/>
+</beans>
