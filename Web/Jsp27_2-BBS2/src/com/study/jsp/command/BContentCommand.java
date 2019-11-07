@@ -14,10 +14,11 @@ import com.study.jsp.dto.BDto;
 public class BContentCommand implements BCommand  {
 
 	@Override
-	public void execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void execute(HttpServletRequest request, HttpServletResponse response)  {
 		String bId = request.getParameter("no");
 		BDao dao = new BDao();
 		BDto dto = dao.contentView(bId);
+		
 		
 		request.setAttribute("content_view", dto);
 	}
