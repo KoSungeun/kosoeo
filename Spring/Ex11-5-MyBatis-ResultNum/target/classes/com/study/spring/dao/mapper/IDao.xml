@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.study.spring.dao.IDao">
+	<select id="listDao" resultType="com.study.spring.dto.ContentDto">
+		SELECT * FROM BOARD ORDER BY MID DESC
+	</select>
+	
+	<insert id="writeDao" parameterType="java.util.HashMap">
+		INSERT INTO BOARD (MID, MWRITER, MCONTENT) VALUES (BOARD_SEQ.NEXTVAL, #{item1}, #{item2})
+	</insert>
+	
+	<select id="viewDao" resultType="com.study.spring.dto.ContentDto">
+		SELECT * FROM BOARD WHERE MID = #{0}
+	</select>
+	
+	<delete id="deleteDao">
+		DELETE FROM BOARD WHERE MID = #{_id}
+	</delete>
+	
+	<select id="articleCount" resultType="_int">
+		SELECT count(*) FROM BOARD
+	</select>
+</mapper>
