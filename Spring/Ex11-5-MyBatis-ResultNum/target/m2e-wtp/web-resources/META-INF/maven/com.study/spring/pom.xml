@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.study</groupId>
 	<artifactId>spring</artifactId>
-	<name>Ex11-4-MyBatis-SqlLog</name>
+	<name>Ex11-5-MyBatis-ResultNum</name>
 	<packaging>war</packaging>
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
