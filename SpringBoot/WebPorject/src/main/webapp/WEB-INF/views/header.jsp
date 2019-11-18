@@ -94,7 +94,7 @@
 </div>
   
 	<nav class="navbar navbar-expand-md navbar-dark bg-dark">
-		<a class="navbar-brand" href="/WebProject/main.do"><i class="fas fa-dragon"></i> WebProject</a>
+		<a class="navbar-brand" href="/"><i class="fas fa-dragon"></i> WebProject</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse"
 			data-target="#navbarsExampleDefault"
 			aria-controls="navbarsExampleDefault" aria-expanded="false"
@@ -112,7 +112,7 @@
 					class="nav-link dropdown-toggle" href="#" id="dropdown01"
 					data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">게시판</a>
 					<div class="dropdown-menu" aria-labelledby="dropdown01">
-						<a class="dropdown-item" href="/WebProject/Board/notice.do">공지사항</a> <a
+						<a class="dropdown-item" href="/Board/notice">공지사항</a> <a
 							class="dropdown-item" href="/WebProject/Board/free.do">자유게시판</a> <a
 							class="dropdown-item" href="/WebProject/Board/down.do">자료실</a>
 					</div></li>
