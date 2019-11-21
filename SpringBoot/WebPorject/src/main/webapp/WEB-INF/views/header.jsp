@@ -134,7 +134,7 @@
 				
 					<div class="my-2 my-md-0">
 						<button class="btn btn-secondary mr-2"
-							onclick="location.href='/WebProject/Member/loginView.do'">로그인</button>
+							onclick="location.href='/Member/login'">로그인</button>
 						<button class="btn btn-secondary"
 							onclick="location.href='/WebProject/Member/joinView.do'">회원가입</button>
 					</div>

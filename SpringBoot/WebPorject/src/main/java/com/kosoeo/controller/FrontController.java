@@ -28,6 +28,13 @@ public class FrontController {
 		System.out.println(model.getAttribute("list").toString());
 		return "Board/list";
 	}
+	@RequestMapping("/Member/login")
+	public String memberLogin (Model model) {
+
+//		model.addAttribute("list", boardDao.list(1, 1, null, null));
+//		System.out.println(model.getAttribute("list").toString());
+		return "Member/login";
+	}
 	
 
 }
