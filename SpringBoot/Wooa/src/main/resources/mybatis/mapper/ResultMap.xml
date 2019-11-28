@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kosoeo.dao.BoardDAO">
+	<resultMap id="boardListMap" type="com.kosoeo.dto.Board" autoMapping="true">
+		<association property="member" javaType="com.kosoeo.dto.Member" autoMapping="true">
+			<result property="no" column="MEMBERNO"></result>
+		</association>
+	</resultMap>
+</mapper>
